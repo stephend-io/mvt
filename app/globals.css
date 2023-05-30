@@ -25,3 +25,8 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+* {
+  font-family: littlebit-square-variable, sans-serif;
+  font-variation-settings: "BLOC" 1, "OPEN" 1000;
+}

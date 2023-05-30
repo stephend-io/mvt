@@ -1,25 +1,26 @@
-"use client";
+// "use client";
+import ChannelBox from "@/components/ChannelBox";
+import Player from "@/components/Player";
+import Remote from "@/components/Remote";
+import "../fonts/Font.css";
+import "../fonts/FontTwo.css";
 
-import {
-  useCurrentChannel,
-  useDecrement,
-  useIncreaseBy,
-  useIncrement,
-} from "@/zustand/store";
+import Head from "next/head";
+
+// <link rel='stylesheet' href='https://use.typekit.net/qln6ttz.css' />
 
 const index = () => {
-  const currentChannel = useCurrentChannel();
-  const Increment = useIncrement();
-  const Decrement = useDecrement();
-  const IncreaseBy = useIncreaseBy();
   return (
-    <div className='w-screen h-screen bg-lime-300 text-4xl text-pink-300'>
-      CHANNELZ
-      <div className='text-pink-800 text-8xl'>{currentChannel}</div>
-      <button onClick={Increment}>+</button>
-      <button onClick={Decrement}>-</button>
-      <button onClick={() => IncreaseBy(20)}>+20</button>
-    </div>
+    <>
+      <div className={`w-screen h-screen bg-lime-300 text-4xl text-pink-300 `}>
+        <Player />
+        <Remote />
+        <ChannelBox />
+      </div>
+    </>
   );
 };
 export default index;
+function localFont(arg0: { src: string; display: string }) {
+  throw new Error("Function not implemented.");
+}
