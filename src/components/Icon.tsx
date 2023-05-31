@@ -16,8 +16,8 @@ const Icon = ({
       return (
         <img
           draggable
-          className={`h-4 w-4 ${sharedStyles}`}
-          src={`/public/${icon}.svg`}
+          className={`h-6 w-6 ${sharedStyles}`}
+          src={`/${icon}.svg`}
           width='10px'
           height='10px'
           {...props}
@@ -52,5 +52,9 @@ const Icon = ({
       );
   }
 };
+
+{
+  /* <Icon icon=""/> */
+}
 
 export default Icon;

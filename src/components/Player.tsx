@@ -3,9 +3,9 @@
 import dynamic from "next/dynamic";
 import {
   useCurrentChannel,
-  useDecrement,
+  useDecrementChannel,
   useIncreaseBy,
-  useIncrement,
+  useIncrementChannel,
 } from "@/zustand/store";
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 

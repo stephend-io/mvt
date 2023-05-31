@@ -1,11 +1,12 @@
 "use client";
 
 import {
+  useActions,
   useAddNoToStack,
   useCurrentChannel,
-  useDecrement,
+  useDecrementChannel,
   useIncreaseBy,
-  useIncrement,
+  useIncrementChannel,
   useIsRemoteOpen,
   useToggleRemote,
 } from "@/zustand/store";
@@ -14,8 +15,10 @@ import { PropsWithChildren } from "react";
 
 const Remote = () => {
   const currentChannel = useCurrentChannel();
-  const increment = useIncrement();
-  const decrement = useDecrement();
+
+  const actions = useActions();
+  const incrementChannel = useIncrementChannel();
+  const decrementChannel = useDecrementChannel();
   const increaseBy = useIncreaseBy();
   const isRemoteOpen = useIsRemoteOpen();
   const toggleRemote = useToggleRemote();
@@ -26,20 +29,32 @@ const Remote = () => {
       {isRemoteOpen ? (
         <div className='w-40 h-1/3 bg-slate-800 rounded-lg '>
           <Col>
-            <div className='flex flex-row justify-between mx-2'>
-              <button onClick={increment} className='my-2'>
+            <div className='flex flex-row justify-between p-2'>
+              <button onClick={actions.toggleRemote} className='my-2'>
                 <Icon icon='Power' className='' />
               </button>
-              {/* <button onClick={decrement}>-</button> */}
-              <button onClick={() => increaseBy(20)}>
-                <Icon icon='More' className='' />
+              {/* <button onClick={decrementChannel}>-</button> */}
+              <button onClick={actions.TOBEIMPLEMENTED}>
+                <div className='w-9 h-9 rounded-full bg-yellow-300' />
               </button>
             </div>
             <Row>
-              <button onClick={increment} className='w-6 h-2 bg-red-400' />
-              <button onClick={increment} className='w-6 h-2 bg-green-400' />
-              <button onClick={increment} className='w-6 h-2 bg-blue-400' />
-              <button onClick={increment} className='w-6 h-2 bg-slate-200' />
+              <button
+                onClick={actions.TOBEIMPLEMENTED}
+                className='w-6 h-2 bg-red-400'
+              />
+              <button
+                onClick={actions.TOBEIMPLEMENTED}
+                className='w-6 h-2 bg-green-400'
+              />
+              <button
+                onClick={actions.TOBEIMPLEMENTED}
+                className='w-6 h-2 bg-blue-400'
+              />
+              <button
+                onClick={actions.TOBEIMPLEMENTED}
+                className='w-6 h-2 bg-slate-200'
+              />
             </Row>
             <Row>
               <button onClick={() => addNoToStack(1)}>1</button>
@@ -58,35 +73,38 @@ const Remote = () => {
             </Row>
 
             <Row>
-              <button onClick={() => console.log("test")}>
+              <button onClick={actions.TOBEIMPLEMENTED}>
                 <Icon icon='Record' />
               </button>
               <button onClick={() => addNoToStack(0)}>0</button>
-              <button onClick={() => console.log("test")}>
+              <button onClick={actions.TOBEIMPLEMENTED}>
                 <Icon icon='Settings' />
               </button>
             </Row>
             <Row>
               <div className='flex flex-col justify-center items-center'>
-                <button onClick={() => addNoToStack(7)}>
+                <button onClick={actions.incrementVolume}>
                   <Icon icon='Plus2' />
                 </button>
 
                 <div className='text-[1rem]'>VOL</div>
                 <button
-                  onClick={() => addNoToStack(9)}
+                  onClick={actions.decrementVolume}
                   className='-translate-y-[0.4rem]'
                 >
                   <Icon icon='Minus3' />
                 </button>
               </div>
+              <button onClick={actions.toggleMuteVolume}>
+                <Icon icon='Mute' size='xs' />
+              </button>
               <div className='flex flex-col items-center '>
-                <button onClick={() => addNoToStack(7)} className=''>
+                <button onClick={actions.incrementChannel} className=''>
                   <Icon icon='Plus2' />
                 </button>
                 <div className='text-[1rem] '>CH</div>
                 <button
-                  onClick={() => addNoToStack(9)}
+                  onClick={actions.decrementChannel}
                   className='-translate-y-[0.4rem]'
                 >
                   <Icon icon='Minus3' />
@@ -94,23 +112,29 @@ const Remote = () => {
               </div>
             </Row>
             <div className='flex flex-row justify-around items-center '>
-              <button className='-rotate-90 '>
+              <button className='-rotate-90' onClick={actions.decrementVolume}>
                 <Icon icon='Up2' />
               </button>
 
-              <div className='flex flex-col '>
+              <div className='flex flex-col' onClick={actions.incrementChannel}>
                 <button className='mb-4'>
                   <Icon icon='Up2' />
                 </button>
 
-                <button className='mb-4 -translate-x-1'>
+                <button
+                  className='mb-4 -translate-x-1'
+                  onClick={actions.TOBEIMPLEMENTED}
+                >
                   <Icon icon='Enter' />
                 </button>
-                <button className='rotate-180'>
+                <button
+                  className='rotate-180'
+                  onClick={actions.decrementChannel}
+                >
                   <Icon icon='Up2' />
                 </button>
               </div>
-              <button className='rotate-90'>
+              <button className='rotate-90' onClick={actions.incrementVolume}>
                 <Icon icon='Up2' />
               </button>
             </div>
