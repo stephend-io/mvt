@@ -4,6 +4,7 @@ import Player from "@/components/Player";
 import Remote from "@/components/Remote";
 import "../fonts/Font.css";
 import "../fonts/FontTwo.css";
+import VolumeBar from "@/components/VolumeBar";
 
 const index = () => {
   return (
@@ -12,6 +13,7 @@ const index = () => {
         <Player />
         <Remote />
         <ChannelBox />
+        <VolumeBar />
       </div>
     </>
   );

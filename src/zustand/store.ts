@@ -6,6 +6,7 @@ type State = {
   maxChannels: number;
   isRemoteOpen: boolean;
   inputChannel: string;
+  volume: number;
 };
 
 type Actions = {
@@ -23,6 +24,7 @@ const initState: State = {
   maxChannels: 1,
   isRemoteOpen: true,
   inputChannel: "",
+  volume: 20,
 };
 
 const useStore = create<State & Actions>((set) => ({
@@ -53,6 +55,7 @@ export const useCurrentChannel = () =>
   useStore((state) => state.currentChannel);
 export const useMaxChannels = () => useStore((state) => state.maxChannels);
 export const useInputNoStack = () => useStore((state) => state.inputChannel);
+export const useVolume = () => useStore((state) => state.volume);
 
 // actions
 // export const use = () => useStore(state => state.actions.)
