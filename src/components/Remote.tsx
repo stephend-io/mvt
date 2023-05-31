@@ -22,21 +22,24 @@ const Remote = () => {
   const addNoToStack = useAddNoToStack();
 
   return (
-    <div className='absolute bottom-2 right-2 text-md'>
+    <div className='absolute bottom-2 right-2 text-[1.5rem]'>
       {isRemoteOpen ? (
         <div className='w-40 h-1/3 bg-slate-800 rounded-lg '>
           <Col>
-            <Row>
-              <button onClick={increment}>
-                <Icon icon='Power' className='text-red-300' />
+            <div className='flex flex-row justify-between mx-2'>
+              <button onClick={increment} className='my-2'>
+                <Icon icon='Power' className='' />
               </button>
-              <button onClick={decrement}>-</button>
-              <button onClick={() => increaseBy(20)}>+20</button>
-            </Row>
+              {/* <button onClick={decrement}>-</button> */}
+              <button onClick={() => increaseBy(20)}>
+                <Icon icon='More' className='' />
+              </button>
+            </div>
             <Row>
-              <button onClick={increment}>+</button>
-              <button onClick={decrement}>-</button>
-              <button onClick={() => increaseBy(20)}>+20</button>
+              <button onClick={increment} className='w-6 h-2 bg-red-400' />
+              <button onClick={increment} className='w-6 h-2 bg-green-400' />
+              <button onClick={increment} className='w-6 h-2 bg-blue-400' />
+              <button onClick={increment} className='w-6 h-2 bg-slate-200' />
             </Row>
             <Row>
               <button onClick={() => addNoToStack(1)}>1</button>
@@ -70,20 +73,47 @@ const Remote = () => {
                 </button>
 
                 <div className='text-[1rem]'>VOL</div>
-                <button onClick={() => addNoToStack(9)}>
-                  <Icon icon='Minus2' />
+                <button
+                  onClick={() => addNoToStack(9)}
+                  className='-translate-y-[0.4rem]'
+                >
+                  <Icon icon='Minus3' />
                 </button>
               </div>
-              <div className='flex flex-col justify-center  items-center'>
-                <button onClick={() => addNoToStack(7)}>
+              <div className='flex flex-col items-center '>
+                <button onClick={() => addNoToStack(7)} className=''>
                   <Icon icon='Plus2' />
                 </button>
-                <div className='text-[1rem]'>CH</div>
-                <button onClick={() => addNoToStack(9)}>
-                  <Icon icon='Minus2' />
+                <div className='text-[1rem] '>CH</div>
+                <button
+                  onClick={() => addNoToStack(9)}
+                  className='-translate-y-[0.4rem]'
+                >
+                  <Icon icon='Minus3' />
                 </button>
               </div>
             </Row>
+            <div className='flex flex-row justify-around items-center '>
+              <button className='-rotate-90 '>
+                <Icon icon='Up2' />
+              </button>
+
+              <div className='flex flex-col '>
+                <button className='mb-4'>
+                  <Icon icon='Up2' />
+                </button>
+
+                <button className='mb-4 -translate-x-1'>
+                  <Icon icon='Enter' />
+                </button>
+                <button className='rotate-180'>
+                  <Icon icon='Up2' />
+                </button>
+              </div>
+              <button className='rotate-90'>
+                <Icon icon='Up2' />
+              </button>
+            </div>
           </Col>
         </div>
       ) : (
