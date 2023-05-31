@@ -66,7 +66,8 @@
 .tk-littlebit-loopy-variable {
   font-family: "littlebit-loopy-variable", sans-serif;
 }
-*,
+
+#boom,
 .tk-littlebit-square-variable {
   font-family: "littlebit-square-variable", sans-serif;
   font-variation-settings: "BLOC" 1, "OPEN" 1;

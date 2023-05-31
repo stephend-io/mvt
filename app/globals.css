@@ -26,7 +26,15 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-* {
-  font-family: littlebit-square-variable, sans-serif;
-  font-variation-settings: "BLOC" 1, "OPEN" 1000;
+button:hover {
+  opacity: 0.5;
+  filter: invert(1);
+  scale: 1.2;
+  transition-property: all;
+  transition-duration: 200ms;
+}
+
+button:active {
+  opacity: 1;
+  filter: invert(0);
 }
