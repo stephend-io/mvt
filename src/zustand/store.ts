@@ -8,6 +8,7 @@ type State = {
   inputChannel: string;
   volume: number;
   muted: boolean;
+  settingsOpen: boolean;
 };
 
 type Actions = {
@@ -25,16 +26,18 @@ type Actions = {
     leftDpad: () => void;
     rightDpad: () => void;
     TOBEIMPLEMENTED: () => void;
+    toggleSettings: () => void;
   };
 };
 
 const initState: State = {
   currentChannel: 0,
-  maxChannels: 1,
+  maxChannels: 10,
   isRemoteOpen: true,
   inputChannel: "",
   volume: 24,
   muted: true,
+  settingsOpen: false,
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -44,10 +47,14 @@ const useStore = create<State & Actions>((set, get) => ({
       console.log("increase called");
       set((state) => ({ currentChannel: state.currentChannel + by }));
     },
-    incrementChannel: () =>
-      set((state) => ({ currentChannel: state.currentChannel + 1 })),
-    decrementChannel: () =>
-      set((state) => ({ currentChannel: state.currentChannel - 1 })),
+    incrementChannel: () => {
+      console.log("increment channel called");
+      set((state) => ({ currentChannel: state.currentChannel + 1 }));
+    },
+    decrementChannel: () => {
+      console.log("decrement channel called");
+      set((state) => ({ currentChannel: state.currentChannel - 1 }));
+    },
     toggleRemote: () => set((state) => ({ isRemoteOpen: !state.isRemoteOpen })),
     addNoToStack: (no) =>
       set((state) => ({ inputChannel: state.inputChannel + no })),
@@ -65,10 +72,12 @@ const useStore = create<State & Actions>((set, get) => ({
       get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
     leftDpad: () =>
       get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
+    toggleSettings: () =>
+      set((state) => ({ settingsOpen: !state.settingsOpen })),
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
   },
 }));
-// hooks for convenience, thanks tkdodo
+// hooks for conbefore:venience, thanks tkdodo
 
 // state
 // export const use = () => useStore(state => state.)
@@ -101,3 +110,5 @@ export const useToggleMuteVolume = () =>
 
 export const useAddNoToStack = () =>
   useStore((state) => state.actions.addNoToStack);
+
+export default useStore;
