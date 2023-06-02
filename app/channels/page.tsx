@@ -11,7 +11,7 @@ const index = () => {
   return (
     <>
       <div className={`relative w-screen h-screen  `}>
-        <Player />
+        {/* <Player /> */}
         <Remote />
         <ChannelBox />
         <VolumeBar />

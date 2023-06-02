@@ -16,33 +16,31 @@ import {
   PropsWithChildren,
   Ref,
   RefObject,
+  useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
+  useState,
 } from "react";
 
-let intervalID: NodeJS.Timer;
-
-const repeatCaller = (func: () => void, delay: number) => {
-  clearInterval(intervalID);
-  intervalID = setInterval(func, delay);
-};
-
-function addListenerWithCallback(
-  ref: RefObject<HTMLButtonElement>,
-  callback: () => void,
-  delay: number = 100
-) {
-  ref.current?.removeEventListener("mousedown", () =>
-    clearInterval(intervalID)
-  );
-  if (ref.current) {
-    ref.current.addEventListener("mousedown", (e) => {
-      callback();
-      repeatCaller(callback, delay);
-    });
-    ref.current.addEventListener("mouseup", (e) => clearInterval(intervalID));
-  }
-}
+// function addListenerWithCallback(
+//   ref: RefObject<HTMLButtonElement>,
+//   callback: () => void,
+//   delay: number = 100
+// ) {
+//   ref.current?.removeEventListener("mousedown", () =>
+//     clearInterval(intervalID)
+//   );
+//   if (ref.current) {
+//     ref.current.addEventListener("mousedown", (e) => {
+//       callback();
+//       setTimeout(() => {
+//         repeatCaller(callback, delay);
+//       }, 1000);
+//     });
+//     ref.current.addEventListener("mouseup", (e) => clearInterval(intervalID));
+//   }
+// }
 
 // !TODO
 // JUST HANDLE ON MOUSE DOWN AND ON MOUSE UP EVENTS AND A SINGLE TIMER, NO NEED FO REVENT LISTENERS DU DOY
@@ -50,59 +48,44 @@ function addListenerWithCallback(
 // have to decouple addEventListener's function in order to be able to unmount it
 function test() {}
 
-const Remote = () => {
-  const { currentChannel, isRemoteOpen, settingsOpen } = useStore();
+let intervalID: NodeJS.Timer;
 
-  const increaseVolumeRef = useRef() as MutableRefObject<HTMLButtonElement>;
-  const decreaseVolumeRef = useRef<HTMLButtonElement>(null);
-  const incrementChannelRef = useRef<HTMLButtonElement>(null);
-  const decrementChannelRef = useRef<HTMLButtonElement>(null);
+const Remote = () => {
+  // disables right click on long touch
+
+  useLayoutEffect(() => {
+    window.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+    });
+    window.addEventListener("mouseup", () => {
+      clearInterval(intervalID);
+    });
+    window.addEventListener("touchend", () => {
+      console.log("touchend called");
+      clearInterval(intervalID);
+    });
+  }, []);
+
+  const { currentChannel, isRemoteOpen, settingsOpen, mouseDown } = useStore();
+
+  const incrementVolume = useCallback(
+    useStore((state) => state.actions.incrementVolume),
+    []
+  );
+  const decrementVolume = useCallback(
+    useStore((state) => state.actions.decrementVolume),
+    []
+  );
 
   const actions = useActions();
   const toggleRemote = useToggleRemote();
   const addNoToStack = useAddNoToStack();
 
-  useEffect(() => {
-    // adding option to hold and continue calling to volume and channel buttons
-    if (!settingsOpen) {
-      addListenerWithCallback(increaseVolumeRef, actions.incrementVolume);
-      addListenerWithCallback(decreaseVolumeRef, actions.decrementVolume);
-      addListenerWithCallback(
-        incrementChannelRef,
-        actions.incrementChannel,
-        1000
-      );
-      addListenerWithCallback(
-        decrementChannelRef,
-        actions.decrementChannel,
-        1000
-      );
-      // } else {
-      // add Listeners to Up and Down arrows when settings is open
-      // addListenerWithCallback();
-      // addListenerWithCallback();
-      // addListenerWithCallback();
-      // addListenerWithCallback();
-    } else {
-      increaseVolumeRef.current?.removeEventListener("mousedown", () =>
-        clearInterval(intervalID)
-      );
-      decreaseVolumeRef.current?.removeEventListener("mousedown", () =>
-        clearInterval(intervalID)
-      );
-      incrementChannelRef.current?.removeEventListener("mousedown", () =>
-        clearInterval(intervalID)
-      );
-      decrementChannelRef.current?.removeEventListener("mousedown", () =>
-        clearInterval(intervalID)
-      );
-    }
-    return () => {
-      console.log("Remote unmounted");
-      clearInterval(intervalID);
-    };
-  }, []);
-
+  const repeatCaller = (func: () => void, delay: number) => {
+    clearInterval(intervalID);
+    // func();
+    intervalID = setInterval(func, delay);
+  };
   return (
     <div className='z-10 absolute bottom-2 right-2 text-[1.5rem] text-accent3'>
       {isRemoteOpen ? (
@@ -199,41 +182,45 @@ const Remote = () => {
             <div className='flex flex-row justify-around items-center '>
               <button
                 className='-rotate-90'
-                // onMouseDown={actions.decrementVolume}
-                ref={decreaseVolumeRef}
+                draggable={false}
+                onMouseDown={() => {
+                  decrementVolume();
+                  repeatCaller(decrementVolume, 200);
+                }}
+                onTouchStart={() => {
+                  decrementVolume();
+                  repeatCaller(decrementVolume, 200);
+                }}
               >
-                <Icon icon='Up2' />
+                <Icon icon='Up2' draggable={false} />
               </button>
 
               <div className='flex flex-col'>
-                <button
-                  className='mb-4'
-                  // onMouseDown={actions.incrementChannel}
-                  ref={incrementChannelRef}
-                >
+                <button className='mb-4'>
                   <Icon icon='Up2' />
                 </button>
 
-                <button
-                  className='mb-4 -translate-x-1'
-                  onClick={actions.TOBEIMPLEMENTED}
-                >
+                <button className='mb-4 -translate-x-1'>
                   <Icon icon='Enter' />
                 </button>
-                <button
-                  className='rotate-180'
-                  // onMouseDown={actions.decrementChannel}
-                  ref={decrementChannelRef}
-                >
+                <button className='rotate-180'>
                   <Icon icon='Up2' />
                 </button>
               </div>
               <button
                 className='rotate-90'
-                // onMouseDown={actions.incrementVolume}
-                ref={increaseVolumeRef}
+                draggable={false}
+                onMouseDown={() => {
+                  incrementVolume();
+                  repeatCaller(incrementVolume, 200);
+                }}
+                onTouchStart={() => {
+                  incrementVolume();
+                  repeatCaller(incrementVolume, 200);
+                }}
               >
-                <Icon icon='Up2' />
+                test
+                <Icon icon='Up2' draggable={false} />
               </button>
             </div>
           </Col>
@@ -248,7 +235,6 @@ const Remote = () => {
 };
 
 const Row = ({ children }: PropsWithChildren) => {
-  // return <div className='flex justify-around flex-row'>{children}</div>;
   return <div className={`flex flex-row justify-around`}>{children}</div>;
 };
 const Col = ({

@@ -9,6 +9,7 @@ type State = {
   volume: number;
   muted: boolean;
   settingsOpen: boolean;
+  mouseDown: boolean;
 };
 
 type Actions = {
@@ -27,6 +28,8 @@ type Actions = {
     rightDpad: () => void;
     TOBEIMPLEMENTED: () => void;
     toggleSettings: () => void;
+    testIncrementVolume: (timer: number) => void;
+    toggleMouseDown: (bool?: boolean) => void;
   };
 };
 
@@ -38,6 +41,7 @@ const initState: State = {
   volume: 24,
   muted: true,
   settingsOpen: false,
+  mouseDown: false,
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -60,10 +64,29 @@ const useStore = create<State & Actions>((set, get) => ({
       set((state) => ({ inputChannel: state.inputChannel + no })),
     decrementVolume: () =>
       get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
-    incrementVolume: () =>
-      get().volume <= 98 &&
-      set((state) => ({ volume: state.volume + 2, muted: false })),
+    incrementVolume: () => {
+      console.log("incrementVolume called");
+      // get().volume <= 98 &&
+      set((state) => ({ volume: state.volume + 2, muted: false }));
+    },
+    testIncrementVolume: (timer) => {
+      console.log("testIncrementVolume called");
+      if (get().mouseDown) {
+        // get().volume <= 98 &&
+        set((state) => ({ volume: state.volume + 2, muted: false }));
+      } else {
+        clearInterval(timer);
+      }
+    },
+    toggleMouseDown: (bool) => {
+      bool
+        ? set((state) => ({ mouseDown: bool }))
+        : set((state) => ({ mouseDown: false }));
+    },
+    // set((state) => ({ mouseDown: bool ? bool : !state.mouseDown })),
+
     toggleMuteVolume: () => set((state) => ({ muted: !state.muted })),
+
     upDpad: () =>
       set((state) => ({ currentChannel: state.currentChannel + 1 })),
     downDpad: () =>
