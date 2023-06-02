@@ -15,7 +15,7 @@ const Icon = ({
     case "xs":
       return (
         <img
-          draggable
+          draggable={false}
           className={`h-6 w-6 ${sharedStyles}`}
           src={`/${icon}.svg`}
           width='10px'

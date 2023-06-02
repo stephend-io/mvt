@@ -1,15 +1,6 @@
 "use client";
 
-import useStore, {
-  useActions,
-  useAddNoToStack,
-  useCurrentChannel,
-  useDecrementChannel,
-  useIncreaseBy,
-  useIncrementChannel,
-  useIsRemoteOpen,
-  useToggleRemote,
-} from "@/zustand/store";
+import useStore, { useActions } from "@/zustand/store";
 import Icon from "@/components/Icon";
 import {
   MutableRefObject,
@@ -23,36 +14,27 @@ import {
   useState,
 } from "react";
 
-// function addListenerWithCallback(
-//   ref: RefObject<HTMLButtonElement>,
-//   callback: () => void,
-//   delay: number = 100
-// ) {
-//   ref.current?.removeEventListener("mousedown", () =>
-//     clearInterval(intervalID)
-//   );
-//   if (ref.current) {
-//     ref.current.addEventListener("mousedown", (e) => {
-//       callback();
-//       setTimeout(() => {
-//         repeatCaller(callback, delay);
-//       }, 1000);
-//     });
-//     ref.current.addEventListener("mouseup", (e) => clearInterval(intervalID));
-//   }
-// }
-
-// !TODO
-// JUST HANDLE ON MOUSE DOWN AND ON MOUSE UP EVENTS AND A SINGLE TIMER, NO NEED FO REVENT LISTENERS DU DOY
-
-// have to decouple addEventListener's function in order to be able to unmount it
-function test() {}
-
 let intervalID: NodeJS.Timer;
+function onHold(func: () => void, delay: number = 200) {
+  return {
+    onTouchStart: () => {
+      func();
+      repeatCaller(func, delay);
+    },
+    onMouseDown: () => {
+      func();
+      repeatCaller(func, delay);
+    },
+    draggable: false,
+  };
+}
+const repeatCaller = (func: () => void, delay: number) => {
+  clearInterval(intervalID);
+  // func();
+  intervalID = setInterval(func, delay);
+};
 
 const Remote = () => {
-  // disables right click on long touch
-
   useLayoutEffect(() => {
     window.addEventListener("contextmenu", function (e) {
       e.preventDefault();
@@ -60,32 +42,16 @@ const Remote = () => {
     window.addEventListener("mouseup", () => {
       clearInterval(intervalID);
     });
-    window.addEventListener("touchend", () => {
-      console.log("touchend called");
+    window.addEventListener("touchend", (e) => {
       clearInterval(intervalID);
+      // thanks! -> https://github.com/facebook/react/issues/9809
+      e.preventDefault();
     });
   }, []);
 
-  const { currentChannel, isRemoteOpen, settingsOpen, mouseDown } = useStore();
-
-  const incrementVolume = useCallback(
-    useStore((state) => state.actions.incrementVolume),
-    []
-  );
-  const decrementVolume = useCallback(
-    useStore((state) => state.actions.decrementVolume),
-    []
-  );
-
+  const { isRemoteOpen, settingsOpen } = useStore();
   const actions = useActions();
-  const toggleRemote = useToggleRemote();
-  const addNoToStack = useAddNoToStack();
 
-  const repeatCaller = (func: () => void, delay: number) => {
-    clearInterval(intervalID);
-    // func();
-    intervalID = setInterval(func, delay);
-  };
   return (
     <div className='z-10 absolute bottom-2 right-2 text-[1.5rem] text-accent3'>
       {isRemoteOpen ? (
@@ -101,8 +67,9 @@ const Remote = () => {
               >
                 <Icon icon='Power' />
               </button>
-              {/* <button onClick={decrementChannel}>-</button> */}
-              <button onClick={actions.TOBEIMPLEMENTED}>
+              <button onClick={actions.curriedIncrement()}>
+                me!
+                {/* <button onClick={actions.TOBEIMPLEMENTED}> */}
                 <div className='w-9 h-9 rounded-full bg-yellow-300' />
               </button>
             </div>
@@ -125,26 +92,26 @@ const Remote = () => {
               />
             </Row>
             <Row>
-              <button onClick={() => addNoToStack(1)}>1</button>
-              <button onClick={() => addNoToStack(2)}>2</button>
-              <button onClick={() => addNoToStack(3)}>3</button>
+              <button onClick={() => actions.addNoToStack(1)}>1</button>
+              <button onClick={() => actions.addNoToStack(2)}>2</button>
+              <button onClick={() => actions.addNoToStack(3)}>3</button>
             </Row>
             <Row>
-              <button onClick={() => addNoToStack(4)}>4</button>
-              <button onClick={() => addNoToStack(5)}>5</button>
-              <button onClick={() => addNoToStack(6)}>6</button>
+              <button onClick={() => actions.addNoToStack(4)}>4</button>
+              <button onClick={() => actions.addNoToStack(5)}>5</button>
+              <button onClick={() => actions.addNoToStack(6)}>6</button>
             </Row>
             <Row>
-              <button onClick={() => addNoToStack(7)}>7</button>
-              <button onClick={() => addNoToStack(8)}>8</button>
-              <button onClick={() => addNoToStack(9)}>9</button>
+              <button onClick={() => actions.addNoToStack(7)}>7</button>
+              <button onClick={() => actions.addNoToStack(8)}>8</button>
+              <button onClick={() => actions.addNoToStack(9)}>9</button>
             </Row>
 
             <Row>
               <button onClick={actions.TOBEIMPLEMENTED}>
                 <Icon icon='Record' />
               </button>
-              <button onClick={() => addNoToStack(0)}>0</button>
+              <button onClick={() => actions.addNoToStack(0)}>0</button>
               <button onClick={actions.toggleSettings}>
                 <Icon icon='Settings' />
               </button>
@@ -182,17 +149,9 @@ const Remote = () => {
             <div className='flex flex-row justify-around items-center '>
               <button
                 className='-rotate-90'
-                draggable={false}
-                onMouseDown={() => {
-                  decrementVolume();
-                  repeatCaller(decrementVolume, 200);
-                }}
-                onTouchStart={() => {
-                  decrementVolume();
-                  repeatCaller(decrementVolume, 200);
-                }}
+                {...onHold(actions.decrementVolume, 200)}
               >
-                <Icon icon='Up2' draggable={false} />
+                <Icon icon='Up2' />
               </button>
 
               <div className='flex flex-col'>
@@ -209,24 +168,15 @@ const Remote = () => {
               </div>
               <button
                 className='rotate-90'
-                draggable={false}
-                onMouseDown={() => {
-                  incrementVolume();
-                  repeatCaller(incrementVolume, 200);
-                }}
-                onTouchStart={() => {
-                  incrementVolume();
-                  repeatCaller(incrementVolume, 200);
-                }}
+                {...onHold(actions.incrementVolume, 200)}
               >
-                test
-                <Icon icon='Up2' draggable={false} />
+                <Icon icon='Up2' />
               </button>
             </div>
           </Col>
         </div>
       ) : (
-        <button onClick={toggleRemote}>
+        <button onClick={actions.toggleRemote}>
           <Icon icon='Remote' size='lg' />
         </button>
       )}

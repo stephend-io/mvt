@@ -1,14 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import useStore, {
-  useCurrentChannel,
-  useDecrementChannel,
-  useIncreaseBy,
-  useIncrementChannel,
-} from "@/zustand/store";
-import { Suspense } from "react";
-import { useVolume } from "@/zustand/store";
+import useStore from "@/zustand/store";
 const ReactPlayer = dynamic(() => import("react-player"), {
   ssr: false,
   loading: () => <div className='h-full w-full bg-black'>test</div>,

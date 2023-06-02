@@ -16,9 +16,10 @@ const VolumeBar = () => {
   const volume = useVolume();
 
   const content: JSX.Element[] = [];
+  // I think using the index as a key is koo but let's see
   for (let i = 1; i <= 25; i++) {
-    if (i <= volume / 4) content.push(<Whole />);
-    else content.push(<Half />);
+    if (i <= volume / 4) content.push(<Whole key={i} />);
+    else content.push(<Half key={i} />);
   }
 
   let timeoutID: NodeJS.Timeout;
