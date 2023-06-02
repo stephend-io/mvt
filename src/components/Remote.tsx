@@ -13,6 +13,9 @@ import {
   useRef,
   useState,
 } from "react";
+import Absolute from "./Absolute";
+import Col from "./Col";
+import Row from "./Row";
 
 let intervalID: NodeJS.Timer;
 function onHold(func: () => void, delay: number = 200) {
@@ -53,27 +56,29 @@ const Remote = () => {
   const actions = useActions();
 
   return (
-    <div className='z-10 absolute bottom-2 right-2 text-[1.5rem] text-accent3'>
+    <Absolute
+      className='text-[1.5rem] text-accent3'
+      x={"rightMd"}
+      y={"bottomMd"}
+    >
       {isRemoteOpen ? (
-        <div className='w-40 h-1/3 bg-slate-800 rounded-lg '>
+        <div className='  bg-slate-800 rounded-lg w-40'>
           <Col>
-            <div className='flex flex-row justify-between p-2'>
-              <button
+            <Row className='flex flex-row justify-between '>
+              <Icon
+                icon='Power'
                 onClick={() => {
                   settingsOpen && actions.toggleSettings();
                   actions.toggleRemote();
                 }}
-                className='my-2'
-              >
-                <Icon icon='Power' />
-              </button>
+                className='m-2'
+              />
+
               <button onClick={actions.curriedIncrement()}>
-                me!
-                {/* <button onClick={actions.TOBEIMPLEMENTED}> */}
-                <div className='w-9 h-9 rounded-full bg-yellow-300' />
+                <div className='w-9 h-9 rounded-full bg-yellow-300 mr-3' />
               </button>
-            </div>
-            <Row>
+            </Row>
+            <Row className='mb-4'>
               <button
                 onClick={actions.TOBEIMPLEMENTED}
                 className='w-6 h-2 bg-red-400'
@@ -108,89 +113,94 @@ const Remote = () => {
             </Row>
 
             <Row>
-              <button onClick={actions.TOBEIMPLEMENTED}>
-                <Icon icon='Record' />
-              </button>
+              <Icon
+                icon='Record'
+                onClick={actions.TOBEIMPLEMENTED}
+                size={"s"}
+              />
               <button onClick={() => actions.addNoToStack(0)}>0</button>
-              <button onClick={actions.toggleSettings}>
-                <Icon icon='Settings' />
-              </button>
+              <Icon
+                icon='Settings'
+                onClick={actions.toggleSettings}
+                size={"s"}
+                className='invert-[0.85]'
+              />
             </Row>
-            <Row>
-              <div className='flex flex-col justify-center items-center'>
-                <button onClick={actions.incrementVolume}>
-                  <Icon icon='Plus2' />
-                </button>
+            <Row className='mt-4'>
+              <Col className='flex flex-col justify-center items-center '>
+                <Icon
+                  icon='Plus2'
+                  onClick={actions.incrementVolume}
+                  className='invert-[0.85]'
+                />
 
                 <div className='text-[1rem]'>VOL</div>
-                <button
-                  onClick={actions.decrementVolume}
-                  className='-translate-y-[0.4rem]'
-                >
-                  <Icon icon='Minus3' />
-                </button>
-              </div>
-              <button onClick={actions.toggleMuteVolume}>
-                <Icon icon='Mute' size='xs' />
-              </button>
-              <div className='flex flex-col items-center '>
-                <button onClick={() => actions.incrementChannel()} className=''>
-                  <Icon icon='Plus2' />
-                </button>
+                <Icon
+                  icon='Minus3'
+                  onClick={actions.decrementChannel}
+                  className='invert-[0.85]'
+                />
+              </Col>
+              <Col x={"content"} y={"full"}>
+                <Icon
+                  icon='Mute'
+                  size='xs'
+                  onClick={actions.toggleMuteVolume}
+                />
+              </Col>
+              <Col className='flex flex-col items-center ' intent={"fit"}>
+                <Icon
+                  icon='Plus2'
+                  onClick={() => actions.incrementChannel()}
+                  className='invert-[0.85]'
+                />
                 <div className='text-[1rem] '>CH</div>
-                <button
+
+                <Icon
+                  icon='Minus3'
                   onClick={() => actions.decrementChannel()}
-                  className='-translate-y-[0.4rem]'
-                >
-                  <Icon icon='Minus3' />
-                </button>
-              </div>
+                  className='invert-[0.85]'
+                />
+              </Col>
             </Row>
-            <div className='flex flex-row justify-around items-center '>
-              <button
-                className='-rotate-90'
+            <Row className='p-4'>
+              <Icon
+                icon='Up2'
+                className='-rotate-90 invert-[0.85]'
                 {...onHold(actions.decrementVolume, 200)}
-              >
-                <Icon icon='Up2' />
-              </button>
+                size={"s"}
+              />
 
-              <div className='flex flex-col'>
-                <button className='mb-4'>
-                  <Icon icon='Up2' />
-                </button>
+              <Col intent={"center"}>
+                <Icon icon='Up2' size={"s"} className='invert-[0.85]' />
+                <Icon
+                  icon='Enter'
+                  className='-translate-x-[0.2rem]  my-3 invert-[0.85]'
+                  size={"s"}
+                />
+                <Icon
+                  icon='Up2'
+                  className='rotate-180 invert-[0.85]'
+                  size={"s"}
+                />
+              </Col>
 
-                <button className='mb-4 -translate-x-1'>
-                  <Icon icon='Enter' />
-                </button>
-                <button className='rotate-180'>
-                  <Icon icon='Up2' />
-                </button>
-              </div>
-              <button
-                className='rotate-90'
+              <Icon
+                icon='Up2'
+                className='rotate-90 invert-[0.85]'
+                size={"s"}
                 {...onHold(actions.incrementVolume, 200)}
-              >
-                <Icon icon='Up2' />
-              </button>
-            </div>
+              />
+            </Row>
           </Col>
         </div>
       ) : (
         <button onClick={actions.toggleRemote}>
-          <Icon icon='Remote' size='lg' />
+          <Icon icon='Remote' size='l' />
         </button>
       )}
-    </div>
+    </Absolute>
   );
 };
 
-const Row = ({ children }: PropsWithChildren) => {
-  return <div className={`flex flex-row justify-around`}>{children}</div>;
-};
-const Col = ({
-  additionalClasses = "justify-around",
-  children,
-}: PropsWithChildren & { additionalClasses?: string }) => {
-  return <div className={`flex flex-col justify-around`}>{children}</div>;
-};
 export default Remote;
