@@ -74,8 +74,11 @@ const Remote = () => {
                 className='m-2'
               />
 
-              <button onClick={actions.curriedIncrement()}>
-                <div className='w-9 h-9 rounded-full bg-yellow-300 mr-3' />
+              <button onClick={() => actions.setMiniVideo(false)}>
+                <div className='w-9 h-9 rounded-full bg-lime-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' />
+              </button>
+              <button onClick={() => actions.setMiniVideo(true)}>
+                <div className='w-9 h-9 rounded-full bg-yellow-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' />
               </button>
             </Row>
             <Row className='mb-4'>
@@ -148,6 +151,8 @@ const Remote = () => {
                   onClick={actions.toggleMuteVolume}
                   className='invert-[0.85]'
                 />
+
+                {/* <div className='w-9 h-9 rounded-full bg-slate-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' /> */}
               </Col>
               <Col className='flex flex-col items-center ' intent={"fit"}>
                 <Icon

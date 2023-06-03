@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { VideoCardParams } from "../../app/page";
 
 type State = {
   currentChannel: number;
@@ -11,6 +12,8 @@ type State = {
   muted: boolean;
   settingsOpen: boolean;
   mouseDown: boolean;
+  currentVideo: { videoId: string } | null;
+  miniVideo: boolean;
 };
 
 type Actions = {
@@ -33,6 +36,8 @@ type Actions = {
     toggleSettings: () => void;
     testIncrementVolume: (timer: number) => void;
     toggleMouseDown: (bool?: boolean) => void;
+    setCurrentVideo: (videoId: string) => void;
+    setMiniVideo: (bool: boolean) => void;
   };
 };
 
@@ -46,6 +51,8 @@ const initState: State = {
   muted: true,
   settingsOpen: false,
   mouseDown: false,
+  currentVideo: null,
+  miniVideo: false,
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -126,6 +133,12 @@ const useStore = create<State & Actions>((set, get) => ({
       get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
+    setCurrentVideo: (video) => {
+      set({ currentVideo: { videoId: video } });
+    },
+    setMiniVideo: (bool) => {
+      set({ miniVideo: bool });
+    },
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
   },
 }));
