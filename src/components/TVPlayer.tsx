@@ -24,6 +24,7 @@ const TVplayerStyles = cva(
           "top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-9/12",
         boxMiddle:
           "top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4",
+        initial: "top-[8vh] right-1/2 translate-x-1/2 w-1/3 h-1/4",
         // boxMiddle: "",
         // boxMiddle: "",
       },
@@ -36,7 +37,7 @@ const TVplayerStyles = cva(
       },
     },
     defaultVariants: {
-      intent: "semiFullScreen",
+      intent: "initial",
       // shape: "roundedXl",
     },
   }

@@ -30,7 +30,8 @@ type State = {
     | "leftQuarter"
     | "rightQuarter"
     | "middleQuarter"
-    | "boxMiddle";
+    | "boxMiddle"
+    | undefined;
 };
 
 type Actions = {
@@ -71,7 +72,7 @@ const initState: State = {
   mouseDown: false,
   currentVideo: null,
   miniVideo: false,
-  playerType: "semiFullScreen",
+  playerType: undefined,
 };
 
 const useStore = create<State & Actions>((set, get) => ({
