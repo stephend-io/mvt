@@ -37,6 +37,7 @@ const repeatCaller = (func: () => void, delay: number) => {
   intervalID = setInterval(func, delay);
 };
 
+const arr = ["fullScreen", "semiFullScreen", "mini"];
 const Remote = () => {
   useLayoutEffect(() => {
     window.addEventListener("contextmenu", function (e) {
@@ -57,9 +58,9 @@ const Remote = () => {
 
   return (
     <Absolute
-      className='text-[1.5rem] text-accent3'
-      x={"rightLg"}
-      y={"bottomLg"}
+      className='text-[1.5rem] text-accent3 overflow-clip'
+      x={"rightXl"}
+      y={"bottomXl"}
     >
       {isRemoteOpen ? (
         <div className='  bg-slate-800 rounded-lg w-40'>
@@ -197,6 +198,54 @@ const Remote = () => {
                 size={"s"}
                 {...onHold(actions.incrementVolume, 200)}
               />
+            </Row>
+            <Row className='text-xs '>
+              <button
+                className='h-8 w-20 bg-red-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("fullScreen")}
+              >
+                fullScreen
+              </button>
+              <button
+                className='h-8 w-20 bg-blue-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("semiFullScreen")}
+              >
+                semiFull
+              </button>
+              <button
+                className='h-8 w-8 bg-yellow-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("mini")}
+              >
+                mini
+              </button>
+            </Row>
+            <Row>
+              <button
+                className='h-8 w-20 bg-red-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("boxMiddle")}
+              >
+                boxMiddle
+              </button>
+              <button
+                className='h-8 w-8 bg-yellow-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("middleQuarter")}
+              >
+                middleQuarter
+              </button>
+            </Row>
+            <Row>
+              <button
+                className='h-8 w-8 bg-yellow-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("leftQuarter")}
+              >
+                leftQuarter
+              </button>
+              <button
+                className='h-8 w-8 bg-yellow-800 hover:scale-150'
+                onClick={() => actions.changeplayerType("rightQuarter")}
+              >
+                rightQuarter
+              </button>
             </Row>
           </Col>
         </div>

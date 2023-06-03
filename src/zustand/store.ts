@@ -2,6 +2,15 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { VideoCardParams } from "../../app/page";
 
+type playerTypes =
+  | "fullScreen"
+  | "semiFullScreen"
+  | "mini"
+  | "leftQuarter"
+  | "rightQuarter"
+  | "middleQuarter"
+  | "boxMiddle";
+
 type State = {
   currentChannel: number;
   minChannel: number;
@@ -14,6 +23,14 @@ type State = {
   mouseDown: boolean;
   currentVideo: { videoId: string } | null;
   miniVideo: boolean;
+  playerType:
+    | "fullScreen"
+    | "semiFullScreen"
+    | "mini"
+    | "leftQuarter"
+    | "rightQuarter"
+    | "middleQuarter"
+    | "boxMiddle";
 };
 
 type Actions = {
@@ -38,6 +55,7 @@ type Actions = {
     toggleMouseDown: (bool?: boolean) => void;
     setCurrentVideo: (videoId: string) => void;
     setMiniVideo: (bool: boolean) => void;
+    changeplayerType: (to: playerTypes) => void;
   };
 };
 
@@ -53,6 +71,7 @@ const initState: State = {
   mouseDown: false,
   currentVideo: null,
   miniVideo: false,
+  playerType: "semiFullScreen",
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -140,6 +159,7 @@ const useStore = create<State & Actions>((set, get) => ({
       set({ miniVideo: bool });
     },
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
+    changeplayerType: (to) => set({ playerType: to }),
   },
 }));
 // hooks for conbefore:venience, thanks tkdodo
