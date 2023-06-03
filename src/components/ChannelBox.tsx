@@ -26,6 +26,7 @@ const ChannelBox = () => {
           setTimeout(() => {
             setChannelChange(false);
           }, 200);
+          actions.resetInputStack();
         }
         setHidden(true);
       }, timeoutDelay);

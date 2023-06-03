@@ -2,7 +2,7 @@ import { VariantProps, cva } from "class-variance-authority";
 import { ButtonHTMLAttributes } from "react";
 import Icon, { iconStyles } from "./Icon";
 
-const buttonStyles = cva("transition-all shadow-xl", {
+const buttonStyles = cva("transition-all ", {
   variants: {
     intent: {
       standard: "",
@@ -23,6 +23,7 @@ const buttonStyles = cva("transition-all shadow-xl", {
       xxl: "w-40 h-40",
       xxxl: "w-60 h-60",
       xxxxl: "w-80 h-86",
+      free: "",
     },
     active: {
       standard: "opacity-100 saturate-150",
@@ -40,7 +41,7 @@ const buttonStyles = cva("transition-all shadow-xl", {
   },
   defaultVariants: {
     intent: "standard",
-    size: "s",
+    size: "free",
   },
 });
 

@@ -32,7 +32,7 @@
     )
     rgb(var(--background-start-rgb));
 } */
-
+/* 
 button:hover {
   opacity: 0.5;
   filter: invert(1);
@@ -44,7 +44,7 @@ button:hover {
 button:active {
   opacity: 1;
   filter: invert(0);
-}
+} */
 
 @keyframes ldio-ytc0y0550u {
   0% {

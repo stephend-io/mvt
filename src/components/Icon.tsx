@@ -4,6 +4,7 @@ export const iconStyles = cva("", {
   variants: {
     defaultHovers: {
       true: "hover:cursor-pointer hover:opacity-70 hover:invert-[.50] hover:scale-125 transition-all hover:duration-200 active:opacity-100 active:invert-[0.1]",
+      false: "hover:cursor-pointer",
     },
     intent: {
       static: "bg-blue-500 text-white border-transparent hover:bg-blue-600",
@@ -49,6 +50,7 @@ type Props = ComponentType & AdditionalProps & VariantProps<typeof iconStyles>;
 
 const Icon = ({
   className,
+  defaultHovers,
   fillColor,
   intent,
   size,
@@ -60,7 +62,10 @@ const Icon = ({
 }: Props) => {
   if (text) {
     return (
-      <div className={iconStyles({ className, intent, alignment })} {...props}>
+      <div
+        className={iconStyles({ className, defaultHovers, intent, alignment })}
+        {...props}
+      >
         <img src={`${icon}.svg`} className={iconStyles({ size })} />
         {text}
       </div>
@@ -70,7 +75,7 @@ const Icon = ({
   return (
     <img
       src={`${icon}.svg`}
-      className={iconStyles({ className, intent, size })}
+      className={iconStyles({ className, defaultHovers, intent, size })}
       {...props}
     />
   );

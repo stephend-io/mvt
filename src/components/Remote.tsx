@@ -58,8 +58,8 @@ const Remote = () => {
   return (
     <Absolute
       className='text-[1.5rem] text-accent3'
-      x={"rightMd"}
-      y={"bottomMd"}
+      x={"rightLg"}
+      y={"bottomLg"}
     >
       {isRemoteOpen ? (
         <div className='  bg-slate-800 rounded-lg w-40'>
@@ -134,18 +134,19 @@ const Remote = () => {
                   className='invert-[0.85]'
                 />
 
-                <div className='text-[1rem]'>VOL</div>
+                <div className='text-[1rem] my-2'>VOL</div>
                 <Icon
                   icon='Minus3'
                   onClick={actions.decrementChannel}
-                  className='invert-[0.85]'
+                  className='invert-[0.85] -translate-y-1'
                 />
               </Col>
               <Col x={"content"} y={"full"}>
                 <Icon
                   icon='Mute'
-                  size='xs'
+                  size='m'
                   onClick={actions.toggleMuteVolume}
+                  className='invert-[0.85]'
                 />
               </Col>
               <Col className='flex flex-col items-center ' intent={"fit"}>
@@ -154,12 +155,12 @@ const Remote = () => {
                   onClick={() => actions.incrementChannel()}
                   className='invert-[0.85]'
                 />
-                <div className='text-[1rem] '>CH</div>
+                <div className='text-[1rem] my-2'>CH</div>
 
                 <Icon
                   icon='Minus3'
                   onClick={() => actions.decrementChannel()}
-                  className='invert-[0.85]'
+                  className='invert-[0.85] -translate-y-1'
                 />
               </Col>
             </Row>
