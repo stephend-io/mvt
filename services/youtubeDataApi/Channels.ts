@@ -1,55 +1,82 @@
 import { google } from "googleapis";
 import { prisma } from "@/lib/prisma";
+import { channel } from "diagnostics_channel";
+import { validator } from "@/lib/utils";
 
-type partOptions = "contentDetails" | "id" | "snippet" | "statistics" | "status";
-
-// export interface channelsGET {
-//     part: partOptions[];
-//     // forUsername?: string;
-//     ids: string[];
-//     maxResults: number;
-//     pageToken?: string;
-// }
+type partOptions =
+  | "contentDetails"
+  | "id"
+  | "snippet"
+  | "statistics"
+  | "status";
 
 export type channel = {
   uploadsId: string;
   channelId: string;
-  name: string;
+  channelName: string;
+  thumbnailYtLink: string;
+  description: string;
 };
 
-export const getChannels = async (channelIDs: string[]): Promise<channel[]> => {
-  // console.log(ids);
-  // ids?.map((id) => console.log(id));
-  // return [];
-  // console.log("called getChannels with" + ids);
+export const makeChannels = async (
+  channelIDs: string[]
+): Promise<channel[]> => {
   try {
-    console.log("starting get channel function");
+    validator().channelID(channelIDs);
     const returnArr: channel[] = [];
-    const playlistData = await google.youtube("v3").channels.list({
+
+    const res = await google.youtube("v3").channels.list({
       key: process.env.YOUTUBE_API_KEY,
       part: ["snippet", "contentDetails"],
       id: channelIDs,
       maxResults: 50,
     });
-    console.log("playlist data is");
-    console.log(playlistData);
-    playlistData?.data?.items?.map((video) => {
-      console.log(video);
-      returnArr.push({
-        uploadsId: video.contentDetails?.relatedPlaylists?.uploads!,
-        channelId: video.id!,
-        name: video.snippet?.customUrl!,
-      });
+
+    const channelArray = res.data.items?.map((channel) => channel.id as string);
+
+    if (!channelArray) throw "No Channel Array";
+
+    const existingChannels = await prisma.ytChannel.findMany({
+      select: {
+        channelId: true,
+      },
+      where: {
+        channelId: {
+          in: channelArray,
+        },
+      },
     });
 
-    prisma.channel.createMany();
+    const existingChannelIDs = existingChannels?.map((e) => e.channelId);
+
+    res.data.items?.map((channel) => {
+      // skips pushing existing data to DB
+      if (existingChannelIDs.includes(channel.id as string)) {
+        return;
+      }
+      const data: channel = {
+        uploadsId: channel.contentDetails?.relatedPlaylists?.uploads as string,
+        channelId: channel.id as string,
+        channelName: channel.snippet?.title as string,
+        thumbnailYtLink: channel.snippet?.thumbnails?.high?.url as string,
+        description: channel.snippet?.description as string,
+      };
+      returnArr.push(data);
+    });
+
+    // make channels
+    await prisma.ytChannel.createMany({
+      data: returnArr,
+    });
+
     return returnArr;
   } catch (err) {
+    console.error(err);
     throw err;
   }
 };
 
-const channelData = {
+const sampleChannelData = {
   kind: "youtube#channelListResponse",
   etag: "2vBIFv38iuR3dv1vKgA9g4rNnJg",
   pageInfo: {
@@ -101,82 +128,82 @@ const channelData = {
   ],
 };
 
-const channels = {
-  kind: "youtube#channel",
-  etag: "etag",
-  id: "string",
-  snippet: {
-    title: "string",
-    description: "string",
-    customUrl: "string",
-    publishedAt: "datetime",
-    thumbnails: {
-      key: {
-        url: "string",
-        width: "unsigned integer",
-        height: "unsigned integer",
-      },
-    },
-    defaultLanguage: "string",
-    localized: {
-      title: "string",
-      description: "string",
-    },
-    country: "string",
-  },
-  contentDetails: {
-    relatedPlaylists: {
-      likes: "string",
-      favorites: "string",
-      uploads: "string",
-    },
-    statistics: {},
-    viewCount: "unsigned long",
-    subscriberCount: "unsigned long", // this value is rounded to three significant figures
-    hiddenSubscriberCount: "boolean",
-    videoCount: "unsigned long",
-  },
-  topicDetails: {
-    topicIds: ["string"],
-    topicCategories: ["string"],
-  },
-  status: {
-    privacyStatus: "string",
-    isLinked: "boolean",
-    longUploadsStatus: "string",
-    madeForKids: "boolean",
-    selfDeclaredMadeForKids: "boolean",
-  },
-  brandingSettings: {
-    channel: {
-      title: "string",
-      description: "string",
-      keywords: "string",
-      trackingAnalyticsAccountId: "string",
-      moderateComments: "boolean",
-      unsubscribedTrailer: "string",
-      defaultLanguage: "string",
-      country: "string",
-    },
-    watch: {
-      textColor: "string",
-      backgroundColor: "string",
-      featuredPlaylistId: "string",
-    },
-  },
-    overallGoodStanding: "boolean",
-    communityGuidelinesGoodStanding: "boolean",
-    copyrightStrikesGoodStanding: "boolean",
-    contentIdClaimsGoodStanding: "boolean",
-  },
-  contentOwnerDetails: {
-    contentOwner: "string",
-    timeLinked: "datetime",
-  },
-  localizations: {
-    key: {
-      title: "string",
-      description: "string",
-    },
-  },
-};
+// const channels = {
+//   kind: "youtube#channel",
+//   etag: "etag",
+//   id: "string",
+//   snippet: {
+//     title: "string",
+//     description: "string",
+//     customUrl: "string",
+//     publishedAt: "datetime",
+//     thumbnails: {
+//       key: {
+//         url: "string",
+//         width: "unsigned integer",
+//         height: "unsigned integer",
+//       },
+//     },
+//     defaultLanguage: "string",
+//     localized: {
+//       title: "string",
+//       description: "string",
+//     },
+//     country: "string",
+//   },
+//   contentDetails: {
+//     relatedPlaylists: {
+//       likes: "string",
+//       favorites: "string",
+//       uploads: "string",
+//     },
+//     statistics: {},
+//     viewCount: "unsigned long",
+//     subscriberCount: "unsigned long", // this value is rounded to three significant figures
+//     hiddenSubscriberCount: "boolean",
+//     videoCount: "unsigned long",
+//   },
+//   topicDetails: {
+//     topicIds: ["string"],
+//     topicCategories: ["string"],
+//   },
+//   status: {
+//     privacyStatus: "string",
+//     isLinked: "boolean",
+//     longUploadsStatus: "string",
+//     madeForKids: "boolean",
+//     selfDeclaredMadeForKids: "boolean",
+//   },
+//   brandingSettings: {
+//     channel: {
+//       title: "string",
+//       description: "string",
+//       keywords: "string",
+//       trackingAnalyticsAccountId: "string",
+//       moderateComments: "boolean",
+//       unsubscribedTrailer: "string",
+//       defaultLanguage: "string",
+//       country: "string",
+//     },
+//     watch: {
+//       textColor: "string",
+//       backgroundColor: "string",
+//       featuredPlaylistId: "string",
+//     },
+//   },
+//     overallGoodStanding: "boolean",
+//     communityGuidelinesGoodStanding: "boolean",
+//     copyrightStrikesGoodStanding: "boolean",
+//     contentIdClaimsGoodStanding: "boolean",
+//   },
+//   contentOwnerDetails: {
+//     contentOwner: "string",
+//     timeLinked: "datetime",
+//   },
+//   localizations: {
+//     key: {
+//       title: "string",
+//       description: "string",
+//     },
+//   },
+// ;

@@ -2,14 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  // previewFeatures = ["jsonProtocol"]
 }
+
+// datasource db {
+//   provider = "postgresql"
+//   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+//   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+//   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+// }
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  url      = env("DATABASE_URL")
 }
 
 model musicVideo {
@@ -22,14 +27,16 @@ model musicVideo {
 
 model ytChannel{
   channelId String     @id @unique
-  video     ytVideo[]
-  name      String
+  channelVideos     ytVideo[]
+  channelName String
   uploadsId String     @unique
+  description String
+  thumbnailYtLink String @unique
   updatedAt DateTime   @updatedAt
-  tvChannels tvChannel  @relation(fields: [tvChannelsID],references: [channelId] )
-  tvChannelsID Int
-  userChannels userChannel  @relation(fields: [userChannelsID],references: [channelId] )
-  userChannelsID Int
+  tvChannels tvChannel?  @relation(fields: [tvChannelsId],references: [channelId] )
+  tvChannelsId Int?
+  userChannels userChannel?  @relation(fields: [userChannelsId],references: [channelId] )
+  userChannelsId Int?
 }
 
 model tvChannel {
@@ -48,13 +55,13 @@ model userChannel {
 
 model ytVideo{
   embedId      String   @id @unique
-  channel      ytChannel? @relation(fields: [ChannelID], references: [channelId])
+  channel      ytChannel? @relation(fields: [ChannelId], references: [channelId])
   title        String
   dateUploaded DateTime
   views        Int
-  thumbnailID  String
+  thumbnailId  String
   length       Int
-  ChannelID    String?
+  ChannelId    String?
 
 }
 

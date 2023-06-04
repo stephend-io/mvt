@@ -1,3 +1,6 @@
+import fs from "fs";
+import { randomUUID } from "crypto";
+
 function getTimeFromTimeString(timeString: string) {
   // Extract hour, minute, and second values
   let hours = 0;
@@ -31,4 +34,32 @@ function getTimeFromTimeString(timeString: string) {
   const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
   return totalSeconds;
+}
+
+const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
+  fs.writeFileSync(__dirname + "/" + name + ".json", JSON.stringify(data));
+};
+
+export function validator() {
+  return {
+    channelID: (channelIDs: string[] | string) => {
+      if (typeof channelIDs === "string") {
+        if (channelIDs.length !== 24)
+          throw "Invalid channelID length: " + channelIDs;
+      } else {
+        channelIDs.map((id) => {
+          if (id.length !== 24) throw "Invalid channelID length: " + id;
+        });
+      }
+    },
+    // videoID: (videoIDs: string[] | string) => {
+    //   if (typeof videoIDs === "string") {
+    //     if (videoIDs.length !== 24) throw "Invalid videoID length: " + videoIDs;
+    //   } else {
+    //     videoIDs.map((id) => {
+    //       if (id.length !== 24) throw "Invalid videoID length: " + id;
+    //     });
+    //   }
+    // },
+  };
 }

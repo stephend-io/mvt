@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { VideoCardParams } from "../../app/page";
+import { VideoCardParams } from "@/app/page";
 
 type playerTypes =
   | "fullScreen"
