@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+model musicVideo {
+  id        Int      @id @unique @default(autoincrement())
+  title     String
+  artist    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ytChannel{
+  channelId String     @id @unique
+  video     ytVideo[]
+  name      String
+  uploadsId String     @unique
+  updatedAt DateTime   @updatedAt
+  tvChannels tvChannel  @relation(fields: [tvChannelsID],references: [channelId] )
+  tvChannelsID Int
+  userChannels userChannel  @relation(fields: [userChannelsID],references: [channelId] )
+  userChannelsID Int
+}
+
+model tvChannel {
+  channelName String @unique 
+  channelId Int @id @unique @default(autoincrement())
+  ytChannels ytChannel[]
+  channels String[]
+}
+
+model userChannel {
+  channelName String @unique 
+  channelId Int @id @unique @default(autoincrement())
+  ytChannels ytChannel[]
+  channels String[]
+}
+
+model ytVideo{
+  embedId      String   @id @unique
+  channel      ytChannel? @relation(fields: [ChannelID], references: [channelId])
+  title        String
+  dateUploaded DateTime
+  views        Int
+  thumbnailID  String
+  length       Int
+  ChannelID    String?
+
+}
+
+model User {
+  id        Int      @id @unique @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  history Json
+}

@@ -96,3 +96,10 @@ button:active {
 .ldio-ytc0y0550u div {
   box-sizing: content-box;
 }
+
+video {
+  position: relative;
+  left: 0;
+  top: 0;
+  transform: none;
+}

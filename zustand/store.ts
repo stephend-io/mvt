@@ -32,6 +32,8 @@ type State = {
     | "middleQuarter"
     | "boxMiddle"
     | undefined;
+  playerSizeX: string;
+  playerSizeY: string;
 };
 
 type Actions = {
@@ -73,6 +75,8 @@ const initState: State = {
   currentVideo: null,
   miniVideo: false,
   playerType: undefined,
+  playerSizeX: "100%",
+  playerSizeY: "100%",
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -160,7 +164,33 @@ const useStore = create<State & Actions>((set, get) => ({
       set({ miniVideo: bool });
     },
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
-    changeplayerType: (to) => set({ playerType: to }),
+    changeplayerType: (to) => {
+      switch (to) {
+        case "fullScreen":
+          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          break;
+        case "semiFullScreen":
+          set({ playerSizeX: "98%", playerSizeY: "98%", playerType: to });
+          break;
+        case "mini":
+          set({ playerSizeX: "30%", playerSizeY: "20%", playerType: to });
+          break;
+        case "leftQuarter":
+          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          break;
+        case "rightQuarter":
+          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          break;
+        case "middleQuarter":
+          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          break;
+        case "boxMiddle":
+          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          break;
+        default:
+          break;
+      }
+    },
   },
 }));
 // hooks for conbefore:venience, thanks tkdodo
