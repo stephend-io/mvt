@@ -1,7 +1,7 @@
 "use client";
 
 import useStore, { useActions } from "@/zustand/store";
-import { VideoCardParams } from "../../app/page";
+import { VideoCardParams } from "@/app/page";
 import { useState } from "react";
 
 const Buttonify = (video: VideoCardParams) => {

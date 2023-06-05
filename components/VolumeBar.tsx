@@ -1,8 +1,8 @@
 "use client";
 
 import { useMuted, useVolume } from "@/zustand/store";
-import "../../app/fonts/Pixel.css";
-import Mute from "../../public/Mute";
+import "@/app/fonts/Pixel.css";
+import Mute from "@/public/Mute";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
 import { useEffect, useState } from "react";

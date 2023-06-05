@@ -1,6 +1,6 @@
 "use client";
 import useStore, { useActions, useCurrentChannel } from "@/zustand/store";
-import "../../app/fonts/Pixel.css";
+import "@/app/fonts/Pixel.css";
 import { useEffect, useState } from "react";
 
 const ChannelBox = () => {

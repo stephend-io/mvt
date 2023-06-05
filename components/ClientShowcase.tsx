@@ -1,7 +1,7 @@
 "use client";
 
 import useStore from "@/zustand/store";
-import { VideoCardParams } from "../../app/page";
+import { VideoCardParams } from "@/app/page";
 import Col from "./Col";
 import Row from "./Row";
 import { use } from "react";
