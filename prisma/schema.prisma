@@ -25,44 +25,52 @@ model musicVideo {
   updatedAt DateTime @updatedAt
 }
 
-model ytChannel{
-  channelId String     @id @unique
-  channelVideos     ytVideo[]
-  channelName String
-  uploadsId String     @unique
-  description String
-  thumbnailYtLink String @unique
-  updatedAt DateTime   @updatedAt
-  tvChannels tvChannel?  @relation(fields: [tvChannelsId],references: [channelId] )
-  tvChannelsId Int?
-  userChannels userChannel?  @relation(fields: [userChannelsId],references: [channelId] )
-  userChannelsId Int?
+model ytChannel {
+  channelId       String       @id @unique
+  channelVideos   ytVideo[]
+  channelName     String
+  uploadsId       String       @unique
+  customUrl       String
+  description     String
+  thumbnailYtLink String       @unique
+  updatedAt       DateTime     @updatedAt
+  tvChannels      tvChannel?   @relation(fields: [tvChannelsId], references: [channelId])
+  tvChannelsId    Int?
+  userChannels    userChannel? @relation(fields: [userChannelsId], references: [channelId])
+  userChannelsId  Int?
 }
 
 model tvChannel {
-  channelName String @unique 
-  channelId Int @id @unique @default(autoincrement())
-  ytChannels ytChannel[]
-  channels String[]
+  channelName String      @unique
+  channelId   Int         @id @unique @default(autoincrement())
+  ytChannels  ytChannel[]
+  channels    String[]
 }
 
 model userChannel {
-  channelName String @unique 
-  channelId Int @id @unique @default(autoincrement())
-  ytChannels ytChannel[]
-  channels String[]
+  channelName String      @unique
+  channelId   Int         @id @unique @default(autoincrement())
+  ytChannels  ytChannel[]
+  channels    String[]
 }
 
-model ytVideo{
-  embedId      String   @id @unique
-  channel      ytChannel? @relation(fields: [ChannelId], references: [channelId])
-  title        String
-  dateUploaded DateTime
-  views        Int
-  thumbnailId  String
-  length       Int
-  ChannelId    String?
-
+model ytVideo {
+  embedId          String    @id @unique
+  channel          ytChannel @relation(fields: [channelId], references: [channelId])
+  title            String
+  dateUploaded     DateTime
+  views            Int
+  thumbnailId      String
+  duration         Int
+  channelId        String
+  channelTitle     String
+  width            Int
+  height           Int
+  viewLikeRatio    Int
+  viewCommentRatio Int
+  commentCount     Int
+  likes            Int
+  categoryId       Int
 }
 
 model User {
@@ -71,5 +79,5 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  history Json
+  history   Json
 }

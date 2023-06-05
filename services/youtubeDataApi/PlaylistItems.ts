@@ -1,4 +1,10 @@
+import {
+  convertISO8601ToMilliseconds,
+  getTimeFromTimeString,
+  simpleWriteFS,
+} from "@/lib/utils";
 import { google } from "googleapis";
+import { getMakeVideos, videos } from "./Videos";
 
 // put in by default for standard get
 // type partOptions = "contentDetails" | "id" | "snippet" | "status";
@@ -15,38 +21,96 @@ export interface playlistItem {
   videoId: string;
   title: string;
   channelId: string;
-  date: number;
+  date: string;
 }
 
-const playlistItems: playlistItem[] = [];
+const playlistChannelIDs: string[] = [];
 
-export const getPlaylistItems = async (
+export const getPlaylistChannels = async (
   playlistId: string,
   pageToken?: string
-): Promise<playlistItem[]> => {
+) => {
   const playlistData = await google.youtube("v3").playlistItems.list({
     key: process.env.YOUTUBE_API_KEY,
     part: ["snippet", "contentDetails"],
-    playlistId,
     maxResults: 50,
+    playlistId,
     pageToken,
   });
 
-  playlistData.data.items?.map((video) => {
-    playlistItems.push({
-      videoId: video.contentDetails?.videoId!,
-      title: video.snippet?.videoOwnerChannelTitle!,
-      channelId: video.snippet?.videoOwnerChannelId!,
-      date: Date.parse(video.snippet?.publishedAt!),
-    });
-  });
+  if (!playlistData.data.items) throw "No Playlist Items";
+
+  playlistData.data.items?.map((video) =>
+    playlistChannelIDs.push(video.snippet?.videoOwnerChannelId as string)
+  );
 
   if (playlistData.data.nextPageToken) {
-    getPlaylistItems(playlistId, playlistData.data.nextPageToken);
+    getPlaylistChannels(playlistId, playlistData.data.nextPageToken);
   }
 
-  console.log(playlistItems);
-  return playlistItems;
+  return playlistChannelIDs;
+};
+
+const playlistItems: playlistItem[] = [];
+
+// only returns simple data, does not conform to ytVideos type
+export const getPlaylistItems = async (
+  playlistId: string,
+  pageToken?: string
+) => {
+  try {
+    const playlistData = await google.youtube("v3").playlistItems.list({
+      key: process.env.YOUTUBE_API_KEY,
+      part: ["snippet", "contentDetails"],
+      maxResults: 50,
+      playlistId,
+      pageToken,
+    });
+
+    if (!playlistData.data.items) throw "No Playlist Items";
+
+    playlistData.data.items?.map((video) =>
+      playlistItems.push({
+        videoId: video.contentDetails?.videoId as string,
+        title: video.snippet?.videoOwnerChannelTitle as string,
+        channelId: video.snippet?.videoOwnerChannelId as string,
+        date: video.snippet?.publishedAt as string,
+      })
+    );
+
+    if (playlistData.data.nextPageToken) {
+      getPlaylistItems(playlistId, playlistData.data.nextPageToken);
+    }
+
+    return playlistItems;
+  } catch (err) {
+    console.error(err);
+    throw "Are you sure that the playlist is public/unlisted?";
+  }
+};
+
+export const getMakeDetailedPlaylistItems = async (
+  playlistId: string
+): Promise<videos[]> => {
+  try {
+    const returnArr: videos[] = [];
+    const playlistData = await getPlaylistItems(playlistId);
+    const playlistIds = playlistData.map((video) => video.videoId);
+
+    simpleWriteFS(playlistData);
+    while (playlistIds.length > 0) {
+      const fetchingArr = playlistIds.splice(0, 50);
+      console.log("spliced: " + fetchingArr);
+      console.log("current length is: " + playlistIds.length);
+      console.log(playlistIds);
+      console.log("------------------------------------------");
+
+      getMakeVideos(fetchingArr).then((data) => returnArr.push(...data));
+    }
+    return returnArr;
+  } catch (err) {
+    throw err;
+  }
 };
 
 const sampleData = {

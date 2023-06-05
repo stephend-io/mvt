@@ -1,14 +1,15 @@
 "use client";
+import { playlistIdType } from "@/app/api/playlistItems/route";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  playlistId: playlistIdType;
+  channelName: string;
 };
 
 export function PlaylistIDs() {
-  const [data, setData] = useState<string[]>();
+  // const [ytChannels, setData] = useState<string[]>();
 
   const {
     register,
@@ -25,48 +26,39 @@ export function PlaylistIDs() {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then(async (returnData) => setData(await returnData.json()));
+    });
+  // .then(async (returnData) => setData(await returnData.json()));
 
   return (
-    <div className='flex flex-col bg-slate-800 p-4 rounded-lg'>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input defaultValue='Add playlist URLS ' {...register("example")} />
-        {errors.exampleRequired && <span>This field is required</span>}
-        <input type='submit' />
+    <div className='flex flex-col bg-slate-800 p-4 rounded-lg justify-between'>
+      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-row gap-4'>
+        <input
+          defaultValue='Add playlist URl'
+          {...register("playlistId", {
+            minLength: 34,
+            maxLength: 34,
+            required: true,
+          })}
+          className='bg-slate-200 rounded-md p-2'
+        />
+        {errors.playlistId && (
+          <span className='bg-red-500'>The playlistId is required</span>
+        )}
+        <input
+          defaultValue='Add Channel Name '
+          {...register("channelName", { required: true })}
+          className='bg-slate-200 rounded-md p-2'
+        />
+        {errors.channelName && <span className='bg-red-500'>required</span>}
+
+        <input type='submit' className='bg-slate-300 p-2 rounded-md' />
       </form>
-      {data && data}
-    </div>
-  );
-}
-
-export function PlaylistURLs() {
-  const [data, setData] = useState<string[]>();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
-
-  console.log(watch("example")); // watch input value by passing the name of it
-
-  return (
-    /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-    <div className='flex flex-col bg-slate-800 p-4 rounded-lg'>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* register your input into the hook by invoking the "register" function */}
-        <input defaultValue='Add playlist URLS ' {...register("example")} />
-
-        {/* include validation with required or other standard HTML validation rules */}
-        <input {...register("exampleRequired", { required: true })} />
-        {/* errors will return when field validation fails  */}
-        {errors.exampleRequired && <span>This field is required</span>}
-
-        <input type='submit' />
-      </form>
-      {data && data}
+      <div className='flex flex-col'>
+        {/* {ytChannels &&
+          ytChannels.map((channel) => {
+            return <div className='bg-red-800 p-2'>{channel}</div>;
+          })} */}
+      </div>
     </div>
   );
 }

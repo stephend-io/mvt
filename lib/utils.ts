@@ -1,7 +1,32 @@
 import fs from "fs";
 import { randomUUID } from "crypto";
 
-function getTimeFromTimeString(timeString: string) {
+export function youtubeStringParser(youtubeString: string) {
+  return {
+    // ytStringTo
+  };
+}
+
+export const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
+  fs.writeFileSync(__dirname + "/" + name + ".json", JSON.stringify(data));
+};
+
+export function validator() {
+  return {
+    channelID: (channelIDs: string[] | string) => {
+      if (typeof channelIDs === "string") {
+        if (channelIDs.length !== 24)
+          throw "Invalid channelID length: " + channelIDs;
+      } else {
+        channelIDs.map((id) => {
+          if (id.length !== 24) throw "Invalid channelID length: " + id;
+        });
+      }
+    },
+  };
+}
+
+export function getTimeFromTimeString(timeString: string) {
   // Extract hour, minute, and second values
   let hours = 0;
   let minutes = 0;
@@ -36,30 +61,42 @@ function getTimeFromTimeString(timeString: string) {
   return totalSeconds;
 }
 
-const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
-  fs.writeFileSync(__dirname + "/" + name + ".json", JSON.stringify(data));
-};
+export function convertISO8601ToMilliseconds(interval: string) {
+  const match = interval.match(
+    /^P(?:(\d+Y)?(\d+M)?(\d+D)?)?(?:T(?:(\d+H)?(\d+M)?(\d+S)?)?)?$/
+  );
 
-export function validator() {
-  return {
-    channelID: (channelIDs: string[] | string) => {
-      if (typeof channelIDs === "string") {
-        if (channelIDs.length !== 24)
-          throw "Invalid channelID length: " + channelIDs;
-      } else {
-        channelIDs.map((id) => {
-          if (id.length !== 24) throw "Invalid channelID length: " + id;
-        });
-      }
-    },
-    // videoID: (videoIDs: string[] | string) => {
-    //   if (typeof videoIDs === "string") {
-    //     if (videoIDs.length !== 24) throw "Invalid videoID length: " + videoIDs;
-    //   } else {
-    //     videoIDs.map((id) => {
-    //       if (id.length !== 24) throw "Invalid videoID length: " + id;
-    //     });
-    //   }
-    // },
-  };
+  if (!match) {
+    throw new Error("Invalid ISO 8601 interval format.");
+  }
+
+  const [, years, months, days, hours, minutes, seconds] = match;
+
+  let milliseconds = 0;
+
+  if (years) {
+    milliseconds += parseInt(years, 10) * 31536000000; // 1 year = 31536000000 milliseconds
+  }
+
+  if (months) {
+    milliseconds += parseInt(months, 10) * 2592000000; // 1 month = 2592000000 milliseconds (approx.)
+  }
+
+  if (days) {
+    milliseconds += parseInt(days, 10) * 86400000; // 1 day = 86400000 milliseconds
+  }
+
+  if (hours) {
+    milliseconds += parseInt(hours, 10) * 3600000; // 1 hour = 3600000 milliseconds
+  }
+
+  if (minutes) {
+    milliseconds += parseInt(minutes, 10) * 60000; // 1 minute = 60000 milliseconds
+  }
+
+  if (seconds) {
+    milliseconds += parseInt(seconds, 10) * 1000; // 1 second = 1000 milliseconds
+  }
+
+  return milliseconds;
 }

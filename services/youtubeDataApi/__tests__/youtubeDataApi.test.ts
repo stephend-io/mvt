@@ -1,7 +1,7 @@
 //  import { getChannels } from "../model/channels";
 //  import { getPlaylists, playlists } from "../model/playlists";
 //  import { getSubscriptions, subscriptions } from "../model/subscriptions";
-//  import { getVideos, videos } from "../model/videos";
+//  import { getVideosData, videos } from "../model/videos";
 
 //  const sync = require("../model/sync");
 
@@ -14,19 +14,19 @@
 //  })
 
 //  test("playlistIngress' prisma.createMany works when only one id is passed", async () => {
-//      const channelID = await getVideos("JT4xW7zIAbQ")
+//      const channelID = await getVideosData("JT4xW7zIAbQ")
 //      const res = await sync.makeChannels(["UCZhtK40axOw7MGLTfwQ1yVA"]);
 //      return expect(res).toBe(true);
 //  });
 
-//  test("getVideos does not return youtube shorts", async () => {
-//       const res = await getVideos(["JT4xW7zIAbQ"]);
-//      const res = await getVideos(["bGqd9Mx1sPA"]);
+//  test("getVideosData does not return youtube shorts", async () => {
+//       const res = await getVideosData(["JT4xW7zIAbQ"]);
+//      const res = await getVideosData(["bGqd9Mx1sPA"]);
 //      return expect(res).toEqual([]);
 //  });
 
-//  test("getVideos successfully filters out youtube shorts", async () => {       const res = await getVideos(["JT4xW7zIAbQ"]);
-//      const res = await getVideos([
+//  test("getVideosData successfully filters out youtube shorts", async () => {       const res = await getVideosData(["JT4xW7zIAbQ"]);
+//      const res = await getVideosData([
 //          "bGqd9Mx1sPA",
 //          "Z5NoQg8LdDk",
 //          "Mtd24QIBJ5Y",
@@ -35,11 +35,11 @@
 //      return expect(res.length).toEqual(2);
 //  });
 
-//  describe("getvideos", () => {
+//  describe("getVideosData", () => {
 //  res moved inside function, surely this doesnt mess with any of the code
 //  const res: videos[] = [];
 //      beforeAll(async () => {
-//          const videos = await getVideos([
+//          const videos = await getVideosData([
 //              "bGqd9Mx1sPA",
 //              "Z5NoQg8LdDk",
 //              "Mtd24QIBJ5Y",

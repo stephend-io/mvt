@@ -2,13 +2,12 @@ import { google } from "googleapis";
 import { prisma } from "@/lib/prisma";
 import { channel } from "diagnostics_channel";
 import { validator } from "@/lib/utils";
-
-type partOptions =
-  | "contentDetails"
-  | "id"
-  | "snippet"
-  | "statistics"
-  | "status";
+import {
+  getMakeDetailedPlaylistItems,
+  getPlaylistChannels,
+  getPlaylistItems,
+} from "./PlaylistItems";
+import { getMakeVideos } from "./Videos";
 
 export type channel = {
   uploadsId: string;
@@ -16,11 +15,10 @@ export type channel = {
   channelName: string;
   thumbnailYtLink: string;
   description: string;
+  customUrl: string;
 };
 
-export const makeChannels = async (
-  channelIDs: string[]
-): Promise<channel[]> => {
+export const getChannels = async (channelIDs: string[]): Promise<channel[]> => {
   try {
     validator().channelID(channelIDs);
     const returnArr: channel[] = [];
@@ -36,37 +34,17 @@ export const makeChannels = async (
 
     if (!channelArray) throw "No Channel Array";
 
-    const existingChannels = await prisma.ytChannel.findMany({
-      select: {
-        channelId: true,
-      },
-      where: {
-        channelId: {
-          in: channelArray,
-        },
-      },
-    });
-
-    const existingChannelIDs = existingChannels?.map((e) => e.channelId);
-
     res.data.items?.map((channel) => {
       // skips pushing existing data to DB
-      if (existingChannelIDs.includes(channel.id as string)) {
-        return;
-      }
       const data: channel = {
         uploadsId: channel.contentDetails?.relatedPlaylists?.uploads as string,
         channelId: channel.id as string,
         channelName: channel.snippet?.title as string,
         thumbnailYtLink: channel.snippet?.thumbnails?.high?.url as string,
         description: channel.snippet?.description as string,
+        customUrl: channel.snippet?.customUrl as string,
       };
       returnArr.push(data);
-    });
-
-    // make channels
-    await prisma.ytChannel.createMany({
-      data: returnArr,
     });
 
     return returnArr;
@@ -75,6 +53,102 @@ export const makeChannels = async (
     throw err;
   }
 };
+
+export const getAndMakeChannels = async (channelIDs: string[]) => {
+  try {
+    validator().channelID(channelIDs);
+    const returnArr: channel[] = [];
+
+    console.log("Step 3: writing new channels to DB");
+    console.log("------------------------------------------");
+
+    const res = await google.youtube("v3").channels.list({
+      key: process.env.YOUTUBE_API_KEY,
+      part: ["snippet", "contentDetails"],
+      id: channelIDs,
+      maxResults: 50,
+    });
+
+    const channelIdArray = res.data.items?.map(
+      (channel) => channel.id as string
+    );
+
+    if (!channelIdArray) throw "No Channel Array";
+
+    const existingChannels = await prisma.ytChannel.findMany({
+      select: {
+        channelId: true,
+      },
+      where: {
+        channelId: {
+          in: channelIdArray,
+        },
+      },
+    });
+
+    const existingChannelIDs = existingChannels?.map((e) => e.channelId);
+
+    res.data.items?.map((channel) => {
+      // skips pushing existing data to DB
+      if (!existingChannelIDs.includes(channel.id as string)) {
+        returnArr.push({
+          uploadsId: channel.contentDetails?.relatedPlaylists
+            ?.uploads as string,
+          channelId: channel.id as string,
+          channelName: channel.snippet?.title as string,
+          thumbnailYtLink: channel.snippet?.thumbnails?.high?.url as string,
+          description: channel.snippet?.description as string,
+          customUrl: channel.snippet?.customUrl as string,
+        });
+      }
+    });
+
+    const channelUploadIdArray = channelIdArray?.map((channelId) =>
+      channelId.replace(channelId.charAt(1), "U")
+    );
+
+    console.log(channelUploadIdArray);
+
+    await prisma.ytChannel
+      .createMany({
+        data: returnArr,
+      })
+      .then((data) =>
+        console.log("createMany yt Channel done " + JSON.stringify(data))
+      );
+    await populateChannels(channelUploadIdArray).then((data) =>
+      console.log(`done populating channels: ${JSON.stringify(data)}`)
+    );
+
+    return returnArr;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export async function populateChannels(uploadsId: string[]) {
+  console.log("Step 4: Populating Channels");
+  console.log("------------------------------------------");
+
+  const uploads = [...uploadsId];
+
+  while (uploads.length > 0) {
+    const currentUpload = uploads.pop() as string;
+    console.log(`Working on: ${currentUpload}`);
+    console.log("------------------------------------------");
+
+    const channelVideoData = getMakeDetailedPlaylistItems(currentUpload).then(
+      async (videoData) => {
+        console.log("making: " + JSON.stringify(videoData));
+        await prisma.ytVideo.createMany({
+          data: videoData,
+        });
+        console.log("done making" + JSON.stringify(videoData));
+      }
+    );
+  }
+}
 
 const sampleChannelData = {
   kind: "youtube#channelListResponse",

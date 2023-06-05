@@ -8,7 +8,7 @@ import Link from "next/link";
 import "..//app/fonts/Pixel.css";
 import Buttonify from "@/components/Buttonify";
 import ClientShowcase from "@/components/ClientShowcase";
-import { makeChannels } from "@/services/youtubeDataApi/Channels";
+import { getAndMakeChannels } from "@/services/youtubeDataApi/Channels";
 
 const testData = [
   {
@@ -460,14 +460,14 @@ const VideoCard = ({ thumbnailId }: VideoCardParams) => {
 };
 
 export default async function Home() {
-  const testArr: string[] = [
-    "UCDq5v10l4wkV5-ZBIJJFbzQ",
-    "UCfyehHM_eo4g5JUyWmms2LA",
-    "UCimiUgDLbi6P17BdaCZpVbg",
-    "UCpqH8-BBNTsluhcOzFKWLuw",
-  ];
-  console.log("making channels");
-  await makeChannels(testArr);
+  // const testArr: string[] = [
+  //   "UCDq5v10l4wkV5-ZBIJJFbzQ",
+  //   "UCfyehHM_eo4g5JUyWmms2LA",
+  //   "UCimiUgDLbi6P17BdaCZpVbg",
+  //   "UCpqH8-BBNTsluhcOzFKWLuw",
+  // ];
+  // console.log("making channels");
+  // await makeChannels(testArr);
   return (
     <div className='w-screen h-screen bg-slate-700'>
       {/* <Link href={"/channels"}>wrong page</Link> */}
