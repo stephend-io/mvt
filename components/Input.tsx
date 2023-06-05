@@ -8,6 +8,54 @@ type Inputs = {
   channelName: string;
 };
 
+type TestInput = {
+  uploadId: string;
+};
+
+export function TestInput() {
+  // const [ytChannels, setData] = useState<string[]>();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<TestInput>();
+
+  const onSubmit: SubmitHandler<TestInput> = async (data) =>
+    await fetch("http://localhost:3000/api/test", {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+  // .then(async (returnData) => setData(await returnData.json()));
+
+  return (
+    <div className='flex flex-col bg-slate-800 p-4 rounded-lg justify-between'>
+      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-row gap-4'>
+        <input
+          defaultValue='Add uploadID'
+          {...register("uploadId", {
+            required: true,
+          })}
+          className='bg-slate-200 rounded-md p-2'
+        />
+        {errors.uploadId && (
+          <span className='bg-red-500'>The uploadId is required</span>
+        )}
+        <input
+          type='submit'
+          className='bg-slate-300 p-2 rounded-md hover:bg-slate-600 hover:scale-110 active:bg-slate-200 active:scale-95 hover:cursor-pointer transition-all hover:text-slate-200 hover:font-bold active:text-slate-800'
+        />
+      </form>
+      <div className='flex flex-col'></div>
+    </div>
+  );
+}
+
 export function PlaylistIDs() {
   // const [ytChannels, setData] = useState<string[]>();
 

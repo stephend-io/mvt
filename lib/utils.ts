@@ -8,7 +8,10 @@ export function youtubeStringParser(youtubeString: string) {
 }
 
 export const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
-  fs.writeFileSync(__dirname + "/" + name + ".json", JSON.stringify(data));
+  fs.writeFileSync(
+    __dirname + "/" + name + "STEPHENKNOWSYOU.json",
+    JSON.stringify(data)
+  );
 };
 
 export function validator() {

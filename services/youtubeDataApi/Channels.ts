@@ -18,10 +18,10 @@ export type channel = {
   customUrl: string;
 };
 
+const returnArrTwo: channel[] = [];
 export const getChannels = async (channelIDs: string[]): Promise<channel[]> => {
   try {
     validator().channelID(channelIDs);
-    const returnArr: channel[] = [];
 
     const res = await google.youtube("v3").channels.list({
       key: process.env.YOUTUBE_API_KEY,
@@ -30,9 +30,11 @@ export const getChannels = async (channelIDs: string[]): Promise<channel[]> => {
       maxResults: 50,
     });
 
-    const channelArray = res.data.items?.map((channel) => channel.id as string);
+    const channelArrTwoay = res.data.items?.map(
+      (channel) => channel.id as string
+    );
 
-    if (!channelArray) throw "No Channel Array";
+    if (!channelArrTwoay) throw "No Channel ArrTwoay";
 
     res.data.items?.map((channel) => {
       // skips pushing existing data to DB
@@ -44,20 +46,20 @@ export const getChannels = async (channelIDs: string[]): Promise<channel[]> => {
         description: channel.snippet?.description as string,
         customUrl: channel.snippet?.customUrl as string,
       };
-      returnArr.push(data);
+      returnArrTwo.push(data);
     });
 
-    return returnArr;
+    return returnArrTwo;
   } catch (err) {
     console.error(err);
     throw err;
   }
 };
 
+const returnArr: channel[] = [];
 export const getAndMakeChannels = async (channelIDs: string[]) => {
   try {
     validator().channelID(channelIDs);
-    const returnArr: channel[] = [];
 
     console.log("Step 3: writing new channels to DB");
     console.log("------------------------------------------");
@@ -87,6 +89,7 @@ export const getAndMakeChannels = async (channelIDs: string[]) => {
     });
 
     const existingChannelIDs = existingChannels?.map((e) => e.channelId);
+    console.log("Existing Channels: " + existingChannelIDs);
 
     res.data.items?.map((channel) => {
       // skips pushing existing data to DB
@@ -107,18 +110,19 @@ export const getAndMakeChannels = async (channelIDs: string[]) => {
       channelId.replace(channelId.charAt(1), "U")
     );
 
-    console.log(channelUploadIdArray);
+    if (returnArr) {
+      await prisma.ytChannel
+        .createMany({
+          data: returnArr,
+        })
+        .then((data) => console.log("createMany yt Channel done "));
+    }
 
-    await prisma.ytChannel
-      .createMany({
-        data: returnArr,
-      })
-      .then((data) =>
-        console.log("createMany yt Channel done " + JSON.stringify(data))
+    if (channelUploadIdArray) {
+      await populateChannels(channelUploadIdArray).then((data) =>
+        console.log(`done populating channels: ${JSON.stringify(data)}`)
       );
-    await populateChannels(channelUploadIdArray).then((data) =>
-      console.log(`done populating channels: ${JSON.stringify(data)}`)
-    );
+    }
 
     return returnArr;
   } catch (err) {
@@ -127,26 +131,25 @@ export const getAndMakeChannels = async (channelIDs: string[]) => {
   }
 };
 
-export async function populateChannels(uploadsId: string[]) {
+export async function populateChannels(uploads: string[]) {
   console.log("Step 4: Populating Channels");
   console.log("------------------------------------------");
 
-  const uploads = [...uploadsId];
-
+  console.log("------------------------------------------");
   while (uploads.length > 0) {
+    console.log(`current length: ${uploads.length}`);
     const currentUpload = uploads.pop() as string;
-    console.log(`Working on: ${currentUpload}`);
-    console.log("------------------------------------------");
+    console.log(`length after popping: ${uploads.length}`);
 
-    const channelVideoData = getMakeDetailedPlaylistItems(currentUpload).then(
-      async (videoData) => {
-        console.log("making: " + JSON.stringify(videoData));
-        await prisma.ytVideo.createMany({
-          data: videoData,
-        });
-        console.log("done making" + JSON.stringify(videoData));
-      }
-    );
+    const channelVideoData = await getMakeDetailedPlaylistItems(currentUpload);
+
+    await prisma.ytVideo.createMany({
+      data: channelVideoData,
+    });
+    // console.log("done making" + JSON.stringify(videoData));
+    console.log("------------------------------------------");
+    console.log("finished making: " + JSON.stringify(currentUpload));
+    console.log("------------------------------------------");
   }
 }
 

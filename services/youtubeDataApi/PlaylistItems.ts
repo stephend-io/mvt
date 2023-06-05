@@ -1,7 +1,6 @@
 import {
   convertISO8601ToMilliseconds,
   getTimeFromTimeString,
-  simpleWriteFS,
 } from "@/lib/utils";
 import { google } from "googleapis";
 import { getMakeVideos, videos } from "./Videos";
@@ -45,7 +44,7 @@ export const getPlaylistChannels = async (
   );
 
   if (playlistData.data.nextPageToken) {
-    getPlaylistChannels(playlistId, playlistData.data.nextPageToken);
+    await getPlaylistChannels(playlistId, playlistData.data.nextPageToken);
   }
 
   return playlistChannelIDs;
@@ -53,6 +52,7 @@ export const getPlaylistChannels = async (
 
 const playlistItems: playlistItem[] = [];
 
+let count = 0;
 // only returns simple data, does not conform to ytVideos type
 export const getPlaylistItems = async (
   playlistId: string,
@@ -68,6 +68,8 @@ export const getPlaylistItems = async (
     });
 
     if (!playlistData.data.items) throw "No Playlist Items";
+    console.log(playlistData);
+    count++;
 
     playlistData.data.items?.map((video) =>
       playlistItems.push({
@@ -89,23 +91,25 @@ export const getPlaylistItems = async (
   }
 };
 
+const returnArr: videos[] = [];
+
 export const getMakeDetailedPlaylistItems = async (
   playlistId: string
 ): Promise<videos[]> => {
   try {
-    const returnArr: videos[] = [];
     const playlistData = await getPlaylistItems(playlistId);
     const playlistIds = playlistData.map((video) => video.videoId);
 
-    simpleWriteFS(playlistData);
     while (playlistIds.length > 0) {
+      console.log("before splice of: " + playlistId);
+      console.log("videos left: " + playlistIds.length);
       const fetchingArr = playlistIds.splice(0, 50);
-      console.log("spliced: " + fetchingArr);
-      console.log("current length is: " + playlistIds.length);
-      console.log(playlistIds);
+      console.log("------------------------------------------");
+      console.log("after plice");
+      console.log("videos left: " + playlistIds.length);
       console.log("------------------------------------------");
 
-      getMakeVideos(fetchingArr).then((data) => returnArr.push(...data));
+      await getMakeVideos(fetchingArr).then((data) => returnArr.push(...data));
     }
     return returnArr;
   } catch (err) {

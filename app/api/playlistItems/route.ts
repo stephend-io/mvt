@@ -1,8 +1,5 @@
 import { getAndMakeChannels } from "@/services/youtubeDataApi/Channels";
-import {
-  getPlaylistChannels,
-  getPlaylistItems,
-} from "@/services/youtubeDataApi/PlaylistItems";
+import { getPlaylistChannels, getPlaylistItems } from "@/services/youtubeDataApi/PlaylistItems";
 import { getMakeVideos } from "@/services/youtubeDataApi/Videos";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -31,16 +28,14 @@ async function getMakeFetchPlaylistChannels(playlistId: string) {
   //   channels.map((channel) => channel.channelId)
   // );
   // if (videos) return true;
-  console.log(channels);
+  // console.log(channels);
   if (channels) return true;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { playlistId, channelName } = await request.json();
-    const playlistChannels = await getMakeFetchPlaylistChannels(
-      playlistIdSchema.parse(playlistId)
-    );
+    const playlistChannels = await getMakeFetchPlaylistChannels(playlistIdSchema.parse(playlistId));
 
     if (playlistChannels)
       return new Response(JSON.stringify(playlistChannels), {

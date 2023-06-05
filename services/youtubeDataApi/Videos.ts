@@ -2,7 +2,6 @@ import { google } from "googleapis";
 import {
   convertISO8601ToMilliseconds,
   getTimeFromTimeString,
-  simpleWriteFS,
 } from "@/lib/utils";
 
 type partOptions = "contentDetails" | "id" | "snippet" | "status";
@@ -12,7 +11,7 @@ export interface videos {
   height: number;
   embedId: string;
   title: string;
-  dateUploaded: Date;
+  dateUploaded: string;
   views: number;
   thumbnailId: string;
   duration: number;
@@ -39,9 +38,8 @@ export const getChannelIdFromVideo = async (videoIDs: string[]) => {
   return returnArr;
 };
 
-const videosArray: videos[] = [];
-
 export const getMakeVideos = async (videoIDs: string[]): Promise<videos[]> => {
+  const videosArray: videos[] = [];
   const videos = await google.youtube("v3").videos.list({
     key: process.env.YOUTUBE_API_KEY,
     part: ["snippet", "statistics", "contentDetails", "player", "status"],
@@ -50,40 +48,40 @@ export const getMakeVideos = async (videoIDs: string[]): Promise<videos[]> => {
     maxHeight: 100,
     maxWidth: 100,
   });
-  simpleWriteFS(videos);
   // const videos = sampleVideo;
   videos.data.items?.map((video) => {
     if (
       !video.status?.embeddable ||
       !(video.status?.privacyStatus === "public")
     ) {
-      console.log(
-        `video ${video.snippet?.title} by ${video.snippet?.channelTitle} is not embeddable`
-      );
+      // console.log(
+      //   `video ${video.snippet?.title} by ${video.snippet?.channelTitle} is not embeddable`
+      // );
       return;
     }
     if (getTimeFromTimeString(video.contentDetails?.duration!) <= 60) {
-      console.log(
-        `trying to add youtube short - ${
-          video.snippet?.title as string
-        } - skipping for now`
-      );
     } else {
       console.log("valid data for: " + video.snippet?.title);
       videosArray.push({
-        dateUploaded: new Date(video.snippet?.publishedAt as string),
+        embedId: video.id as string,
+        dateUploaded: video.snippet?.publishedAt as string,
         width: Number(video.player?.embedWidth),
         height: Number(video.player?.embedHeight),
-        embedId: video.id as string,
         title: video.snippet?.title as string,
         views: Number(video.statistics?.viewCount),
-        thumbnailId: video.snippet as string,
+        thumbnailId: video.id as string,
         viewCommentRatio:
-          Number(video.statistics?.commentCount) /
-          Number(video.statistics?.viewCount),
+          Math.round(
+            (Number(video.statistics?.commentCount) /
+              Number(video.statistics?.viewCount)) *
+              100000
+          ) / 100,
         viewLikeRatio:
-          Number(video.statistics?.likeCount) /
-          Number(video.statistics?.viewCount),
+          Math.round(
+            (Number(video.statistics?.likeCount) /
+              Number(video.statistics?.viewCount)) *
+              100000
+          ) / 100,
         likes: Number(video.statistics?.likeCount),
         commentCount: Number(video.statistics?.commentCount),
         categoryId: Number(video.snippet?.categoryId),
@@ -95,6 +93,8 @@ export const getMakeVideos = async (videoIDs: string[]): Promise<videos[]> => {
       });
     }
   });
+  console.log("------------------------");
+  console.log("done with this thing cuh");
   return videosArray;
 };
 const yo = {
