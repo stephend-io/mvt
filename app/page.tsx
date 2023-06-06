@@ -8,7 +8,6 @@ import Link from "next/link";
 import "..//app/fonts/Pixel.css";
 import Buttonify from "@/components/Buttonify";
 import ClientShowcase from "@/components/ClientShowcase";
-import { getAndMakeChannels } from "@/services/youtubeDataApi/Channels";
 
 const testData = [
   {

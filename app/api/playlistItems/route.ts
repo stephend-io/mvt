@@ -3,10 +3,7 @@ import {
   getTimeFromTimeString,
   validator,
 } from "@/lib/utils";
-import {
-  channel,
-  getAndMakeChannels,
-} from "@/services/youtubeDataApi/Channels";
+import { channel } from "@/services/youtubeDataApi/Channels";
 import {
   getMakeDetailedPlaylistItems,
   getPlaylistChannels,
@@ -106,6 +103,7 @@ async function getMakeFetchPlaylistChannels(playlistId: string) {
 
       await prisma.ytVideo.createMany({
         data: detailedVideos,
+        skipDuplicates: true,
       });
       // const channelData = await getMakeDetailedPlaylistItems(uploadId);
     }
@@ -125,10 +123,10 @@ export async function POST(request: NextRequest) {
       playlistIdSchema.parse(playlistId)
     );
 
-    await makeTvChannel();
+    const TvChannelId = await makeTvChannel(playlistChannels, channelName);
 
     if (playlistChannels)
-      return new Response("working", {
+      return new Response(JSON.stringify(TvChannelId), {
         status: 200,
       });
     else throw "Error Getting / Making / Fetching playlist channels";
@@ -140,21 +138,36 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const testPlaylistRecursion = "PLnQ_7AffD8eUuBY0Z52NBlZgfFJsgg_mt";
 export async function GET(request: NextRequest) {
   try {
-    // const res = await request.json();
-    // console.log(res);
-    // const stringSchema = z.string(res);
-    // const playlistChannels = await getPlaylistChannels(stringSchema.parse(res));
+    const data = await getPlaylistChannels(testPlaylistRecursion);
 
-    // console.log(playlistChannels);
-    return NextResponse.json("yo");
+    console.log("No coming out: " + data.length);
+    console.log(data);
+    return new Response(JSON.stringify(data), {
+      status: 200,
+    });
   } catch (err) {
     return new Response("Something went wrong", {
       status: 500,
     });
   }
 }
-function makeTvChannel(channelIds: string[]) {
-  return;
+async function makeTvChannel(channelIds: string[], channelName: string) {
+  console.log("Making Tv Channel: " + channelName);
+  const { channelId } = await prisma.tvChannel.create({
+    select: {
+      channelId: true,
+    },
+    data: {
+      channelName: channelName,
+      channels: channelIds,
+    },
+  });
+  return channelId;
+}
+
+function getChannelVideos(filters?: string[]) {
+  throw new Error("Function not implemented.");
 }

@@ -23,11 +23,10 @@ export interface playlistItem {
   date: string;
 }
 
-const playlistChannelIDs: string[] = [];
-
 export const getPlaylistChannels = async (
   playlistId: string,
-  pageToken?: string
+  pageToken?: string,
+  playlistChannelIDs: string[] = []
 ) => {
   const playlistData = await google.youtube("v3").playlistItems.list({
     key: process.env.YOUTUBE_API_KEY,
@@ -44,13 +43,14 @@ export const getPlaylistChannels = async (
   );
 
   if (playlistData.data.nextPageToken) {
-    await getPlaylistChannels(playlistId, playlistData.data.nextPageToken);
+    await getPlaylistChannels(
+      playlistId,
+      playlistData.data.nextPageToken,
+      playlistChannelIDs
+    );
   }
-
-  return playlistChannelIDs;
+  return [...new Set(playlistChannelIDs)];
 };
-
-let count = 0;
 // only returns simple data, does not conform to ytVideos type
 export const getPlaylistItems = async (
   playlistId: string,
