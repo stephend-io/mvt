@@ -61,9 +61,6 @@ export const getAndMakeChannels = async (channelIDs: string[]) => {
   try {
     validator().channelID(channelIDs);
 
-    console.log("Step 3: writing new channels to DB");
-    console.log("------------------------------------------");
-
     const res = await google.youtube("v3").channels.list({
       key: process.env.YOUTUBE_API_KEY,
       part: ["snippet", "contentDetails"],

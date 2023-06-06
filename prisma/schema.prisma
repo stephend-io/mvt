@@ -45,8 +45,7 @@ model userChannel {
 }
 
 model ytVideo {
-  testId           Int       @id @default(autoincrement())
-  embedId          String
+  embedId          String    @id @unique
   title            String
   dateUploaded     DateTime
   views            Int

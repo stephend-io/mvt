@@ -50,8 +50,6 @@ export const getPlaylistChannels = async (
   return playlistChannelIDs;
 };
 
-const playlistItems: playlistItem[] = [];
-
 let count = 0;
 // only returns simple data, does not conform to ytVideos type
 export const getPlaylistItems = async (
@@ -59,6 +57,7 @@ export const getPlaylistItems = async (
   pageToken?: string
 ) => {
   try {
+    const playlistItems: playlistItem[] = [];
     const playlistData = await google.youtube("v3").playlistItems.list({
       key: process.env.YOUTUBE_API_KEY,
       part: ["snippet", "contentDetails"],
@@ -68,8 +67,6 @@ export const getPlaylistItems = async (
     });
 
     if (!playlistData.data.items) throw "No Playlist Items";
-    console.log(playlistData);
-    count++;
 
     playlistData.data.items?.map((video) =>
       playlistItems.push({
@@ -81,7 +78,11 @@ export const getPlaylistItems = async (
     );
 
     if (playlistData.data.nextPageToken) {
-      getPlaylistItems(playlistId, playlistData.data.nextPageToken);
+      const nextItems = await getPlaylistItems(
+        playlistId,
+        playlistData.data.nextPageToken
+      );
+      playlistItems.push(...nextItems);
     }
 
     return playlistItems;

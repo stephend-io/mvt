@@ -1,44 +1,134 @@
-import { getAndMakeChannels } from "@/services/youtubeDataApi/Channels";
-import { getPlaylistChannels, getPlaylistItems } from "@/services/youtubeDataApi/PlaylistItems";
-import { getMakeVideos } from "@/services/youtubeDataApi/Videos";
+import {
+  convertISO8601ToMilliseconds,
+  getTimeFromTimeString,
+  validator,
+} from "@/lib/utils";
+import {
+  channel,
+  getAndMakeChannels,
+} from "@/services/youtubeDataApi/Channels";
+import {
+  getMakeDetailedPlaylistItems,
+  getPlaylistChannels,
+  getPlaylistItems,
+} from "@/services/youtubeDataApi/PlaylistItems";
+import { getMakeVideos, videos } from "@/services/youtubeDataApi/Videos";
+import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
 
 const playlistIdSchema = z.string().length(34);
 export type playlistIdType = z.infer<typeof playlistIdSchema>; // string
 
 async function getMakeFetchPlaylistChannels(playlistId: string) {
-  // Steps:
-  // get ChannelIDs
-  // check ChannelIDs in DB
-  // write new CHannelIDs in DB
-  console.log("Step 1: getChannelIDs");
-  console.log(playlistId);
-  console.log("------------------------------------------");
-  const channelIds = await getPlaylistChannels(playlistId);
-  console.log("Step 2: getAndMakeChannels");
-  console.log(playlistId);
-  console.log("------------------------------------------");
-  const channels = await getAndMakeChannels(channelIds);
-  // get ALL videos from channel by using the uploadsID
-  // fetch videoData for each video
-  // write videoData
+  const newChannels: channel[] = [];
+  const videosArray: videos[] = [];
 
-  // const videos = await getMakeVideos(
-  //   channels.map((channel) => channel.channelId)
-  // );
-  // if (videos) return true;
-  // console.log(channels);
-  if (channels) return true;
+  const channelIds = await getPlaylistChannels(playlistId);
+
+  validator().channelID(channelIds);
+
+  const res = await google.youtube("v3").channels.list({
+    key: process.env.YOUTUBE_API_KEY,
+    part: ["snippet", "contentDetails"],
+    id: channelIds,
+    maxResults: 50,
+  });
+
+  const channelIdArray = res.data.items?.map((channel) => channel.id as string);
+
+  if (!channelIdArray) throw "No Channel Array";
+
+  const existingChannels = await prisma.ytChannel.findMany({
+    select: {
+      channelId: true,
+    },
+    where: {
+      channelId: {
+        in: channelIdArray,
+      },
+    },
+  });
+
+  const existingChannelIDs = existingChannels?.map((e) => e.channelId);
+  // console.log("Existing Channels: " + existingChannelIDs);
+
+  res.data.items?.map((channel) => {
+    if (!existingChannelIDs.includes(channel.id as string)) {
+      newChannels.push({
+        uploadsId: channel.contentDetails?.relatedPlaylists?.uploads as string,
+        channelId: channel.id as string,
+        channelName: channel.snippet?.title as string,
+        thumbnailYtLink: channel.snippet?.thumbnails?.high?.url as string,
+        description: channel.snippet?.description as string,
+        customUrl: channel.snippet?.customUrl as string,
+      });
+    }
+  });
+
+  const channelUploadIdArray = channelIdArray?.map((channelId) =>
+    channelId.replace(channelId.charAt(1), "U")
+  );
+
+  if (newChannels.length) {
+    await prisma.ytChannel
+      .createMany({
+        data: newChannels,
+      })
+      .then((data) => console.log("createMany yt Channel done "));
+  }
+  console.log("-------------------------------------");
+  console.log("starting to get items");
+  console.log("-------------------------------------");
+
+  let currentIndex = 0;
+  channelUploadIdArray.map(async (uploadId) => {
+    const uploads = await getPlaylistItems(uploadId);
+
+    console.log("-------------------------------------");
+    console.log(`There are: ${uploads.length} uploads`);
+    console.log("-------------------------------------");
+
+    const uploadIds = uploads.map((upload) => upload.videoId);
+    console.log("-------------------------------------");
+    console.log("1111111111111111111");
+    console.log(`uploadNos = ${uploadIds}`);
+    console.log("getting and making videos");
+    console.log("-------------------------------------");
+    for (let i = 0; i < uploadIds.length / 50; i++) {
+      const detailedVideos = await getMakeVideos(
+        uploadIds.slice(i * 50, (i + 1) * 50)
+      );
+      console.log("-------------------------------------");
+      console.log("----------------got detailed videos-----------------");
+      console.log("-------------------------------------");
+
+      await prisma.ytVideo.createMany({
+        data: detailedVideos,
+      });
+      // const channelData = await getMakeDetailedPlaylistItems(uploadId);
+    }
+  });
+
+  // await prisma.ytVideo.createMany({
+  //   data: videosArray,
+  // });
+
+  return channelIds;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { playlistId, channelName } = await request.json();
-    const playlistChannels = await getMakeFetchPlaylistChannels(playlistIdSchema.parse(playlistId));
+    const playlistChannels = await getMakeFetchPlaylistChannels(
+      playlistIdSchema.parse(playlistId)
+    );
+
+    await makeTvChannel();
 
     if (playlistChannels)
-      return new Response(JSON.stringify(playlistChannels), {
+      return new Response("working", {
         status: 200,
       });
     else throw "Error Getting / Making / Fetching playlist channels";
@@ -64,4 +154,7 @@ export async function GET(request: NextRequest) {
       status: 500,
     });
   }
+}
+function makeTvChannel(channelIds: string[]) {
+  return;
 }

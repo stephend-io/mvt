@@ -48,17 +48,14 @@ export const getMakeVideos = async (videoIDs: string[]): Promise<videos[]> => {
     maxHeight: 100,
     maxWidth: 100,
   });
-  // const videos = sampleVideo;
   videos.data.items?.map((video) => {
     if (
       !video.status?.embeddable ||
       !(video.status?.privacyStatus === "public")
     ) {
-      // console.log(
-      //   `video ${video.snippet?.title} by ${video.snippet?.channelTitle} is not embeddable`
-      // );
       return;
     }
+
     if (getTimeFromTimeString(video.contentDetails?.duration!) <= 60) {
     } else {
       console.log("valid data for: " + video.snippet?.title);
@@ -93,8 +90,7 @@ export const getMakeVideos = async (videoIDs: string[]): Promise<videos[]> => {
       });
     }
   });
-  console.log("------------------------");
-  console.log("done with this thing cuh");
+
   return videosArray;
 };
 const yo = {
