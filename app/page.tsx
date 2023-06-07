@@ -161,8 +161,9 @@ export default async function Home() {
                   className='transition-all hover:shadow-3xl relative hover:z-10 hover:scale-[1.15] bg-slate-600 rounded-md lg:w-[30%] lg:h-[calc(33.33%-0.5rem)] w-full md:w-[calc(50%-1rem)] lg:min-w-[30rem] min-h-[10rem] overflow-clip'
                   key={index}
                 >
+                  {index}
                   <ButtonifyTest num={index} totalItems={dataList.length} />
-                  <img src={data} />
+                  <img src={data} className='w-full h-full' />
                 </div>
               );
             })}

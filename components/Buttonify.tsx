@@ -73,8 +73,20 @@ export const WindowEventAdder = ({ totalItems }: { totalItems: number }) => {
           `Up Clicked || CurrentGrid - ${buttonSelected} || TotalItems - ${totalItems} || `
         );
         if (buttonSelected - 1 >= 0) {
-          console.log("Down clicked");
-          actions.setSelectedGrid(buttonSelected - 1);
+          console.log("Up clicked");
+          if (buttonSelected % 3 === 0) {
+            if (totalItems - buttonSelected >= 2)
+              actions.setSelectedGrid(buttonSelected + 2);
+            else if (totalItems - buttonSelected == 1)
+              actions.setSelectedGrid(buttonSelected + 1);
+          } else {
+            actions.setSelectedGrid(buttonSelected - 1);
+          }
+        } else {
+          if (totalItems - buttonSelected >= 2)
+            actions.setSelectedGrid(buttonSelected + 2);
+          else if (totalItems - buttonSelected == 1)
+            actions.setSelectedGrid(buttonSelected + 1);
         }
 
         break;
@@ -86,9 +98,10 @@ export const WindowEventAdder = ({ totalItems }: { totalItems: number }) => {
         );
         if (buttonSelected + 1 <= totalItems) {
           console.log("Down clicked");
-          actions.setSelectedGrid(buttonSelected + 1);
+          if ((buttonSelected + 1) % 3 === 0) {
+            actions.setSelectedGrid(buttonSelected - 2);
+          } else actions.setSelectedGrid(buttonSelected + 1);
         }
-
         break;
     }
   }
