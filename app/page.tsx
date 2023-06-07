@@ -14,6 +14,7 @@ import ClientShowcase from "@/components/ClientShowcase";
 import { prisma } from "@/lib/prisma";
 import { SizeShower } from "@/components/SizeShower";
 import "./styles.scss";
+import { FloatingRight, FloatingLeft } from "@/components/FloatingDirection";
 
 export const Navbar = () => {
   return (
@@ -136,34 +137,44 @@ export default async function Home() {
   ];
 
   return (
-    <div className='w-screen h-screen '>
+    <div className='w-screen h-screen relative'>
       <WindowEventAdder totalItems={dataList.length} />
-      {/* <div className='h-[100vh] w-screen absolute z-50' id='vignette'></div> */}
-
+      {/* <div className='h-[100vh] w-screen absolute z-10' id='vignette'></div> */}
       {/* <div className='h-[100vh] w-screen absolute z-0 '>
         <Icon
           icon='PictureError'
           defaultHovers={false}
           className='group-hover:scale-125 group-hover:-translate-x-1 group-active:saturate-200   transition-all hover:saturate-50 '
         />
-      </div> */}
-
+      </div> 
       <SizeShower />
       {/* <Link href={"/channels"}>wrong page</Link> */}
+      <div
+        className='bg-gray-800 w-full lg:h-[100%] lg:flex flex-col justify-center overflow-hidden'
+        id='carousel'
+      >
+        <FloatingRight totalItems={dataList.length} />
+        <FloatingLeft totalItems={dataList.length} />
 
-      <div className='bg-gray-800 w-full lg:h-[100%] lg:flex flex-col justify-center overflow-scroll '>
         {/* <div className='bg-gray-800 w-full lg:h-[87%] lg:flex flex-col justify-center overflow-scroll '> */}
         <div className='w-full flex-wrap  md:justify-center md:w-[98%] md:mt-4 md:m-2 md:gap-4 lg:w-[calc(100% - 4rem)] lg:h-[93%] lg:ml-16 flex flex-row lg:flex-col md:flex-wrap lg:gap-2 lg:mt-4'>
           {dataList &&
             dataList.map((data, index) => {
               return (
                 <div
-                  className='transition-all hover:shadow-3xl relative hover:z-10 hover:scale-[1.15] bg-slate-600 rounded-md lg:w-[30%] lg:h-[calc(33.33%-0.5rem)] w-full md:w-[calc(50%-1rem)] lg:min-w-[30rem] min-h-[10rem] overflow-clip'
+                  className=' transition-all relative   rounded-md lg:w-[30%] lg:h-[calc(33.33%-0.5rem)] w-full md:w-[calc(50%-1rem)] lg:min-w-[30rem] min-h-[10rem] overflow-visible'
                   key={index}
+                  id={String(index)}
                 >
-                  {index}
-                  <ButtonifyTest num={index} totalItems={dataList.length} />
-                  <img src={data} className='w-full h-full' />
+                  <ButtonifyTest
+                    imgSrc={data}
+                    num={index}
+                    totalItems={dataList.length}
+                  />
+                  <img
+                    src={data}
+                    className='w-full h-full rounded-md opacity-90'
+                  />
                 </div>
               );
             })}

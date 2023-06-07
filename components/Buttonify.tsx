@@ -2,7 +2,7 @@
 
 import useStore, { useActions } from "@/zustand/store";
 import { VideoCardParams } from "@/app/page";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const Buttonify = (video: VideoCardParams) => {
   const actions = useActions();
@@ -19,61 +19,97 @@ const Buttonify = (video: VideoCardParams) => {
     ></button>
   );
 };
+
 export const ButtonifyTest = ({
   num,
   totalItems,
+  imgSrc,
 }: {
   num: number;
   totalItems: number;
+  imgSrc?: string;
 }) => {
   const actions = useActions();
   const { buttonSelected } = useStore();
   const [selected, setSelected] = useState(false);
+  const width = useRef("100%");
+  const height = useRef("100%");
+
   return (
     <button
-      onClick={() => actions.setSelectedGrid(num)}
-      className={`absolute top-0 left-0 w-full h-full duration-100  transition-all  
-  ${buttonSelected === num && "border-lime-300 border-8"}
+      id={num.toString()}
+      onClick={() => {
+        // actions.setSelectedGrid(num);
+        // document.getElementById("test")?.scrollIntoView();
+        width.current = "100vw";
+        height.current = "100vh";
+      }}
+      onMouseOver={
+        // selected?.scrollIntoView({ inline: "end" });
+        () => actions.setSelectedGrid(num)
+      }
+      className={`absolute top-0 left-0  duration-100 z-10  transition-all  overflow-visible  text-white font-black
+  ${buttonSelected === num && "border-lime-300 border-8 scale-110"}
       `}
-    ></button>
+      style={{ width: width.current, height: height.current }}
+      // style={{ width: "100vw", height: "100vh" }}
+    >
+      {/* {String(buttonSelected === num)} */}
+      {/* {String(num)} */}
+      {buttonSelected === num && (
+        <img
+          src={imgSrc}
+          className={`w-full h-full rounded-md ${
+            buttonSelected === num ?? "invisible"
+          }`}
+        />
+      )}
+    </button>
   );
 };
 
 export const WindowEventAdder = ({ totalItems }: { totalItems: number }) => {
   const actions = useActions();
   const { buttonSelected } = useStore();
-  console.log("WindowEvventAdder called: " + buttonSelected);
 
-  function keyCallback({ code }: { code: string }) {
-    switch (code) {
+  function threeGridControl(keyboardEvent: KeyboardEvent) {
+    switch (keyboardEvent.code) {
       case "ArrowRight":
+        keyboardEvent.preventDefault();
       case "KeyD":
       case "KeyL":
-        console.log(
-          `Right Clicked || CurrentGrid - ${buttonSelected} || TotalItems - ${totalItems} || `
-        );
+        console.log("ArrowRight called with buttonSelected: " + buttonSelected);
         if (buttonSelected + 3 <= totalItems) {
-          console.log(`inside of thing ${buttonSelected}`);
           actions.setSelectedGrid(buttonSelected + 3);
+          document
+            .getElementById((buttonSelected + 6).toString())
+            ?.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+              inline: "nearest",
+            });
         }
         break;
-      case "KeyA":
-      case "KeyH":
       case "ArrowLeft":
-        console.log(
-          `Left Clicked || CurrentGrid - ${buttonSelected} || TotalItems - ${totalItems} || `
-        );
+        keyboardEvent.preventDefault();
+      case "KeyH":
+      case "KeyA":
+        console.log("ArrowLeft called with buttonSelected: " + buttonSelected);
         if (buttonSelected - 3 >= 0)
           actions.setSelectedGrid(buttonSelected - 3);
+        document
+          .getElementById((buttonSelected - 6).toString())
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+            inline: "nearest",
+          });
         break;
       case "KeyW":
       case "KeyK":
       case "ArrowUp":
-        console.log(
-          `Up Clicked || CurrentGrid - ${buttonSelected} || TotalItems - ${totalItems} || `
-        );
+        console.log("ArrowUp called with buttonSelected: " + buttonSelected);
         if (buttonSelected - 1 >= 0) {
-          console.log("Up clicked");
           if (buttonSelected % 3 === 0) {
             if (totalItems - buttonSelected >= 2)
               actions.setSelectedGrid(buttonSelected + 2);
@@ -88,30 +124,27 @@ export const WindowEventAdder = ({ totalItems }: { totalItems: number }) => {
           else if (totalItems - buttonSelected == 1)
             actions.setSelectedGrid(buttonSelected + 1);
         }
-
         break;
       case "KeyS":
       case "KeyJ":
       case "ArrowDown":
-        console.log(
-          `Down Clicked || CurrentGrid - ${buttonSelected} || TotalItems - ${totalItems} || `
-        );
+        console.log("ArrowDown called with buttonSelected: " + buttonSelected);
         if (buttonSelected + 1 <= totalItems) {
-          console.log("Down clicked");
           if ((buttonSelected + 1) % 3 === 0) {
             actions.setSelectedGrid(buttonSelected - 2);
           } else actions.setSelectedGrid(buttonSelected + 1);
+        } else {
+          if (buttonSelected === totalItems)
+            actions.setSelectedGrid(buttonSelected - 2);
         }
         break;
     }
   }
 
-  let test: void;
-
-  useEffect(() => {
-    console.log("effect called");
-    test = window.addEventListener("keydown", keyCallback);
-    return () => window.removeEventListener("keydown", keyCallback);
+  useLayoutEffect(() => {
+    window.removeEventListener("keydown", threeGridControl);
+    window.addEventListener("keydown", threeGridControl);
+    return () => window.removeEventListener("keydown", threeGridControl);
   }, [buttonSelected]);
   return <></>;
 };

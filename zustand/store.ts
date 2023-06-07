@@ -194,9 +194,7 @@ const useStore = create<State & Actions>((set, get) => ({
       }
     },
     setSelectedGrid: (to) => {
-      console.log("Called setSelectorGrid with: " + to);
       set({ buttonSelected: to });
-      console.log("New buttonSelected should be: " + get().buttonSelected);
     },
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
   },
