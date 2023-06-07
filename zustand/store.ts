@@ -34,6 +34,7 @@ type State = {
     | undefined;
   playerSizeX: string;
   playerSizeY: string;
+  buttonSelected: number;
 };
 
 type Actions = {
@@ -59,6 +60,7 @@ type Actions = {
     setCurrentVideo: (videoId: string) => void;
     setMiniVideo: (bool: boolean) => void;
     changeplayerType: (to: playerTypes) => void;
+    setSelectedGrid: (to: number) => void;
   };
 };
 
@@ -77,6 +79,7 @@ const initState: State = {
   playerType: undefined,
   playerSizeX: "100%",
   playerSizeY: "100%",
+  buttonSelected: 0,
 };
 
 const useStore = create<State & Actions>((set, get) => ({
@@ -163,7 +166,6 @@ const useStore = create<State & Actions>((set, get) => ({
     setMiniVideo: (bool) => {
       set({ miniVideo: bool });
     },
-    TOBEIMPLEMENTED: () => console.log("func not implemented"),
     changeplayerType: (to) => {
       switch (to) {
         case "fullScreen":
@@ -191,6 +193,12 @@ const useStore = create<State & Actions>((set, get) => ({
           break;
       }
     },
+    setSelectedGrid: (to) => {
+      console.log("Called setSelectorGrid with: " + to);
+      set({ buttonSelected: to });
+      console.log("New buttonSelected should be: " + get().buttonSelected);
+    },
+    TOBEIMPLEMENTED: () => console.log("func not implemented"),
   },
 }));
 // hooks for conbefore:venience, thanks tkdodo

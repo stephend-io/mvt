@@ -33,6 +33,7 @@
     "zustand": "^4.3.8"
   },
   "devDependencies": {
-    "prisma": "^4.15.0"
+    "prisma": "^4.15.0",
+    "sass": "^1.62.1"
   }
 }

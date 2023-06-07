@@ -70,9 +70,9 @@ const TVPlayer = ({ shape }: Props) => {
           transition: "ease-in-out",
           transitionDuration: "500ms",
         }}
-        url='https://www.youtube.com/watch?v=0rhpNsg7CUY'
-        width={playerSizeX}
-        height={playerSizeY}
+        url={`https://www.youtube.com/watch?v=${currentVideo}`}
+        width={playerSizeX + "%"}
+        height={playerSizeY + "%"}
         volume={muted ? 0 : volume / 100}
         playing={true}
         loop={true}

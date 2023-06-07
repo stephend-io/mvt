@@ -10,7 +10,28 @@ import Absolute from "@/components/Absolute";
 import Button from "@/components/Button";
 import TVPlayer from "@/components/TVPlayer";
 
-const index = () => {
+function randomNumber(max: number) {
+  return Math.floor(Math.random() * max);
+}
+
+const index = async () => {
+  const data = await prisma?.tvChannel.findFirst({
+    select: {
+      channels: true,
+    },
+    where: {
+      channelId: 1,
+    },
+  });
+
+  const getRandomChannel = await prisma?.ytChannel.findUnique({
+    where: {
+      channelId: data?.channels[randomNumber(data?.channels.length)],
+    },
+  });
+  const getVideo = await prisma?.ytVideo.findFirst({});
+
+  console.log(data);
   return (
     <>
       <div className={`relative w-screen h-screen bg-black`}>

@@ -46,6 +46,14 @@ button:active {
   filter: invert(0);
 } */
 
+.hidden-scrollbar {
+  scrollbar-color: transparent transparent;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes ldio-ytc0y0550u {
   0% {
     top: 96px;

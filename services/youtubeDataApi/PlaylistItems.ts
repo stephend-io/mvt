@@ -49,15 +49,16 @@ export const getPlaylistChannels = async (
       playlistChannelIDs
     );
   }
+
   return [...new Set(playlistChannelIDs)];
 };
 // only returns simple data, does not conform to ytVideos type
 export const getPlaylistItems = async (
   playlistId: string,
-  pageToken?: string
+  pageToken?: string,
+  playlistItems: playlistItem[] = []
 ) => {
   try {
-    const playlistItems: playlistItem[] = [];
     const playlistData = await google.youtube("v3").playlistItems.list({
       key: process.env.YOUTUBE_API_KEY,
       part: ["snippet", "contentDetails"],
@@ -78,11 +79,11 @@ export const getPlaylistItems = async (
     );
 
     if (playlistData.data.nextPageToken) {
-      const nextItems = await getPlaylistItems(
+      await getPlaylistItems(
         playlistId,
-        playlistData.data.nextPageToken
+        playlistData.data.nextPageToken,
+        playlistItems
       );
-      playlistItems.push(...nextItems);
     }
 
     return playlistItems;
@@ -92,12 +93,11 @@ export const getPlaylistItems = async (
   }
 };
 
-const returnArr: videos[] = [];
-
 export const getMakeDetailedPlaylistItems = async (
   playlistId: string
 ): Promise<videos[]> => {
   try {
+    const returnArr: videos[] = [];
     const playlistData = await getPlaylistItems(playlistId);
     const playlistIds = playlistData.map((video) => video.videoId);
 
@@ -117,6 +117,27 @@ export const getMakeDetailedPlaylistItems = async (
     throw err;
   }
 };
+
+export const appendChannel = async (
+  ytChannelIds: string[],
+  tvChannel: number
+) => {
+  await prisma?.tvChannel.update({
+    where: {
+      channelId: tvChannel,
+    },
+    data: {
+      channels: {
+        push: ytChannelIds,
+      },
+    },
+  });
+};
+
+export const appendVideos = async (
+  ytChannelIds: string[],
+  ytVideosEmbedIds: string[]
+) => {};
 
 const sampleData = {
   kind: "youtube#playlistItemListResponse",

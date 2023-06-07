@@ -50,6 +50,9 @@ module.exports = {
         accent2: "var(--accent2)",
         accent3: "var(--accent3)",
       },
+      boxShadow: {
+        "3xl": "10px 35px 20px -15px rgba(0, 0, 0, 0.6)",
+      },
     },
   },
 
