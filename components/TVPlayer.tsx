@@ -6,13 +6,15 @@ import Loader from "./Loader";
 import Absolute from "./Absolute";
 import { useState } from "react";
 
+import "@/app/styles.scss";
+
 const ReactPlayer = dynamic(() => import("react-player/youtube"), {
   ssr: false,
   loading: () => <Loader />,
 });
 
 const TVplayerStyles = cva(
-  "w-full h-full relative transition-all duration-1000 ease-in-out  rounded-2xl overflow-clip",
+  "w-full h-full relative transition-all duration-1000 ease-in-out  overflow-clip",
   {
     variants: {
       intent: {
@@ -20,10 +22,10 @@ const TVplayerStyles = cva(
         semiFullScreen:
           "w-[97vw] h-[98vh] top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 ",
         mini: "top-2 right-2 h-64 w-96",
-        leftQuarter: "top-0 right-1/4 w-9/12 ",
-        rightQuarter: "top-0 right-2 w-9/12",
+        leftQuarter: "top-0 left-1/4 w-4/12 h-full",
+        rightQuarter: "top-0 right-2 w-9/12 h-full",
         middleQuarter:
-          "top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-9/12",
+          "top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-9/12 h-full",
         boxMiddle:
           "top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4",
         initial: "top-[5vh] right-1/2 translate-x-1/2 w-1/4 h-1/3 bg-red-500",
@@ -49,7 +51,7 @@ const TVplayerStyles = cva(
 type Props = VariantProps<typeof TVplayerStyles> & {};
 
 const TVPlayer = ({ shape }: Props) => {
-  const additionalClassNames = "bg-red-500";
+  // const additionalClassNames = "bg-red-500";
   const {
     currentVideo,
     volume,
@@ -61,7 +63,7 @@ const TVPlayer = ({ shape }: Props) => {
     playerSizeY,
   } = useStore();
   return (
-    <div className={TVplayerStyles({ className: additionalClassNames, shape })}>
+    <div className={TVplayerStyles({ shape })} id='vignette'>
       <ReactPlayer
         style={{
           position: "absolute",
@@ -79,6 +81,7 @@ const TVPlayer = ({ shape }: Props) => {
         controls={false}
         stopOnUnmount={false}
         pip={true}
+        playbackRate={0.2}
       />
     </div>
   );

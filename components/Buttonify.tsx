@@ -32,8 +32,8 @@ export const ButtonifyTest = ({
   const actions = useActions();
   const { buttonSelected } = useStore();
   const [selected, setSelected] = useState(false);
-  const width = useRef("100%");
-  const height = useRef("100%");
+  // const width = useRef("100%");
+  // const height = useRef("100%");
 
   return (
     <button
@@ -41,29 +41,21 @@ export const ButtonifyTest = ({
       onClick={() => {
         // actions.setSelectedGrid(num);
         // document.getElementById("test")?.scrollIntoView();
-        width.current = "100vw";
-        height.current = "100vh";
+        // width.current = "100vw";
+        // height.current = "100vh";
       }}
       onMouseOver={
         // selected?.scrollIntoView({ inline: "end" });
         () => actions.setSelectedGrid(num)
       }
-      className={`absolute top-0 left-0  duration-100 z-10  transition-all  overflow-visible  text-white font-black
-  ${buttonSelected === num && "border-lime-300 border-8 scale-110"}
+      className={`absolute top-0 left-0 h-full w-full duration-100 z-10  transition-all  overflow-visible  text-white font-black
+  ${buttonSelected === num && "border-lime-300 border-8 "}
       `}
-      style={{ width: width.current, height: height.current }}
+      // style={{ width: width.current, height: height.current }}
       // style={{ width: "100vw", height: "100vh" }}
     >
       {/* {String(buttonSelected === num)} */}
       {/* {String(num)} */}
-      {buttonSelected === num && (
-        <img
-          src={imgSrc}
-          className={`w-full h-full rounded-md ${
-            buttonSelected === num ?? "invisible"
-          }`}
-        />
-      )}
     </button>
   );
 };

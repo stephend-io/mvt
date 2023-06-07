@@ -21,7 +21,7 @@ type State = {
   muted: boolean;
   settingsOpen: boolean;
   mouseDown: boolean;
-  currentVideo: { videoId: string } | null;
+  currentVideo: string | null;
   miniVideo: boolean;
   playerType:
     | "fullScreen"
@@ -32,8 +32,8 @@ type State = {
     | "middleQuarter"
     | "boxMiddle"
     | undefined;
-  playerSizeX: string;
-  playerSizeY: string;
+  playerSizeX: number;
+  playerSizeY: number;
   buttonSelected: number;
 };
 
@@ -74,11 +74,11 @@ const initState: State = {
   muted: true,
   settingsOpen: false,
   mouseDown: false,
-  currentVideo: null,
+  currentVideo: "GX_h5L-DQUk",
   miniVideo: false,
   playerType: undefined,
-  playerSizeX: "100%",
-  playerSizeY: "100%",
+  playerSizeX: 100,
+  playerSizeY: 100,
   buttonSelected: 0,
 };
 
@@ -161,7 +161,7 @@ const useStore = create<State & Actions>((set, get) => ({
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
     setCurrentVideo: (video) => {
-      set({ currentVideo: { videoId: video } });
+      set({ currentVideo: video });
     },
     setMiniVideo: (bool) => {
       set({ miniVideo: bool });
@@ -169,25 +169,25 @@ const useStore = create<State & Actions>((set, get) => ({
     changeplayerType: (to) => {
       switch (to) {
         case "fullScreen":
-          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          set({ playerSizeX: 100, playerSizeY: 100, playerType: to });
           break;
         case "semiFullScreen":
-          set({ playerSizeX: "98%", playerSizeY: "98%", playerType: to });
+          set({ playerSizeX: 98, playerSizeY: 98, playerType: to });
           break;
         case "mini":
-          set({ playerSizeX: "30%", playerSizeY: "20%", playerType: to });
+          set({ playerSizeX: 30, playerSizeY: 20, playerType: to });
           break;
         case "leftQuarter":
-          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
           break;
         case "rightQuarter":
-          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
           break;
         case "middleQuarter":
-          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
           break;
         case "boxMiddle":
-          set({ playerSizeX: "100%", playerSizeY: "100%", playerType: to });
+          set({ playerSizeX: 50, playerSizeY: 100, playerType: to });
           break;
         default:
           break;

@@ -1,5 +1,5 @@
 export const SizeShower = () => (
-  <div>
+  <div className='relative z-50'>
     <div className='absolute top-5 left-5 bg-lime-700 p-2 rounded-lg sm:invisible'>
       xs
     </div>

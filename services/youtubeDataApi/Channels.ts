@@ -135,7 +135,6 @@ const returnArr: channel[] = [];
 //     console.log(`length after popping: ${uploads.length}`);
 
 //     const channelVideoData = await getMakeDetailedPlaylistItems(currentUpload);
-
 //     await prisma.ytVideo.createMany({
 //       data: channelVideoData,
 //     });
