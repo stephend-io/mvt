@@ -1,28 +1,4 @@
-// #vignette {
-//   box-shadow: 0rem 0rem 1rem 1.2rem black inset;
-// }
-
-// .ratio {
-//   width: 100%;
-//   position: relative;
-//   display: block;
-//   aspect-ratio: 3/4;
-// }
-#thirty {
-}
-#fourty {
-}
-#fifty {
-}
-#sixty {
-}
-#seventy {
-}
-#eighty {
-}
-
 @media (max-width: 900px) {
-  // @media (max-width: 1280) {
   #ratio {
     position: relative;
     display: block;
@@ -45,34 +21,17 @@
     position: relative;
     display: block;
 
-    // height: 100%;
-
     width: var(--playerWidth);
-    // min-width: 10%;
-    // max-width: 100%;
-    max-width: var(--aspectRatio);
-    // width: 100vw;
-    // max-width: var(--aspectRatio);
-    // max-height: 100vh;
-    // height: 100%;
 
+    max-width: var(--aspectRatio);
     padding-top: var(--playerHeight);
   }
   #ratio2 {
     position: relative;
     display: block;
-
-    // height: 100%;
-
     width: var(--playerWidth);
-    // width: 50%;
-    // min-width: 10%;
-    // max-width: 100%;
+
     max-width: var(--aspectRatio);
-    // width: 100vw;
-    // max-width: var(--aspectRatio);
-    // max-height: 100vh;
-    // height: 100%;
 
     padding-top: var(--playerHeight);
   }
@@ -97,12 +56,12 @@
   }
 }
 .vignette {
-  box-shadow: 0rem 0rem 1rem 1.2rem blue inset;
+  box-shadow: 0rem 0rem 1rem 1.2rem black inset;
   // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
 }
 #vignette {
   // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
-  box-shadow: 0rem 0rem 1rem 1.2rem salmon inset;
+  box-shadow: 0rem 0rem 1rem 1.2rem black inset;
   // background-color: rgba(255, 255, 2, 1);
   // background-color: rgba(255, 255, 2, 0.9);
 }

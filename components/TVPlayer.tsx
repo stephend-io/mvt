@@ -106,7 +106,7 @@ const TVPlayer = ({ videoId }: Props) => {
       /> */
   }
 
-  const no = 5;
+  const no = 3;
   // const testStr = `max-xl:pt-[${testData[no].height}%] xl:w-[${Number(
   //   ((testData[no].width / testData[no].height) * 100).toFixed(2)
   // )}vh]`;
@@ -118,41 +118,7 @@ const TVPlayer = ({ videoId }: Props) => {
   const [style, setStyle] = useState("");
   const video = testData[no];
   useLayoutEffect(() => {
-    console.log("useLayoutEffect called");
     actions.setCurrentVideo(testData[no]);
-    const aspectRatio = `${Number(
-      ((video.width / video.height) * 100).toFixed(2)
-    )}vh`;
-    if (true) {
-      // setStyle(
-      //   `relative block max-lg:w-[100%] max-lg:pt-[${
-      //     testData[no].height
-      //   }%] lg:max-w-[${Number(
-      //     ((video.width / video.height) * 100).toFixed(2)
-      //   )}vh] lg:h-[100%]`
-      // );
-      // 4:3
-      setStyle(
-        `relative block max-lg:w-[100vw] max-lg:pt-[${video.height}%] lg:w-[100%] lg:max-w-[${aspectRatio}] lg:pt-[${video.height}vw]  xl:pt-[0%] xl:h-[100vw] xl:max-w-[${aspectRatio}]`
-      );
-      `
-  - w-100%
-  - pt-[vid.height%]
-  - 
-  -
-lg
-  - w-100%
-  - max-w-[aspectRatio] 133.33vh
-  - pt-[vid.height%]
-xl
-  - h-100vw
-  - max-w-[aspectRatio] 133.33vh
-  -
-  -
-`;
-    }
-    console.log(aspectRatio);
-    console.log(style);
     return () => console.log("useLayoutEffect returned");
   }, [currentVideo]);
 
