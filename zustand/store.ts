@@ -74,7 +74,7 @@ const initState: State = {
   minChannel: 1,
   currentChannel: 1,
   maxChannel: 998,
-  isRemoteOpen: true,
+  isRemoteOpen: false,
   inputChannel: "",
   volume: 24,
   muted: true,
@@ -169,18 +169,33 @@ const useStore = create<State & Actions>((set, get) => ({
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
     setCurrentVideo: (video) => {
-      document.documentElement.style.setProperty(
-        "--playerWidth",
-        `${video.width}%`
-      );
-      document.documentElement.style.setProperty(
-        "--playerHeight",
-        `${video.height}%`
-      );
-      document.documentElement.style.setProperty(
-        "--aspectRatio",
-        `${Number(((video.width / video.height) * 100).toFixed(2))}vh`
-      );
+      const aspectRatio = `${Number(
+        ((video.width / video.height) * 100).toFixed(2)
+      )}vh`;
+      console.log(video.height / video.width);
+      console.log(video.height / video.width <= 1.25);
+
+      if (video.height / video.width > 0.75) {
+        document.documentElement.style.setProperty(
+          "--playerWidth",
+          `${video.width}%`
+        );
+        // document.documentElement.style.setProperty("--playerHeight", `100%`);
+        document.documentElement.style.setProperty("--aspectRatio", "100%");
+      } else {
+        document.documentElement.style.setProperty(
+          "--playerWidth",
+          `${video.width}%`
+        );
+        document.documentElement.style.setProperty(
+          "--playerHeight",
+          `${video.height}%`
+        );
+        document.documentElement.style.setProperty(
+          "--aspectRatio",
+          `${video.width}%`
+        );
+      }
       set({ currentVideo: video.embedId });
     },
     setMiniVideo: (bool) => {

@@ -69,10 +69,10 @@ const TVPlayer = ({ videoId }: Props) => {
     playerSizeX,
     playerSizeY,
   } = useStore();
-  useLayoutEffect(() => {
-    console.log("videoId: " + videoId);
-    actions.setCurrentVideo(videoId);
-  }, []);
+  // useLayoutEffect(() => {
+  //   console.log("videoId: " + videoId);
+  //   actions.setCurrentVideo(videoId);
+  // }, []);
   const testData = [
     // Food Insider
     { height: 100, width: 100, embedId: "LkjWw94_Q6k" },
@@ -105,7 +105,7 @@ const TVPlayer = ({ videoId }: Props) => {
       /> */
   }
 
-  const no = 5;
+  const no = 3;
   // const testStr = `max-xl:pt-[${testData[no].height}%] xl:w-[${Number(
   //   ((testData[no].width / testData[no].height) * 100).toFixed(2)
   // )}vh]`;
@@ -126,7 +126,9 @@ const TVPlayer = ({ videoId }: Props) => {
         // className={`max-w-screen-lg:pt-[${testData[no].height}%]`}
         // className={`max-w-screen-lg:pt-[75%]`}
         // className={testStr}
-        className='relative block lg:h-full lg:w-[--aspectRatio] max-lg:w-[--playerWidth] max-lg:pt-[--playerHeight]'
+        // working but playing around with the box thing
+        // className='relative block lg:h-[--playerHeight] lg:w-[--aspectRatio] max-lg:w-[--playerWidth] max-lg:pt-[--playerHeight]'
+        className='relative block lg:h-[--playerHeight] lg:w-[--aspectRatio] max-lg:w-[--playerWidth] pt-[--playerHeight]'
         // className='relative w-[90vw] before:block before:pt-[50%] bg-red-500'
 
         // Food insider
