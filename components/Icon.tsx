@@ -8,7 +8,7 @@ export const iconStyles = cva("", {
     },
     intent: {
       static: "bg-blue-500 text-white border-transparent hover:bg-blue-600",
-      interactive: "color-red-400",
+      interactive: "",
       disabled: "grayscale",
       highlight: "",
       withText: "",

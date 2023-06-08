@@ -19,12 +19,13 @@ const index = async () => {
     next: { revalidate: 0 },
   });
   const data = await res.json();
+  console.log(data);
   console.log(data.data);
   return (
     <>
       <div className={`relative w-screen h-screen bg-black`}>
         {/* <Player /> */}
-        <TVPlayer videoId={data.data[0].embedId} />
+        {/* <TVPlayer videoId={data.data} /> */}
         <Remote />
         <ChannelBox />
         <VolumeBar />

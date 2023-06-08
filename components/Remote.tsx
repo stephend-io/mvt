@@ -39,32 +39,55 @@ const repeatCaller = (func: () => void, delay: number) => {
 
 const arr = ["fullScreen", "semiFullScreen", "mini"];
 const Remote = () => {
+  const [hidden, setHidden] = useState(true);
+  const timeoutDelay = 5000;
+  let timeoutID: NodeJS.Timer;
+
   useLayoutEffect(() => {
     window.addEventListener("contextmenu", function (e) {
       e.preventDefault();
     });
     window.addEventListener("mouseup", () => {
       clearInterval(intervalID);
+      clearTimeout(timeoutID);
+      setHidden(false);
+      timeoutID = setTimeout(() => setHidden(true), timeoutDelay);
     });
     window.addEventListener("touchend", (e) => {
       clearInterval(intervalID);
       // thanks! -> https://github.com/facebook/react/issues/9809
       e.preventDefault();
+      clearTimeout(timeoutID);
+      timeoutID = setTimeout(() => {
+        if (!isRemoteOpen) setHidden(true);
+      }, timeoutDelay);
     });
+    window.addEventListener("mousemove", () => {
+      clearTimeout(timeoutID);
+      setHidden(false);
+      timeoutID = setTimeout(() => {
+        if (!isRemoteOpen) setHidden(true);
+      }, timeoutDelay);
+    });
+    window.addEventListener("keydown", () => {});
   }, []);
+
+  useEffect(() => {}, []);
 
   const { isRemoteOpen, settingsOpen } = useStore();
   const actions = useActions();
 
   return (
     <Absolute
-      className='text-[1.5rem] text-accent3 overflow-clip z-20'
+      className={`transition-all duration-500 text-[1.5rem] text-accent3 overflow-clip z-20 ${
+        hidden && "hidden"
+      }`}
       x={"rightXl"}
       y={"bottomXl"}
       // id='vignette'
     >
       {isRemoteOpen ? (
-        <div className='  bg-slate-800 rounded-lg w-40'>
+        <div className=' bg-slate-800 rounded-lg w-40 '>
           <Col>
             <Row className='flex flex-row justify-between '>
               <Icon
@@ -200,7 +223,7 @@ const Remote = () => {
                 {...onHold(actions.incrementVolume, 200)}
               />
             </Row>
-            <Row className='text-xs '>
+            {/* <Row className='text-xs '>
               <button
                 className='h-8 w-20 bg-red-800 hover:scale-150'
                 onClick={() => actions.changeplayerType("fullScreen")}
@@ -247,12 +270,17 @@ const Remote = () => {
               >
                 rightQuarter
               </button>
-            </Row>
+            </Row> */}
           </Col>
         </div>
       ) : (
         <button onClick={actions.toggleRemote}>
-          <Icon icon='Remote' size='l' />
+          <Icon
+            icon='Remote'
+            size='l'
+            className='invert hover:scale-125 transform-all duration-200 p-2'
+            defaultHovers={false}
+          />
         </button>
       )}
     </Absolute>
