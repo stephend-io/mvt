@@ -22,6 +22,8 @@ type State = {
   settingsOpen: boolean;
   mouseDown: boolean;
   currentVideo: string | null;
+  currentVideoWidth: number;
+  currentVideoHeight: number;
   miniVideo: boolean;
   playerType:
     | "fullScreen"
@@ -57,7 +59,11 @@ type Actions = {
     toggleSettings: () => void;
     testIncrementVolume: (timer: number) => void;
     toggleMouseDown: (bool?: boolean) => void;
-    setCurrentVideo: (videoId: string) => void;
+    setCurrentVideo: (video: {
+      embedId: string;
+      height: number;
+      width: number;
+    }) => void;
     setMiniVideo: (bool: boolean) => void;
     changeplayerType: (to: playerTypes) => void;
     setSelectedGrid: (to: number) => void;
@@ -75,6 +81,8 @@ const initState: State = {
   settingsOpen: false,
   mouseDown: false,
   currentVideo: null,
+  currentVideoHeight: 100,
+  currentVideoWidth: 56,
   miniVideo: false,
   playerType: undefined,
   playerSizeX: 100,
@@ -161,7 +169,19 @@ const useStore = create<State & Actions>((set, get) => ({
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
     setCurrentVideo: (video) => {
-      set({ currentVideo: video });
+      document.documentElement.style.setProperty(
+        "--playerWidth",
+        `${video.width}%`
+      );
+      document.documentElement.style.setProperty(
+        "--playerHeight",
+        `${video.height}%`
+      );
+      document.documentElement.style.setProperty(
+        "--aspectRatio",
+        `${Number(((video.width / video.height) * 100).toFixed(2))}vh`
+      );
+      set({ currentVideo: video.embedId });
     },
     setMiniVideo: (bool) => {
       set({ miniVideo: bool });

@@ -1,9 +1,54 @@
 // #vignette {
 //   box-shadow: 0rem 0rem 1rem 1.2rem black inset;
 // }
+
+// .ratio {
+//   width: 100%;
+//   position: relative;
+//   display: block;
+//   aspect-ratio: 3/4;
+// }
+@media (max-width: 1280px) {
+  #ratio {
+    width: 100%;
+    // max-width: 133.33vh;
+    position: relative;
+    display: block;
+    max-height: 100vh;
+    // padding-top: 75%;
+  }
+}
+// @media (max-width: 1280px) {
+//   #ratio {
+//     width: 100%;
+//     max-width: 133.33vh;
+//     position: relative;
+//     display: block;
+//     max-height: 100vh;
+//     padding-top: 75%;
+//   }
+// }
+// @media (min-width: 1280px) {
+//   #ratio {
+//     width: 100%;
+//     max-width: 133.33vh;
+//     position: relative;
+//     display: block;
+//     height: 100vh;
+//   }
+// }
+@media (min-width: 1280px) {
+  #ratio {
+    // width: 100%;
+    // max-width: 133.33vh;
+    position: relative;
+    display: block;
+    height: 100vh;
+  }
+}
 #vignette {
   // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
-  box-shadow: 0rem 0rem 1rem 1.2rem pink inset;
+  box-shadow: 0rem 0rem 1rem 1.2rem salmon inset;
 }
 
 #button {
