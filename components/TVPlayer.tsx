@@ -8,6 +8,7 @@ import { useLayoutEffect, useState } from "react";
 
 import "@/app/styles.scss";
 import { SizeShower } from "./SizeShower";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
 const ReactPlayer = dynamic(() => import("react-player/youtube"), {
   ssr: false,
@@ -105,7 +106,7 @@ const TVPlayer = ({ videoId }: Props) => {
       /> */
   }
 
-  const no = 3;
+  const no = 5;
   // const testStr = `max-xl:pt-[${testData[no].height}%] xl:w-[${Number(
   //   ((testData[no].width / testData[no].height) * 100).toFixed(2)
   // )}vh]`;
@@ -114,12 +115,50 @@ const TVPlayer = ({ videoId }: Props) => {
   // const yo = `xl:w-[${Number(
   //   ((testData[no].width / testData[no].height) * 100).toFixed(2)
   // )}vh]`;
+  const [style, setStyle] = useState("");
+  const video = testData[no];
   useLayoutEffect(() => {
+    console.log("useLayoutEffect called");
     actions.setCurrentVideo(testData[no]);
+    const aspectRatio = `${Number(
+      ((video.width / video.height) * 100).toFixed(2)
+    )}vh`;
+    if (true) {
+      // setStyle(
+      //   `relative block max-lg:w-[100%] max-lg:pt-[${
+      //     testData[no].height
+      //   }%] lg:max-w-[${Number(
+      //     ((video.width / video.height) * 100).toFixed(2)
+      //   )}vh] lg:h-[100%]`
+      // );
+      // 4:3
+      setStyle(
+        `relative block max-lg:w-[100vw] max-lg:pt-[${video.height}%] lg:w-[100%] lg:max-w-[${aspectRatio}] lg:pt-[${video.height}vw]  xl:pt-[0%] xl:h-[100vw] xl:max-w-[${aspectRatio}]`
+      );
+      `
+  - w-100%
+  - pt-[vid.height%]
+  - 
+  -
+lg
+  - w-100%
+  - max-w-[aspectRatio] 133.33vh
+  - pt-[vid.height%]
+xl
+  - h-100vw
+  - max-w-[aspectRatio] 133.33vh
+  -
+  -
+`;
+    }
+    console.log(aspectRatio);
+    console.log(style);
+    return () => console.log("useLayoutEffect returned");
   }, [currentVideo]);
 
   return (
-    <div className='h-screen w-screen bg-black flex flex-col justify-center items-center'>
+    <div className='h-screen w-screen bg-black flex flex-col justify-center items-center vignette'>
+      <div className='absolute z-50 top-0 right-0 bottom-0 left-0  before:block  vignette'></div>
       <SizeShower />
       <div
         // id='ratio'
@@ -128,7 +167,16 @@ const TVPlayer = ({ videoId }: Props) => {
         // className={testStr}
         // working but playing around with the box thing
         // className='relative block lg:h-[--playerHeight] lg:w-[--aspectRatio] max-lg:w-[--playerWidth] max-lg:pt-[--playerHeight]'
-        className='relative block lg:h-[--playerHeight] lg:w-[--aspectRatio] max-lg:w-[--playerWidth] pt-[--playerHeight]'
+        // className='relative block lg:h-[--playerHeight] lg:w-[--playerWidth] lg:pt[--aspectRatio] max-lg:w-[--playerWidth] max-lg:pt-[--playerHeight]'
+        // className={style}
+        // !HERE - working for cooking with dog
+        // className={`relative block max-lg:w-[100vw] max-lg:pt-[75vw] lg:w-[100%] lg:max-w-[133.33vh] lg:pt-[75vw]  xl:pt-[0%] xl:h-[100vw] xl:max-w-[133.33vh]`}
+        // className={`relative block max-lg:w-[100vw] max-lg:pt-[80vw] lg:w-[100%] lg:max-w-[133.33vh] lg:pt-[75vw]  xl:pt-[0%] xl:h-[100vw] xl:max-w-[133.33vh]`}
+        // className={style}
+        id='ratio2'
+        // className={`relative block max-lg:w-[100vw] max-lg:pt-[75vw] lg:w-[100%] lg:max-w-[133.33vh] lg:pt-[75vw] lg:max-w-[100vw] xl:pt-[0%] xl:h-[100vw] xl:max-w-[133.33vh]`}
+
+        // className={`relative block w-[100%] pt-[75%]`}
         // className='relative w-[90vw] before:block before:pt-[50%] bg-red-500'
 
         // Food insider

@@ -61,7 +61,7 @@ const Remote = () => {
       className='text-[1.5rem] text-accent3 overflow-clip z-20'
       x={"rightXl"}
       y={"bottomXl"}
-      id='vignette'
+      // id='vignette'
     >
       {isRemoteOpen ? (
         <div className='  bg-slate-800 rounded-lg w-40'>

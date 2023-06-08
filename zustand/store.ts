@@ -175,27 +175,15 @@ const useStore = create<State & Actions>((set, get) => ({
       console.log(video.height / video.width);
       console.log(video.height / video.width <= 1.25);
 
-      if (video.height / video.width > 0.75) {
-        document.documentElement.style.setProperty(
-          "--playerWidth",
-          `${video.width}%`
-        );
-        // document.documentElement.style.setProperty("--playerHeight", `100%`);
-        document.documentElement.style.setProperty("--aspectRatio", "100%");
-      } else {
-        document.documentElement.style.setProperty(
-          "--playerWidth",
-          `${video.width}%`
-        );
-        document.documentElement.style.setProperty(
-          "--playerHeight",
-          `${video.height}%`
-        );
-        document.documentElement.style.setProperty(
-          "--aspectRatio",
-          `${video.width}%`
-        );
-      }
+      document.documentElement.style.setProperty(
+        "--playerWidth",
+        `${video.width}%`
+      );
+      document.documentElement.style.setProperty(
+        "--playerHeight",
+        `${video.height}%`
+      );
+      document.documentElement.style.setProperty("--aspectRatio", aspectRatio);
       set({ currentVideo: video.embedId });
     },
     setMiniVideo: (bool) => {
