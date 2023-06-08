@@ -11,33 +11,20 @@ import Button from "@/components/Button";
 import TVPlayer from "@/components/TVPlayer";
 import { prisma } from "@/lib/prisma";
 
-function randomNumber(max: number) {
-  return Math.floor(Math.random() * max);
-}
-
 const index = async () => {
-  // const data = await prisma?.tvChannel.findFirst({
-  //   select: {
-  //     channels: true,
-  //   },
-  //   where: {
-  //     channelId: 1,
-  //   },
-  // });
-
-  // const getRandomChannel = await prisma?.ytChannel.findUnique({
-  //   where: {
-  //     channelId: data?.channels[randomNumber(data?.channels.length)],
-  //   },
-  // });
-  // const getVideo = await prisma.ytVideo.findFirst({});
-
-  // console.log(data);
+  console.log("index - NEW");
+  const res = await fetch("http://localhost:3000/api/channels/", {
+    method: "get",
+    // headers: { "Content-Type": "application/json" },
+    next: { revalidate: 0 },
+  });
+  const data = await res.json();
+  console.log(data.data);
   return (
     <>
       <div className={`relative w-screen h-screen bg-black`}>
         {/* <Player /> */}
-        <TVPlayer />
+        <TVPlayer videoId={data.data[0].embedId} />
         <Remote />
         <ChannelBox />
         <VolumeBar />

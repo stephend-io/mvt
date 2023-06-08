@@ -58,7 +58,7 @@ const Remote = () => {
 
   return (
     <Absolute
-      className='text-[1.5rem] text-accent3 overflow-clip'
+      className='text-[1.5rem] text-accent3 overflow-clip z-20'
       x={"rightXl"}
       y={"bottomXl"}
       id='vignette'

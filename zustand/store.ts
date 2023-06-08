@@ -74,7 +74,7 @@ const initState: State = {
   muted: true,
   settingsOpen: false,
   mouseDown: false,
-  currentVideo: "GX_h5L-DQUk",
+  currentVideo: null,
   miniVideo: false,
   playerType: undefined,
   playerSizeX: 100,
@@ -166,32 +166,36 @@ const useStore = create<State & Actions>((set, get) => ({
     setMiniVideo: (bool) => {
       set({ miniVideo: bool });
     },
+    // changeplayerType: (to) => {
+    //   switch (to) {
+    //     case "fullScreen":
+    //       set({ playerSizeX: 100, playerSizeY: 100, playerType: to });
+    //       break;
+    //     case "semiFullScreen":
+    //       set({ playerSizeX: 98, playerSizeY: 98, playerType: to });
+    //       break;
+    //     case "mini":
+    //       set({ playerSizeX: 30, playerSizeY: 20, playerType: to });
+    //       break;
+    //     case "leftQuarter":
+    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
+    //       break;
+    //     case "rightQuarter":
+    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
+    //       break;
+    //     case "middleQuarter":
+    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
+    //       break;
+    //     case "boxMiddle":
+    //       set({ playerSizeX: 50, playerSizeY: 100, playerType: to });
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // },
+
     changeplayerType: (to) => {
-      switch (to) {
-        case "fullScreen":
-          set({ playerSizeX: 100, playerSizeY: 100, playerType: to });
-          break;
-        case "semiFullScreen":
-          set({ playerSizeX: 98, playerSizeY: 98, playerType: to });
-          break;
-        case "mini":
-          set({ playerSizeX: 30, playerSizeY: 20, playerType: to });
-          break;
-        case "leftQuarter":
-          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-          break;
-        case "rightQuarter":
-          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-          break;
-        case "middleQuarter":
-          set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-          break;
-        case "boxMiddle":
-          set({ playerSizeX: 50, playerSizeY: 100, playerType: to });
-          break;
-        default:
-          break;
-      }
+      set({ playerType: to });
     },
     setSelectedGrid: (to) => {
       set({ buttonSelected: to });
