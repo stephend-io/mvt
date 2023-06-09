@@ -1,4 +1,7 @@
-@media (max-width: 900px) {
+// :root {
+//   --test: blue;
+// }
+@media (max-width: 1024px) {
   #ratio {
     position: relative;
     display: block;
@@ -15,8 +18,11 @@
     max-height: 100vh;
     padding-top: var(--playerHeight);
   }
+  #vignette {
+    box-shadow: 0rem 0rem 1rem 1.2rem white inset;
+  }
 }
-@media (min-width: 900px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1280px) {
   #ratio {
     position: relative;
     display: block;
@@ -35,8 +41,11 @@
 
     padding-top: var(--playerHeight);
   }
+  #vignette {
+    box-shadow: 0rem 0rem 1rem 1.2rem red inset;
+  }
 }
-@media (min-width: 1280px) {
+@media (min-width: 1280px) and (max-width: 1536px) {
   #ratio {
     width: 100%;
     max-width: var(--aspectRatio);
@@ -54,14 +63,35 @@
 
     padding-top: var(--playerHeight);
   }
+  #vignette {
+    box-shadow: 0rem 0rem 1rem 1.2rem green inset;
+  }
+}
+@media (min-width: 1536px) {
+  #ratio2 {
+    // width: 100%;
+    min-width: var(--aspectRatio);
+    position: relative;
+    display: block;
+    // padding-top: ;
+    height: 100%;
+    max-height: 100vh;
+  }
+  #vignette {
+    box-shadow: 0rem 0rem 1rem 1.2rem fuchsia inset;
+    // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
+  }
 }
 .vignette {
-  box-shadow: 0rem 0rem 1rem 1.2rem black inset;
+  z-index: 99;
+  box-shadow: 0rem 0rem 1rem 1.2rem rgb(79, 136, 123) inset;
+  // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
   // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
 }
 #vignette {
+  // box-shadow: 0rem 0rem 1rem 1.2rem rgb(94, 194, 17) inset;
   // box-shadow: 0rem 0rem 1rem 1.2rem black inset;
-  box-shadow: 0rem 0rem 1rem 1.2rem black inset;
+  // box-shadow: 0rem 0rem 1rem 1.2rem var(--test) inset;
   // background-color: rgba(255, 255, 2, 1);
   // background-color: rgba(255, 255, 2, 0.9);
 }

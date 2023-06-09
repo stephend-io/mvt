@@ -8,7 +8,7 @@ const channelIdArraySchema = z
   .max(50);
 
 export async function GET(request: NextRequest) {
-  console.log("GET");
+  console.log("CALLING---------------- GET");
   const data = await getRandomVideos();
   console.log("GET" + data);
   return NextResponse.json({ data });
@@ -19,11 +19,16 @@ export async function getRandomVideos(
   no: number = 1,
   date: Date = new Date("2022-01-01")
 ) {
-  console.log("getRandomVideos called");
   const data =
-    (await prisma.$queryRaw`SELECT "embedId" FROM "ytVideo" WHERE "channelId" = ${channelId} AND "dateUploaded" > ${date} ORDER BY random() LIMIT ${no}`) as {
-      embedId: string;
-    }[];
-  // return data[0].embedId;
+    await prisma.$queryRaw`SELECT "embedId", "width", "height" FROM "ytVideo" WHERE "channelId" = ${channelId} AND "dateUploaded" > ${date} ORDER BY random() LIMIT ${no}`;
+  // as {
+  //   embedId: string;
+  //   width: number;
+  //   height: number;
+  // }[];
+
+  console.log("getRandomVideos called");
+  console.log("-----------------------------------------------");
+  console.log(data);
   return data;
 }

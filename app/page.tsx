@@ -15,175 +15,35 @@ import { prisma } from "@/lib/prisma";
 import { SizeShower } from "@/components/SizeShower";
 import "./styles.scss";
 import { FloatingRight, FloatingLeft } from "@/components/FloatingDirection";
+import TVPlayer from "@/components/TVPlayer";
+import Remote from "@/components/Remote";
+import ChannelBox from "@/components/ChannelBox";
+import VolumeBar from "@/components/VolumeBar";
 
-export const Navbar = () => {
+export const Page = async () => {
+  const res = await fetch("http://localhost:3000/api/channels/");
+  const testData = await res.json();
+
+  // const testData = [
+  //   { embedId: "CfUDAWZGBvo", width: 100, height: 56 },
+  //   { embedId: "Q93VZdVDYPE", width: 100, height: 56 },
+  //   { embedId: "-IeMN3eA9AY", width: 100, height: 56 },
+  //   { embedId: "0VLras4mZ84", width: 100, height: 56 },
+  //   { embedId: "2MxyydicOY4", width: 100, height: 56 },
+  //   { embedId: "5ztU_jJyr2c", width: 100, height: 56 },
+  //   { embedId: "2LyhweLk5Vc", width: 100, height: 56 },
+  //   { embedId: "gShjHRGfkSQ", width: 100, height: 56 },
+  //   { embedId: "ws6dFb69t7U", width: 100, height: 56 },
+  //   { embedId: "lH5TRnY8JHw", width: 100, height: 56 },
+  // ];
   return (
-    <div>
-      <Row className=' justify-between px-8 py-2' intent={"fullW"}>
-        <div className='flex justify-center items-center group text-xl  '>
-          <Icon
-            icon='TV'
-            defaultHovers={false}
-            size={"s"}
-            className='group-hover:scale-125 group-hover:-translate-x-1 group-active:saturate-200   transition-all hover:saturate-50 '
-          />
-          <div
-            id='boom'
-            className={`absolute left-16 mb-2 text-primary  blur-[2px] group-hover:scale-125 transition-all group-hover:translate-x-5 group-hover:saturate-[0.75] group-active:saturate-100 group-active:scale-[1.3]`}
-            style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-          >
-            kindalikeTV
-          </div>
-          <button
-            id='boom'
-            className={`mb-2 text-primary text-xl  text-["littlebit-dotty-variable", sans-serif] blur-[0.5px] group-hover:scale-125 transition-all group-hover:translate-x-5 group-hover:saturate-[0.75] group-active:saturate-100 group-active:scale-[1.3]`}
-            style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-          >
-            kindalikeTV
-          </button>
-        </div>
-        <div className='max-w-1/2 '>
-          <Button
-            children={
-              <div className='relative group transition-all'>
-                <div
-                  id='boom'
-                  // className={`text-xl mx-4 text-["littlebit-dotty-variable", sans-serif]`}
-
-                  className={`text-primary text-xl mx-4 font-["littlebit-dotty-variable", sans-serif] blur-[0.5px] group-hover:scale-125 group-hover:opacity-80 active:saturate-200 transition-all duration-200 group-active:opacity-100 `}
-                  style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-                >
-                  stephendio
-                </div>
-                <div
-                  id='boom'
-                  className={`absolute top-0 left-0 text-primary text-xl mx-4 font-["littlebit-dotty-variable", sans-serif] blur-sm transition-all duration-200 active:opacity-100 group-hover:opacity-80 group-active:opacity-100  group-hover:scale-125`}
-                  style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-                >
-                  stephendio
-                </div>
-              </div>
-            }
-          />
-          <Button
-            id='boom'
-            children={
-              <div className='relative group '>
-                <div
-                  id='boom'
-                  className={`text-primary text-xl mx-4 font-["littlebit-dotty-variable", sans-serif] blur-[0.5px] group-hover:scale-125 group-hover:opacity-80 active:saturate-200 transition-all duration-200 active:opacity-100 hover:opacity-80 group-active:opacity-100 `}
-                  style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-                >
-                  player
-                </div>
-                <div
-                  id='boom'
-                  className={`absolute top-0  right-0 text-primary text-xl mx-4 font-["littlebit-dotty-variable", sans-serif] blur-sm group-hover:scale-125 group-hover:opacity-80 active:saturate-200 transition-all duration-200 active:opacity-100 hover:opacity-80 group-active:opacity-100 `}
-                  style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
-                >
-                  player
-                </div>
-              </div>
-            }
-          />
-        </div>
-      </Row>
+    <div className='h-screen w-screen bg-slate-800 flex flex-col justify-center '>
+      <TVPlayer videos={testData.data} />
+      <Remote />
+      <ChannelBox />
+      <VolumeBar />
     </div>
   );
 };
 
-export type VideoCardParams = {
-  title: string;
-  id: string;
-  ChannelId: string;
-  thumbnailId: string;
-  channelTitle: string;
-};
-const VideoCard = ({ thumbnailId }: VideoCardParams) => {
-  return (
-    <button
-      style={{
-        background: `url("https://i.ytimg.com/vi/${thumbnailId}/hqdefault.jpg")`,
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-      }}
-      className='w-full h-full bg-red-400'
-    ></button>
-  );
-};
-
-export default async function Home() {
-  // const testData = await prisma.tvChannel.findMany({
-  //   select: {
-  //     channelName: true,
-  //     channelId: true,
-  //   },
-  // });
-  const dataList = [
-    "https://img.youtube.com/vi/--2YbfVnUsQ/maxresdefault.jpg",
-    "https://img.youtube.com/vi/3mtPLhZvdAo/maxresdefault.jpg",
-    "https://img.youtube.com/vi/X7COhsO86ao/maxresdefault.jpg",
-    "https://img.youtube.com/vi/VYzl0p53KF4/maxresdefault.jpg",
-    "https://img.youtube.com/vi/0lPIPCGPNWg/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-LicMzrx1As/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-JLCyUzLW_8/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-KqF6qjcOZw/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-LOaun3btv8/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-LWzeMGSRM4/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-JNP-GqhwlU/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-KwkgSGX13o/maxresdefault.jpg",
-    "https://img.youtube.com/vi/-JlxuQ7tPgQ/maxresdefault.jpg",
-    "https://img.youtube.com/vi/QDilzaZWAf0/maxresdefault.jpg",
-  ];
-
-  return (
-    <div className='w-screen h-screen relative'>
-      <WindowEventAdder totalItems={dataList.length} />
-      {/* <div className='h-[100vh] w-screen absolute z-10' id='vignette'></div> */}
-      {/* <div className='h-[100vh] w-screen absolute z-0 '>
-        <Icon
-          icon='PictureError'
-          defaultHovers={false}
-          className='group-hover:scale-125 group-hover:-translate-x-1 group-active:saturate-200   transition-all hover:saturate-50 '
-        />
-      </div> 
-      <SizeShower />
-      {/* <Link href={"/channels"}>wrong page</Link> */}
-      <div
-        className='bg-gray-800 w-full lg:h-[100%] lg:flex flex-col justify-center overflow-hidden'
-        id='carousel'
-      >
-        <FloatingRight totalItems={dataList.length} />
-        <FloatingLeft totalItems={dataList.length} />
-
-        {/* <div className='bg-gray-800 w-full lg:h-[87%] lg:flex flex-col justify-center overflow-scroll '> */}
-        <div className='w-full flex-wrap  md:justify-center md:w-[98%] md:mt-4 md:m-2 md:gap-4 lg:w-[calc(100% - 4rem)] lg:h-[93%] lg:ml-16 flex flex-row lg:flex-col md:flex-wrap lg:gap-2 lg:mt-4'>
-          {dataList &&
-            dataList.map((data, index) => {
-              return (
-                <div
-                  className=' transition-all relative   rounded-md lg:w-[30%] lg:h-[calc(33.33%-0.5rem)] w-full md:w-[calc(50%-1rem)] lg:min-w-[30rem] min-h-[10rem] overflow-visible'
-                  key={index}
-                  id={String(index)}
-                >
-                  <ButtonifyTest
-                    imgSrc={data}
-                    num={index}
-                    totalItems={dataList.length}
-                  />
-                  <img
-                    src={data}
-                    className='w-full h-full rounded-md opacity-90'
-                  />
-                </div>
-              );
-            })}
-          <div className='relative bg-slate-600 rounded-md lg:w-[30%] lg:h-[calc(33.33%-0.5rem)] w-full md:w-[calc(50%-1rem)] lg:min-w-[30rem] min-h-[10rem]'>
-            <ButtonifyTest num={dataList.length} totalItems={dataList.length} />
-            +
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+export default Page;

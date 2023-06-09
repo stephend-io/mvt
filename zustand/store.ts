@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { VideoCardParams } from "@/app/page";
 
 type playerTypes =
   | "fullScreen"
@@ -80,7 +79,7 @@ const initState: State = {
   muted: true,
   settingsOpen: false,
   mouseDown: false,
-  currentVideo: null,
+  currentVideo: "LT-oNf3A7IU",
   currentVideoHeight: 100,
   currentVideoWidth: 56,
   miniVideo: false,
@@ -172,8 +171,7 @@ const useStore = create<State & Actions>((set, get) => ({
       const aspectRatio = `${Number(
         ((video.width / video.height) * 100).toFixed(2)
       )}vh`;
-      console.log(video.height / video.width);
-      console.log(video.height / video.width <= 1.25);
+      console.log("setCurrentVideo");
 
       document.documentElement.style.setProperty(
         "--playerWidth",

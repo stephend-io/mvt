@@ -40,7 +40,7 @@ const ChannelBox = () => {
     <div className={`flex flex-col ${hidden && "hidden"}`}>
       <div
         id='boom'
-        className={`text-primary transition-all text-8xl absolute top-4 right-4  blur-[4px] translate-x-[2px] ${
+        className={`text-primary transition-all text-8xl absolute top-8 right-20  blur-[4px] translate-x-[2px] z-50 ${
           channelChange && "scale-110 saturate-150"
         }`}
         style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
@@ -49,7 +49,7 @@ const ChannelBox = () => {
       </div>
       <div
         id='boom'
-        className={`text-primary transition-all text-8xl absolute top-4 right-4 text-["littlebit-dotty-variable", sans-serif] blur-[1px] ${
+        className={`text-primary transition-all text-8xl absolute top-8 right-20 text-["littlebit-dotty-variable", sans-serif] blur-[1px] z-50 ${
           channelChange && "scale-110 saturate-150"
         }
         `}

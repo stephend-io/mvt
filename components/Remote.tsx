@@ -2,17 +2,7 @@
 
 import useStore, { useActions } from "@/zustand/store";
 import Icon from "@/components/Icon";
-import {
-  MutableRefObject,
-  PropsWithChildren,
-  Ref,
-  RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import Absolute from "./Absolute";
 import Col from "./Col";
 import Row from "./Row";
@@ -33,11 +23,9 @@ function onHold(func: () => void, delay: number = 200) {
 }
 const repeatCaller = (func: () => void, delay: number) => {
   clearInterval(intervalID);
-  // func();
   intervalID = setInterval(func, delay);
 };
 
-const arr = ["fullScreen", "semiFullScreen", "mini"];
 const Remote = () => {
   const [hidden, setHidden] = useState(true);
   const timeoutDelay = 5000;
@@ -72,19 +60,16 @@ const Remote = () => {
     window.addEventListener("keydown", () => {});
   }, []);
 
-  useEffect(() => {}, []);
-
   const { isRemoteOpen, settingsOpen } = useStore();
   const actions = useActions();
 
   return (
     <Absolute
-      className={`transition-all duration-500 text-[1.5rem] text-accent3 overflow-clip z-20 ${
+      className={`transition-all duration-500 text-[1.5rem] text-accent3 overflow-clip z-50 ${
         hidden && "hidden"
       }`}
       x={"rightXl"}
       y={"bottomXl"}
-      // id='vignette'
     >
       {isRemoteOpen ? (
         <div className=' bg-slate-800 rounded-lg w-40 '>
