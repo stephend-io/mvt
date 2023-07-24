@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { get as getIdb, set, del } from "idb-keyval";
 
 type playerTypes =
   | "fullScreen"
@@ -20,7 +21,15 @@ type State = {
   muted: boolean;
   settingsOpen: boolean;
   mouseDown: boolean;
-  currentVideo: string | null;
+  currentVideo: {
+    title: string;
+    artist: string;
+    links: {
+      id: string;
+      width: number;
+      height: number;
+    }[];
+  };
   currentVideoWidth: number;
   currentVideoHeight: number;
   miniVideo: boolean;
@@ -59,10 +68,15 @@ type Actions = {
     testIncrementVolume: (timer: number) => void;
     toggleMouseDown: (bool?: boolean) => void;
     setCurrentVideo: (video: {
-      embedId: string;
-      height: number;
-      width: number;
+      artist: string;
+      title: string;
+      links: {
+        id: string;
+        height: number;
+        width: number;
+      }[];
     }) => void;
+    nextVideo: () => void;
     setMiniVideo: (bool: boolean) => void;
     changeplayerType: (to: playerTypes) => void;
     setSelectedGrid: (to: number) => void;
@@ -79,7 +93,14 @@ const initState: State = {
   muted: true,
   settingsOpen: false,
   mouseDown: false,
-  currentVideo: "LT-oNf3A7IU",
+  currentVideo: {
+    artist: "Spandau Ballet",
+    title: "Gold",
+    links: [
+      { id: "ntG50eXbBtc", width: 100, height: 56 },
+      { id: "VQ4qrcHyYj4", width: 100, height: 56 },
+    ],
+  },
   currentVideoHeight: 100,
   currentVideoWidth: 56,
   miniVideo: false,
@@ -168,25 +189,25 @@ const useStore = create<State & Actions>((set, get) => ({
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
     setCurrentVideo: (video) => {
+      console.log("Playing: ");
+      console.log(video);
       const aspectRatio = `${Number(
-        ((video.width / video.height) * 100).toFixed(2)
+        ((video.links[0].width / video.links[0].height) * 100).toFixed(2)
       )}vh`;
       console.log("setCurrentVideo");
 
       document.documentElement.style.setProperty(
         "--playerWidth",
-        `${video.width}%`
+        `${video.links[0].width}%`
       );
       document.documentElement.style.setProperty(
         "--playerHeight",
-        `${video.height}%`
+        `${video.links[0].height}%`
       );
       document.documentElement.style.setProperty("--aspectRatio", aspectRatio);
-      set({ currentVideo: video.embedId });
+      set({ currentVideo: video });
     },
-    setMiniVideo: (bool) => {
-      set({ miniVideo: bool });
-    },
+
     // changeplayerType: (to) => {
     //   switch (to) {
     //     case "fullScreen":
@@ -214,7 +235,18 @@ const useStore = create<State & Actions>((set, get) => ({
     //       break;
     //   }
     // },
-
+    setMiniVideo: (bool) => {
+      set({ miniVideo: bool });
+    },
+    nextVideo: () => {
+      (async () => {
+        const name = process.env.not_mtv_channel_name;
+        const channel = get().currentChannel;
+        const data = await getIdb(name! + channel);
+      })();
+      console.log("play next video");
+      return;
+    },
     changeplayerType: (to) => {
       set({ playerType: to });
     },
@@ -224,10 +256,7 @@ const useStore = create<State & Actions>((set, get) => ({
     TOBEIMPLEMENTED: () => console.log("func not implemented"),
   },
 }));
-// hooks for conbefore:venience, thanks tkdodo
 
-// state
-// export const use = () => useStore(state => state.)
 export const useCurrentChannel = () =>
   useStore((state) => state.currentChannel);
 export const useMaxChannels = () => useStore((state) => state.maxChannel);

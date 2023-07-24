@@ -20,14 +20,13 @@ export async function getRandomVideos(
   date: Date = new Date("2022-01-01")
 ) {
   const data =
-    await prisma.$queryRaw`SELECT "embedId", "width", "height" FROM "ytVideo" WHERE "channelId" = ${channelId} AND "dateUploaded" > ${date} ORDER BY random() LIMIT ${no}`;
-  // as {
-  //   embedId: string;
-  //   width: number;
-  //   height: number;
-  // }[];
+    // as {
+    //   embedId: string;
+    //   width: number;
+    //   height: number;
+    // }[];
 
-  console.log("getRandomVideos called");
+    console.log("getRandomVideos called");
   console.log("-----------------------------------------------");
   console.log(data);
   return data;

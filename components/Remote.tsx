@@ -93,7 +93,7 @@ const Remote = () => {
             </Row>
             <Row className='mb-4'>
               <button
-                onClick={actions.TOBEIMPLEMENTED}
+                onClick={actions.nextVideo}
                 className='w-6 h-2 bg-red-400'
               />
               <button

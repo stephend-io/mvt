@@ -1,0 +1,14 @@
+
+> kindaliketv@0.1.0 dev /home/stephen/stephendio/kindaliketv
+> next dev
+
+- ready started server on 0.0.0.0:3001, url: http://localhost:3001
+- [36minfo[39m Loaded env from /home/stephen/stephendio/kindaliketv/.env
+ ELIFECYCLE  Command failed with exit code 1.
+
+> kindaliketv@0.1.0 dev /home/stephen/stephendio/kindaliketv
+> next dev
+
+- ready started server on 0.0.0.0:3001, url: http://localhost:3001
+- [36minfo[39m Loaded env from /home/stephen/stephendio/kindaliketv/.env
+ ELIFECYCLE  Command failed with exit code 1.

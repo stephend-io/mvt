@@ -3,10 +3,12 @@ import useStore, { useActions } from "@/zustand/store";
 import { VariantProps, cva } from "class-variance-authority";
 import dynamic from "next/dynamic";
 import Loader from "./Loader";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
+import { get, set } from "idb-keyval";
 
 import "@/app/styles.scss";
 import { SizeShower } from "./SizeShower";
+// import useTV from "@/app/hooks/useTV";
 
 const ReactPlayer = dynamic(() => import("react-player/youtube"), {
   ssr: false,
@@ -48,21 +50,63 @@ const TVplayerStyles = cva(
   }
 );
 
-type Props = VariantProps<typeof TVplayerStyles> & {
-  videos: { embedId: string; width: number; height: number }[];
+export type MusicVideo = {
+  artist: string;
+  title: string;
+  links: {
+    id: string;
+    width: number;
+    height: number;
+  }[];
 };
 
-const TVPlayer = ({ videos, intent }: Props) => {
-  const actions = useActions();
-  const { currentVideo, volume, muted } = useStore();
+// type Props = VariantProps<typeof TVplayerStyles> & {
+//   videos: { embedId: string; width: number; height: number }[];
+// };
 
-  useLayoutEffect(() => {
-    actions.setCurrentVideo(videos[0]);
-    return () => console.log("useLayoutEffect returned");
-  }, [currentVideo]);
+const TVPlayer = () => {
+  const actions = useActions();
+  const { currentVideo, volume, muted, nextVideo } = useStore();
+
+  const channel = 80;
+
+  const [videoNo, setVideoNo] = useState(0);
+
+  // useLayoutEffect(() => {
+  //   actions.setCurrentVideo(videos[9].links[0]);
+  //   return () => console.log("useLayoutEffect returned");
+  // }, [currentVideo]);
+
+  // async function nextVideo() {
+  //   const currChannel = (await get("kindalikemtv-" + channel)) as {
+  //     currVideo: number;
+  //     totalVids: number;
+  //   };
+  //   if (!currChannel) {
+  //     const newChannelData = { currVideo: 0, totalVids: 240 };
+  //     actions.setCurrentVideo(videos[0].links[0]);
+  //     await set("kindalikemtv-" + channel, newChannelData);
+  //   }
+  //   if (currChannel.currVideo + 1 <= currChannel.totalVids) {
+  //     const currChannelData = (await get(
+  //       "kindalikemtv-" + channel + "-data"
+  //     )) as MvData;
+  //     actions.setCurrentVideo(
+  //       currChannelData.videos[currChannel.currVideo].links[0]
+  //     );
+  //     const newChannelData = {
+  //       ...currChannel,
+  //       currVideo: currChannel.currVideo + 1,
+  //     };
+  //     await set("kindalikemtv-" + channel, newChannelData);
+  //   }
+  // }
+  console.log("rerendered tvplayer");
+  console.log(currentVideo);
 
   return (
-    <div className={TVplayerStyles({ intent })}>
+    // <div className={TVplayerStyles({ intent })}>
+    <div className='h-full w-full bg-black flex flex-col justify-center items-center '>
       <div className='h-screen w-screen absolute top-0 right-0 vignette' />
       <SizeShower />
       <div id='ratio2'>
@@ -70,6 +114,10 @@ const TVPlayer = ({ videos, intent }: Props) => {
           className='absolute z-50 top-0 right-0 bottom-0 left-0  before:block'
           id='vignette'
         ></div>
+        <div className='absolute bottom-12 right-12 text-white flex flex-col gap-1 z-50 font-black'>
+          <div>{currentVideo.title}</div>
+          <div>{currentVideo.artist}</div>
+        </div>
         <ReactPlayer
           style={{
             transition: "ease-in-out",
@@ -82,7 +130,7 @@ const TVPlayer = ({ videos, intent }: Props) => {
             bottom: 0,
             border: "medium dashed green",
           }}
-          url={`https://www.youtube.com/watch?v=${videos[0].embedId}`}
+          url={`https://www.youtube.com/watch?v=${currentVideo.links[0].id}`}
           width={"100%"}
           height={"100%"}
           volume={muted ? 0 : volume / 100}
@@ -92,6 +140,7 @@ const TVPlayer = ({ videos, intent }: Props) => {
           stopOnUnmount={false}
           pip={true}
           playbackRate={1}
+          onEnded={nextVideo}
         />
       </div>
     </div>
