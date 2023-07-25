@@ -28,6 +28,7 @@ const repeatCaller = (func: () => void, delay: number) => {
 
 const Remote = () => {
   const [hidden, setHidden] = useState(true);
+  const store = useStore()
   const timeoutDelay = 5000;
   let timeoutID: NodeJS.Timer;
 
@@ -60,7 +61,7 @@ const Remote = () => {
     window.addEventListener("keydown", () => {});
   }, []);
 
-  const { isRemoteOpen, settingsOpen } = useStore();
+  const { isRemoteOpen, settingsOpen, currentVideo } = useStore();
   const actions = useActions();
 
   return (
@@ -128,7 +129,7 @@ const Remote = () => {
             <Row>
               <Icon
                 icon='Record'
-                onClick={actions.TOBEIMPLEMENTED}
+                onClick={() => actions.reportVideo(JSON.stringify(currentVideo))}
                 size={"s"}
               />
               <button onClick={() => actions.addNoToStack(0)}>0</button>

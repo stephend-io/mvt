@@ -3,7 +3,7 @@ import ChannelBox from "@/components/ChannelBox";
 import Remote from "@/components/Remote";
 import TVPlayer from "@/components/TVPlayer";
 import VolumeBar from "@/components/VolumeBar";
-import { useActions } from "@/zustand/store";
+import useStore, { useActions } from "@/zustand/store";
 // import Head from "next/head";
 import { get, set, del } from "idb-keyval";
 import { useEffect } from "react";
@@ -17,11 +17,16 @@ export default function Home({ params }: { params: { slug: string } }) {
   // <Head>
   //   <link rel='stylesheet' href='https://use.typekit.net/qln6ttz.css' />
   // </Head>;
-  const { setCurrentVideo } = useActions();
 
-  const name = process.env.not_mtv_channel_name;
+  const { currentChannel } = useStore();
+  const { setCurrentVideo, nextVideo, setChannel } = useActions();
+
+  const name = "kindalikemtv";
   useEffect(() => {
     (async () => {
+      console.log("changing channel from client");
+      setChannel(Number(params.slug));
+      console.log(`getting from idb: ${name}-${params.slug}`);
       const channelData = await get(`${name}-${params.slug}`);
       if (channelData) {
         console.log("data found");

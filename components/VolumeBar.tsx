@@ -1,19 +1,21 @@
 "use client";
 
-import { useMuted, useVolume } from "@/zustand/store";
+// import { useMuted, useVolume } from "@/zustand/store";
 import "@/app/fonts/Pixel.css";
 import Mute from "@/public/Mute";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
 import { useEffect, useState } from "react";
+import useStore from "@/zustand/store";
 
 const timeoutDelay = 3000;
 
 const VolumeBar = () => {
+  const {volume, muted} = useStore()
   const [hidden, setHidden] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const muted = useMuted();
-  const volume = useVolume();
+  // const muted = useMuted();
+  // const volume = useVolume();
 
   const content: JSX.Element[] = [];
   // I think using the index as a key is koo but let's see

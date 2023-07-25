@@ -6,12 +6,17 @@ import { headers } from "next/headers";
 export async function GET(req: NextRequest) {
   const headerList = headers();
 
-  let minYear: string | number = headerList.get("minYear");
-
-  if (!minYear || minYear.length !== 4) {
-    throw "Error fetching minYear";
+  let minYear: string | null | number= headerList.get("minYear");
+  console.log('sent request for year: ')
+  console.log(minYear)
+  if (minYear && minYear.length === 2 && (minYear.startsWith('8') || minYear.startsWith('9')) ) {
+    minYear = Number(minYear) + 1900
   }
-  minYear = Number(minYear);
+  else {
+    minYear = Number(minYear) + 2000
+  }
+
+  console.log(`Input to route: ${headerList.get("minYear")} becomes ${minYear}`)
 
   const minRank = Number(headerList.get("minRank") ?? 1);
   const maxRank = Number(headerList.get("maxRank") ?? 20);

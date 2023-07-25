@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { get as getIdb, set, del } from "idb-keyval";
+import { get as getIdb, set as setIdb, del } from "idb-keyval";
+import { redirect } from "next/navigation";
+import { getIdbChannelString, numberInNumberRanges } from "@/lib/utils";
+import { number } from "zod";
+import { MusicVideo } from "@/components/TVPlayer";
 
 type playerTypes =
   | "fullScreen"
@@ -12,9 +16,14 @@ type playerTypes =
   | "boxMiddle";
 
 type State = {
+  idbPrefix: string;
+  mouseOver: boolean;
   currentChannel: number;
-  minChannel: number;
-  maxChannel: number;
+  currentChannelVideoIndex: number;
+  currentChannelTotalVideos: number;
+  // minChannel: number;
+  // maxChannel: number;
+  channelRange: number[][];
   isRemoteOpen: boolean;
   inputChannel: string;
   volume: number;
@@ -66,7 +75,9 @@ type Actions = {
     TOBEIMPLEMENTED: () => void;
     toggleSettings: () => void;
     testIncrementVolume: (timer: number) => void;
-    toggleMouseDown: (bool?: boolean) => void;
+    toggleMouseDown: () => void;
+    reportVideo: (songName: string) => void;
+    loadChannel: (channel: number) => void;
     setCurrentVideo: (video: {
       artist: string;
       title: string;
@@ -80,25 +91,30 @@ type Actions = {
     setMiniVideo: (bool: boolean) => void;
     changeplayerType: (to: playerTypes) => void;
     setSelectedGrid: (to: number) => void;
+    newChannel: (channel: number) => void;
   };
 };
 
 const initState: State = {
-  minChannel: 1,
-  currentChannel: 1,
-  maxChannel: 998,
+  // minChannel: 0,
+  currentChannel: 80,
+  currentChannelTotalVideos: 0,
+  currentChannelVideoIndex: 0,
+  // maxChannel: 998,
   isRemoteOpen: false,
   inputChannel: "",
   volume: 24,
-  muted: true,
+  channelRange: [[0, 20], [80, 99]],
+  muted: false,
   settingsOpen: false,
   mouseDown: false,
+  mouseOver: false,
+  idbPrefix: "kindaliketv-",
   currentVideo: {
-    artist: "Spandau Ballet",
-    title: "Gold",
+    artist: "ERROR",
+    title: "No Artist",
     links: [
-      { id: "ntG50eXbBtc", width: 100, height: 56 },
-      { id: "VQ4qrcHyYj4", width: 100, height: 56 },
+      {id: "H2E7LteVmXg", width: 100, height: 56 }
     ],
   },
   currentVideoHeight: 100,
@@ -121,26 +137,77 @@ const useStore = create<State & Actions>((set, get) => ({
         return () =>
           set((state) => ({ currentChannel: state.currentChannel + by }));
     },
+    // when channel is not in the channel ranges, defaults to the minimum value of the highest channel range
     setChannel: (to) => {
-      if (to > get().maxChannel) {
-        set((state) => ({
-          currentChannel: state.minChannel,
-        }));
-      } else if (to < get().minChannel) {
-        set((state) => ({
-          currentChannel: state.maxChannel,
-        }));
-      } else set({ currentChannel: to });
+      console.log(`Calling channel: ${to}`)
+      const numberInRange = numberInNumberRanges(to, get().channelRange)
+      if (numberInRange) {
+        console.log('valid channel ' + to)
+        // set((state) => ({
+        //   currentChannel: to,
+        // }));
+        get().actions.loadChannel(to)
+      }     
+      else {
+        // set((state) => ({
+        //   currentChannel: get().channelRange[get().channelRange.length-1][0]
+        // }))
+        console.log(`Channel: ${to} not in range`)
+        get().actions.loadChannel(get().channelRange[get().channelRange.length-1][0])
+      }
     },
     incrementChannel: () => {
-      if (get().currentChannel + 1 > get().maxChannel) {
-        set((state) => ({ currentChannel: state.minChannel }));
-      } else set((state) => ({ currentChannel: state.currentChannel + 1 }));
-    },
+      const nextNumberInRange = numberInNumberRanges(get().currentChannel+1, get().channelRange)
+      console.log('increment called: ')
+      if (nextNumberInRange) {
+        // console.log("actually incrementing");
+        // set((state) => ({ currentChannel: state.currentChannel+1}));
+        get().actions.loadChannel(get().currentChannel+1)
+        // getIdb(
+        //   (get().idbPrefix +
+        //     String(get().currentChannel + 1).padStart(2, "0")) as any
+        // ).then((nextChannelData) => {
+        //   set((state) => {
+        //     state.actions.setCurrentVideo(
+        //       nextChannelData.videos[nextChannelData.videoIndex]
+        //     );
+        //     return {};
+        //   });
+        //   // set((state) => ({
+          //   state.actions.setCurrentVideo(
+          //     nextChannelData.videos[nextChannelData.videoIndex]
+          //   )
+          // }));
+        }
+       else {
+        // set((state) => ({
+        //   currentChannel: state.channelRange[state.channelRange.length-1][0]
+        // }))
+        get().actions.loadChannel(get().channelRange[get().channelRange.length-1][0])
+        // getIdb(
+        //   (get().idbPrefix +
+        //     String(get().currentChannel + 1).padStart(2, "0")) as any
+        // ).then((nextChannelData) => {
+        //   set((state) => {
+        //     state.actions.setCurrentVideo(
+        //       nextChannelData.videos[nextChannelData.videoIndex]
+        //     );
+        //     return {};
+        //   });
+        // });
+      // }
+
+      // set((state) => ({ currentChannel: state.currentChannel + 1 }));
+    }},
     decrementChannel: () => {
-      if (get().currentChannel + 1 < get().minChannel) {
-        set((state) => ({ currentChannel: state.maxChannel }));
-      } else set((state) => ({ currentChannel: state.currentChannel - 1 }));
+      const prevNumberInRange = numberInNumberRanges(get().currentChannel-1, get().channelRange)
+      console.log('decrement called')
+      if (prevNumberInRange) {
+        // set((state) => ({ currentChannel: state.currentChannel-1}));
+        get().actions.loadChannel(get().currentChannel-1)
+      // } else set((state) => ({ currentChannel: state.channelRange[0][state.channelRange[0].length-1] }));
+      } else
+      get().actions.loadChannel(get().channelRange[0][1])
     },
     toggleRemote: () => set((state) => ({ isRemoteOpen: !state.isRemoteOpen })),
     addNoToStack: (no) => {
@@ -155,10 +222,26 @@ const useStore = create<State & Actions>((set, get) => ({
     resetInputStack: () => set({ inputChannel: "" }),
     decrementVolume: () =>
       get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
-    incrementVolume: () => {
-      console.log("incrementVolume called");
-      // get().volume <= 98 &&
-      set((state) => ({ volume: state.volume + 2, muted: false }));
+    incrementVolume: () => 
+      get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
+    newChannel: async (channel) => {
+      const res = await fetch(`http://localhost:3000/api/channels/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          minYear: String(channel),
+        },
+      });
+      console.log(res)
+      const data = await res.json();
+      // get().actions.setCurrentVideo(data[0]);
+      const idbName = getIdbChannelString(channel)
+      await setIdb(idbName, {
+        videos:[...data],
+        videoIndex: 0,
+        total: data.length,
+      });
+      get().actions.loadChannel(channel)
     },
     testIncrementVolume: (timer) => {
       console.log("testIncrementVolume called");
@@ -169,23 +252,19 @@ const useStore = create<State & Actions>((set, get) => ({
         clearInterval(timer);
       }
     },
-    toggleMouseDown: (bool) => {
-      bool
-        ? set((state) => ({ mouseDown: bool }))
-        : set((state) => ({ mouseDown: false }));
+    toggleMouseDown: () => {
+      console.log('toggleMousedown called')
+      get().mouseDown
+        ? set(() => ({ mouseDown: false}))
+        : set(() => ({ mouseDown: true}));
     },
     // set((state) => ({ mouseDown: bool ? bool : !state.mouseDown })),
-
     toggleMuteVolume: () => set((state) => ({ muted: !state.muted })),
+    upDpad: () => get().actions.incrementChannel(),
+    downDpad: () =>get().actions.decrementChannel(),
+    rightDpad: () => get().actions.incrementVolume(),
+    leftDpad: () => get().actions.decrementVolume(),
 
-    upDpad: () =>
-      set((state) => ({ currentChannel: state.currentChannel + 1 })),
-    downDpad: () =>
-      set((state) => ({ currentChannel: state.currentChannel - 1 })),
-    rightDpad: () =>
-      get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
-    leftDpad: () =>
-      get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
     toggleSettings: () =>
       set((state) => ({ settingsOpen: !state.settingsOpen })),
     setCurrentVideo: (video) => {
@@ -206,6 +285,47 @@ const useStore = create<State & Actions>((set, get) => ({
       );
       document.documentElement.style.setProperty("--aspectRatio", aspectRatio);
       set({ currentVideo: video });
+    },
+    reportVideo: (songName)=> {
+      // ! TODO - Report channel and remove from circulation?
+      console.log('reported: ' + songName)
+      get().actions.nextVideo() 
+    },
+    loadChannel: async (channel: number) => {
+      let idbName = getIdbChannelString(channel)
+      console.log(idbName)
+
+      const data = await getIdb(idbName) as {videos: MusicVideo[], videoIndex: number}
+      console.log(data)
+      if (data) {
+        if (data.videos.length > data.videoIndex)  {
+
+          // console.log(data.videos)
+          // console.log(data.videos.length)
+          // console.log(data.videoIndex)
+        // set({
+        //   currentVideo: data.videos[data.videoIndex],
+        // });
+
+        // set ahead of time to prevent UI from dleaying its channel update
+        set({currentChannel: channel})
+        get().actions.setCurrentVideo(data.videos[data.videoIndex])
+        await setIdb(idbName, {...data, videoIndex: data.videoIndex+1})
+        set((state)=> ({
+
+          currentChannelTotalVideos: data.videos.length,
+          currentChannelVideoIndex: data.videoIndex
+        }))
+        }
+        else {
+
+        }
+      }
+      else {
+        // !!!!! FIX
+        // console.log('attempting to make new channel: ' + channel)
+        get().actions.newChannel(channel)
+      }
     },
 
     // changeplayerType: (to) => {
@@ -240,9 +360,61 @@ const useStore = create<State & Actions>((set, get) => ({
     },
     nextVideo: () => {
       (async () => {
-        const name = process.env.not_mtv_channel_name;
+        if (get().currentChannelTotalVideos > get().currentChannelVideoIndex) {
+
         const channel = get().currentChannel;
-        const data = await getIdb(name! + channel);
+        const idbName = getIdbChannelString(get().currentChannel)
+        const data = await getIdb(idbName
+);
+        if (data) {
+
+
+        set(()=> ({
+          currentChannel: channel,
+          currentChannelTotalVideos: data.videos.length,
+          currentChannelVideoIndex: data.videoIndex+1
+        }))
+        get().actions.setCurrentVideo(data.videos[data.videoIndex])
+
+        // console.log(name + "-" + channel);
+        // console.log(data.videoIndex + "/" + data.videos.length);
+        // set({
+        //   currentVideo: data[data.videoIndex],
+        // });
+        // get().actions.loadChannel(get().currentChannel)
+        // if (data.videoIndex >= data.videos.length) {
+        // }
+        setIdb(getIdbChannelString(get().currentChannel), {
+          ...data,
+          videoIndex: data.videoIndex + 1,
+        });
+        } else {
+          console.log('no data found somehow')
+        }
+
+        }
+        else {
+          // ! TODO - fetch 20 to 40 or 1 to 40 idk
+      const res = await fetch(`http://localhost:3000/api/channels/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          minYear: String(get().currentChannel),
+          minRank: "21",
+          maxRank: "40"
+        },
+      });
+      const data = await res.json();
+      // get().actions.setCurrentVideo(data[0]);
+      await setIdb(getIdbChannelString(get().currentChannel), {
+        videos:[...data],
+        videoIndex: 0,
+        total: data.length,
+      });
+      get().actions.loadChannel(get().currentChannel)
+
+
+        }
       })();
       console.log("play next video");
       return;
@@ -259,11 +431,6 @@ const useStore = create<State & Actions>((set, get) => ({
 
 export const useCurrentChannel = () =>
   useStore((state) => state.currentChannel);
-export const useMaxChannels = () => useStore((state) => state.maxChannel);
-export const useInputNoStack = () => useStore((state) => state.inputChannel);
-export const useVolume = () => useStore((state) => state.volume);
-export const useMuted = () => useStore((state) => state.muted);
-
 export const useActions = () => useStore((state) => state.actions);
 
 export default useStore;

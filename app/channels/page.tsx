@@ -10,8 +10,17 @@ import Absolute from "@/components/Absolute";
 import Button from "@/components/Button";
 import TVPlayer from "@/components/TVPlayer";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const index = async () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/channels/00");
+  }, []);
+
   console.log("index - NEW");
   // const res = await fetch("http://localhost:3000/api/channels/", {
   //   method: "get",

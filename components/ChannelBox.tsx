@@ -4,7 +4,7 @@ import "@/app/fonts/Pixel.css";
 import { useEffect, useState } from "react";
 
 const ChannelBox = () => {
-  const { currentChannel, muted, volume, inputChannel } = useStore();
+  const { currentChannel, muted, volume, inputChannel, mouseDown } = useStore();
   const [hidden, setHidden] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [channelChange, setChannelChange] = useState(false);
@@ -12,6 +12,17 @@ const ChannelBox = () => {
 
   const timeoutDelay = 5000;
   let timeoutID: NodeJS.Timer;
+
+  useEffect(() => {
+    console.log('mouseover effect')
+      setHidden(false);
+      clearTimeout(timeoutID);
+      timeoutID = setTimeout(() => {
+        setHidden(true)
+         }, 1000);
+    return () => clearTimeout(timeoutID);
+
+  }, [mouseDown])
 
   useEffect(() => {
     if (mounted) {

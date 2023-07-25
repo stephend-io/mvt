@@ -1,5 +1,6 @@
-import fs from "fs";
+// import fs from "fs";
 import { randomUUID } from "crypto";
+import { get } from "idb-keyval";
 
 export function youtubeStringParser(youtubeString: string) {
   return {
@@ -7,12 +8,12 @@ export function youtubeStringParser(youtubeString: string) {
   };
 }
 
-export const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
-  fs.writeFileSync(
-    __dirname + "/" + name + "STEPHENKNOWSYOU.json",
-    JSON.stringify(data)
-  );
-};
+// export const simpleWriteFS = <T>(data: T, name: string = randomUUID()) => {
+//   fs.writeFileSync(
+//     __dirname + "/" + name + ".json",
+//     JSON.stringify(data)
+//   );
+// };
 
 export function validator() {
   return {
@@ -28,6 +29,11 @@ export function validator() {
     },
   };
 }
+const idbPrefix = "kindalikemtv"
+export function getIdbChannelString(num: number) {
+return (idbPrefix+"-"+num.toString().padStart(2, "0"))
+}
+
 
 export function getTimeFromTimeString(timeString: string) {
   // Extract hour, minute, and second values
@@ -102,4 +108,40 @@ export function convertISO8601ToMilliseconds(interval: string) {
   }
 
   return milliseconds;
+}
+
+
+
+function binarySearch(arr: number[], target: number) {
+  let min = 0;
+  let max = arr.length - 1;
+  while (min <= max) {
+    let mid = Math.floor((min + max) / 2);
+    if (arr[mid] === target) {
+      return true;
+    }
+    if (arr[mid] < target) {
+      min = mid + 1;
+    } else {
+      max = mid - 1;
+    }
+  }
+  return false;
+}
+
+// takes in a channel number and the valid number ranges
+// Returns: a boolean if it fits, and an optional secondary tuple for the closest channel that it fits into
+export function numberInNumberRanges(
+  number: number,
+  numberRanges: number[][]
+): boolean  {
+  const numExists = numberRanges.some((range) => {
+    if (number >= range[0] && number <= range[1]) {
+      return true
+    }
+});
+console.log(`Input: ${number} : numExists is ${String(numExists)}`)
+  if (numExists) 
+    return true;
+  return false
 }

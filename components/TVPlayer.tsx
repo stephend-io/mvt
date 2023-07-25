@@ -3,7 +3,7 @@ import useStore, { useActions } from "@/zustand/store";
 import { VariantProps, cva } from "class-variance-authority";
 import dynamic from "next/dynamic";
 import Loader from "./Loader";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { get, set } from "idb-keyval";
 
 import "@/app/styles.scss";
@@ -65,12 +65,13 @@ export type MusicVideo = {
 // };
 
 const TVPlayer = () => {
+  const { currentVideo, currentChannel, muted, volume} = useStore();
   const actions = useActions();
-  const { currentVideo, volume, muted, nextVideo } = useStore();
-
-  const channel = 80;
-
   const [videoNo, setVideoNo] = useState(0);
+
+    useEffect(() => {
+     console.log('Playing: ' + currentVideo) 
+    }, [currentVideo])
 
   // useLayoutEffect(() => {
   //   actions.setCurrentVideo(videos[9].links[0]);
@@ -106,7 +107,7 @@ const TVPlayer = () => {
 
   return (
     // <div className={TVplayerStyles({ intent })}>
-    <div className='h-full w-full bg-black flex flex-col justify-center items-center '>
+    <div className='h-full w-full bg-black flex flex-col justify-center items-center ' onMouseOver={() => actions.toggleMouseDown()}>
       <div className='h-screen w-screen absolute top-0 right-0 vignette' />
       <SizeShower />
       <div id='ratio2'>
@@ -140,7 +141,7 @@ const TVPlayer = () => {
           stopOnUnmount={false}
           pip={true}
           playbackRate={1}
-          onEnded={nextVideo}
+          onEnded={actions.nextVideo}
         />
       </div>
     </div>

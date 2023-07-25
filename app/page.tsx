@@ -20,6 +20,8 @@ import Remote from "@/components/Remote";
 import ChannelBox from "@/components/ChannelBox";
 import VolumeBar from "@/components/VolumeBar";
 import fs from "fs";
+import { redirect } from "next/navigation";
+import useStore from "@/zustand/store";
 
 const sampleData = [
   {
@@ -1939,6 +1941,12 @@ const sampleData = [
 ];
 
 export const Page = async () => {
+  // redirect("/channels/01");
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   router.push("/channels/00");
+  // }, []);
   // read from local db what has been read
   // if 1 - 20 have been already fetched, do 21 - 40, etc
 
@@ -1948,7 +1956,7 @@ export const Page = async () => {
   // });
   // const data = await res.json();
 
-  const data = sampleData;
+  // const data = sampleData;
   // console.log(res[0]);
   // console.log(res[0].links);
 
