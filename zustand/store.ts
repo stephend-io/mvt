@@ -128,7 +128,9 @@ const useStore = create<State & Actions>((set, get) => ({
     },
     // when channel is not in the channel ranges, defaults to the minimum value of the highest channel range
     setChannel: (to) => {
-      console.log(`Calling channel: ${to}`)
+      if (to === get().currentChannel) {
+        return
+      }
       const numberInRange = numberInNumberRanges(to, get().channelRange)
       if (numberInRange) {
         console.log('valid channel ' + to)

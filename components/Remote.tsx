@@ -1,224 +1,167 @@
-"use client";
+'use client'
 
-import useStore, { useActions } from "@/zustand/store";
-import Icon from "@/components/Icon";
-import { useEffect, useLayoutEffect, useState } from "react";
-import Absolute from "./Absolute";
-import Col from "./Col";
-import Row from "./Row";
+import useStore, { useActions } from '@/zustand/store'
+import Icon from '@/components/Icon'
+import { useEffect, useLayoutEffect, useState } from 'react'
+import Absolute from './Absolute'
+import Col from './Col'
+import Row from './Row'
 
-let intervalID: NodeJS.Timer;
+let intervalID: NodeJS.Timer
 function onHold(func: () => void, delay: number = 200) {
   return {
     onTouchStart: () => {
-      func();
-      repeatCaller(func, delay);
+      func()
+      repeatCaller(func, delay)
     },
     onMouseDown: () => {
-      func();
-      repeatCaller(func, delay);
+      func()
+      repeatCaller(func, delay)
     },
     draggable: false,
-  };
+  }
 }
 const repeatCaller = (func: () => void, delay: number) => {
-  clearInterval(intervalID);
-  intervalID = setInterval(func, delay);
-};
+  clearInterval(intervalID)
+  intervalID = setInterval(func, delay)
+}
 
 const Remote = () => {
-  const [hidden, setHidden] = useState(true);
+  const [hidden, setHidden] = useState(true)
   const store = useStore()
-  const timeoutDelay = 5000;
-  let timeoutID: NodeJS.Timer;
+  const timeoutDelay = 5000
+  let timeoutID: NodeJS.Timer
 
   useLayoutEffect(() => {
-    window.addEventListener("contextmenu", function (e) {
-      e.preventDefault();
-    });
-    window.addEventListener("mouseup", () => {
-      clearInterval(intervalID);
-      clearTimeout(timeoutID);
-      setHidden(false);
-      timeoutID = setTimeout(() => setHidden(true), timeoutDelay);
-    });
-    window.addEventListener("touchend", (e) => {
-      clearInterval(intervalID);
+    window.addEventListener('contextmenu', function (e) {
+      e.preventDefault()
+    })
+    window.addEventListener('mouseup', () => {
+      clearInterval(intervalID)
+      clearTimeout(timeoutID)
+      setHidden(false)
+      timeoutID = setTimeout(() => setHidden(true), timeoutDelay)
+    })
+    window.addEventListener('touchend', (e) => {
+      clearInterval(intervalID)
       // thanks! -> https://github.com/facebook/react/issues/9809
-      e.preventDefault();
-      clearTimeout(timeoutID);
+      e.preventDefault()
+      clearTimeout(timeoutID)
       timeoutID = setTimeout(() => {
-        if (!isRemoteOpen) setHidden(true);
-      }, timeoutDelay);
-    });
-    window.addEventListener("mousemove", () => {
-      clearTimeout(timeoutID);
-      setHidden(false);
+        if (!isRemoteOpen) setHidden(true)
+      }, timeoutDelay)
+    })
+    window.addEventListener('mousemove', () => {
+      clearTimeout(timeoutID)
+      setHidden(false)
       timeoutID = setTimeout(() => {
-        if (!isRemoteOpen) setHidden(true);
-      }, timeoutDelay);
-    });
-    window.addEventListener("keydown", () => {});
-  }, []);
+        if (!isRemoteOpen) setHidden(true)
+      }, timeoutDelay)
+    })
+    window.addEventListener('keydown', () => {})
+  }, [])
 
-  const { isRemoteOpen, settingsOpen, currentVideo } = useStore();
-  const actions = useActions();
+  const { isRemoteOpen, settingsOpen, currentVideo } = useStore()
+  const actions = useActions()
 
   return (
-
     <>
-    {/* invisible div that enables clicking on screen to toggle remote instead of an event listener that is tricky not to trigger when clicking on the buttons of the remote*/}
-    {isRemoteOpen &&
-    <div className="absolute top-0 right-0 w-screen h-screen" onClick={() => actions.toggleRemote()}/>
-    }
+      {/* invisible div that enables clicking on screen to toggle remote instead of an event listener that is tricky not to trigger when clicking on the buttons of the remote*/}
+      {isRemoteOpen && <div className="absolute right-0 top-0 h-screen w-screen" onClick={() => actions.toggleRemote()} />}
 
-    <Absolute
-      className={`transition-all duration-500 text-[1.5rem] text-accent3 overflow-clip z-50 ${
-        hidden && "hidden"
-      }`}
-      x={"rightXl"}
-      y={"bottomXl"}
-      onClick={(e) => e.stopPropagation()}
-    >
-
-      {isRemoteOpen ? (
-        <div className=' bg-slate-800 rounded-lg w-40 inherit'>
-          <Col>
-            <Row className='flex flex-row justify-between '>
-              <Icon
-                icon='Power'
-                onClick={() => {
-                  settingsOpen && actions.toggleSettings();
-                  actions.toggleRemote();
-                }}
-                className='m-2'
-              />
-
-              <button onClick={() => actions.setMiniVideo(false)}>
-                <div className='w-9 h-9 rounded-full bg-lime-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' />
-              </button>
-              <button onClick={() => actions.setMiniVideo(true)}>
-                <div className='w-9 h-9 rounded-full bg-yellow-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' />
-              </button>
-            </Row>
-            <Row className='mb-4'>
-              <button
-                onClick={actions.nextVideo}
-                className='w-6 h-2 bg-red-400'
-              />
-              <button
-                onClick={actions.TOBEIMPLEMENTED}
-                className='w-6 h-2 bg-green-400'
-              />
-              <button
-                onClick={actions.TOBEIMPLEMENTED}
-                className='w-6 h-2 bg-blue-400'
-              />
-              <button
-                onClick={actions.TOBEIMPLEMENTED}
-                className='w-6 h-2 bg-slate-200'
-              />
-            </Row>
-            <Row>
-              <button onClick={() => actions.addNoToStack(1)}>1</button>
-              <button onClick={() => actions.addNoToStack(2)}>2</button>
-              <button onClick={() => actions.addNoToStack(3)}>3</button>
-            </Row>
-            <Row>
-              <button onClick={() => actions.addNoToStack(4)}>4</button>
-              <button onClick={() => actions.addNoToStack(5)}>5</button>
-              <button onClick={() => actions.addNoToStack(6)}>6</button>
-            </Row>
-            <Row>
-              <button onClick={() => actions.addNoToStack(7)}>7</button>
-              <button onClick={() => actions.addNoToStack(8)}>8</button>
-              <button onClick={() => actions.addNoToStack(9)}>9</button>
-            </Row>
-
-            <Row>
-              <Icon
-                icon='Record'
-                onClick={() => actions.reportVideo(JSON.stringify(currentVideo))}
-                size={"s"}
-              />
-              <button onClick={() => actions.addNoToStack(0)}>0</button>
-              <Icon
-                icon='Settings'
-                onClick={actions.toggleSettings}
-                size={"s"}
-                className='invert-[0.85]'
-              />
-            </Row>
-            <Row className='mt-4'>
-              <Col className='flex flex-col justify-center items-center '>
+      <Absolute className={`z-50 overflow-clip text-[1.5rem] text-accent3 transition-all duration-500 ${hidden && 'hidden'}`} x={'rightXl'} y={'bottomXl'} onClick={(e) => e.stopPropagation()}>
+        {isRemoteOpen ? (
+          <div className=" inherit w-40 rounded-lg bg-slate-800">
+            <Col>
+              <Row className="flex flex-row justify-between ">
                 <Icon
-                  icon='Plus2'
-                  onClick={actions.incrementVolume}
-                  className='invert-[0.85]'
+                  icon="Power"
+                  onClick={() => {
+                    settingsOpen && actions.toggleSettings()
+                    actions.toggleRemote()
+                  }}
+                  className="m-2"
                 />
 
-                <div className='text-[1rem] my-2'>VOL</div>
-                <Icon
-                  icon='Minus3'
-                  onClick={actions.decrementChannel}
-                  className='invert-[0.85] -translate-y-1'
-                />
-              </Col>
-              <Col x={"content"} y={"full"}>
-                <Icon
-                  icon='Mute'
-                  size='m'
-                  onClick={actions.toggleMuteVolume}
-                  className='invert-[0.85]'
-                />
+                <button onClick={() => actions.setMiniVideo(false)}>
+                  <div className="mr-3 h-9 w-9 rounded-full bg-lime-300 transition-all hover:scale-125 hover:saturate-200" />
+                </button>
+                <button onClick={() => actions.setMiniVideo(true)}>
+                  <div className="mr-3 h-9 w-9 rounded-full bg-yellow-300 transition-all hover:scale-125 hover:saturate-200" />
+                </button>
+              </Row>
+              <Row>
+                <button onClick={() => actions.addNoToStack(1)}>1</button>
+                <button onClick={() => actions.addNoToStack(2)}>2</button>
+                <button onClick={() => actions.addNoToStack(3)}>3</button>
+              </Row>
+              <Row>
+                <button onClick={() => actions.addNoToStack(4)}>4</button>
+                <button onClick={() => actions.addNoToStack(5)}>5</button>
+                <button onClick={() => actions.addNoToStack(6)}>6</button>
+              </Row>
+              <Row>
+                <button onClick={() => actions.addNoToStack(7)}>7</button>
+                <button onClick={() => actions.addNoToStack(8)}>8</button>
+                <button onClick={() => actions.addNoToStack(9)}>9</button>
+              </Row>
 
-                {/* <div className='w-9 h-9 rounded-full bg-slate-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' /> */}
-              </Col>
-              <Col className='flex flex-col items-center ' intent={"fit"}>
-                <Icon
-                  icon='Plus2'
-                  onClick={() => actions.incrementChannel()}
-                  className='invert-[0.85]'
-                />
-                <div className='text-[1rem] my-2'>CH</div>
+              <Row>
+                <Icon icon="Record" onClick={() => actions.reportVideo(JSON.stringify(currentVideo))} size={'s'} />
+                <button onClick={() => actions.addNoToStack(0)}>0</button>
+                <Icon icon="Settings" onClick={actions.toggleSettings} size={'s'} className="invert-[0.85]" />
+              </Row>
+              <Col>
+                <Row className="mb-4">
+                  <button onClick={() => actions.setChannel(80)} className=" rounded-md bg-red-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                    80s
+                  </button>
+                  <button onClick={() => actions.setChannel(90)} className=" rounded-md bg-green-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                    90s
+                  </button>
+                </Row>
+                <Row>
+                  <button onClick={() => actions.setChannel(10)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                    00s
+                  </button>
 
-                <Icon
-                  icon='Minus3'
-                  onClick={() => actions.decrementChannel()}
-                  className='invert-[0.85] -translate-y-1'
-                />
-              </Col>
-            </Row>
-            <Row className='p-4'>
-              <Icon
-                icon='Up2'
-                className='-rotate-90 invert-[0.85]'
-                {...onHold(actions.decrementVolume, 200)}
-                size={"s"}
-              />
-
-              <Col intent={"center"}>
-                <Icon icon='Up2' size={"s"} className='invert-[0.85]' />
-                <Icon
-                  icon='Enter'
-                  className='-translate-x-[0.2rem]  my-3 invert-[0.85]'
-                  size={"s"}
-                />
-                <Icon
-                  icon='Up2'
-                  className='rotate-180 invert-[0.85]'
-                  size={"s"}
-                />
+                  <button onClick={() => actions.setChannel(0)} className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                    10s
+                  </button>
+                </Row>
               </Col>
 
-              <Icon
-                icon='Up2'
-                className='rotate-90 invert-[0.85]'
-                size={"s"}
-                {...onHold(actions.incrementVolume, 200)}
-              />
-            </Row>
-            {/* <Row className='text-xs '>
+              <Row className="mt-4">
+                <Col className="flex flex-col items-center justify-center ">
+                  <Icon icon="Plus2" onClick={actions.incrementVolume} className="invert-[0.85]" />
+
+                  <div className="my-2 text-[1rem]">VOL</div>
+                  <Icon icon="Minus3" onClick={actions.decrementChannel} className="-translate-y-1 invert-[0.85]" />
+                </Col>
+                <Col x={'content'} y={'full'}>
+                  <Icon icon="Mute" size="m" onClick={actions.toggleMuteVolume} className="invert-[0.85]" />
+
+                  {/* <div className='w-9 h-9 rounded-full bg-slate-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' /> */}
+                </Col>
+                <Col className="flex flex-col items-center " intent={'fit'}>
+                  <Icon icon="Plus2" onClick={() => actions.incrementChannel()} className="invert-[0.85]" />
+                  <div className="my-2 text-[1rem]">CH</div>
+
+                  <Icon icon="Minus3" onClick={() => actions.decrementChannel()} className="-translate-y-1 invert-[0.85]" />
+                </Col>
+              </Row>
+              <Row className="p-4">
+                <Icon icon="Up2" className="-rotate-90 invert-[0.85]" {...onHold(actions.decrementVolume, 200)} size={'s'} />
+
+                <Col intent={'center'}>
+                  <Icon icon="Up2" size={'s'} className="invert-[0.85]" />
+                  <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} />
+                  <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} />
+                </Col>
+
+                <Icon icon="Up2" className="rotate-90 invert-[0.85]" size={'s'} {...onHold(actions.incrementVolume, 200)} />
+              </Row>
+              {/* <Row className='text-xs '>
               <button
                 className='h-8 w-20 bg-red-800 hover:scale-150'
                 onClick={() => actions.changeplayerType("fullScreen")}
@@ -266,23 +209,16 @@ const Remote = () => {
                 rightQuarter
               </button>
             </Row> */}
-          </Col>
-        </div>
-      ) : (
-        <button onClick={actions.toggleRemote}>
-          <Icon
-            icon='Remote'
-            size='l'
-            className='invert hover:scale-125 transform-all duration-200 p-2'
-            defaultHovers={false}
-          />
-        </button>
-      )}
-    </Absolute>
-
-
+            </Col>
+          </div>
+        ) : (
+          <button onClick={actions.toggleRemote}>
+            <Icon icon="Remote" size="l" className="transform-all p-2 invert duration-200 hover:scale-125" defaultHovers={false} />
+          </button>
+        )}
+      </Absolute>
     </>
-  );
-};
+  )
+}
 
-export default Remote;
+export default Remote
