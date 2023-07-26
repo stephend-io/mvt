@@ -1950,7 +1950,7 @@ export const Page = async () => {
   // read from local db what has been read
   // if 1 - 20 have been already fetched, do 21 - 40, etc
 
-  // const res = await fetch("http://localhost:3000/api/mtv", {
+  // const res = await fetch("http://localhost:2221/api/mtv", {
   //   method: "get",
   //   next: { revalidate: 1000 },
   // });

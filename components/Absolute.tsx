@@ -1,6 +1,6 @@
 import { VariantProps, cva } from "class-variance-authority";
 
-const absoluteStyles = cva("absolute", {
+const absoluteStyles = cva("absolute inherit", {
   variants: {
     preset: {
       center: "left-[50vw] bottom-[50vh] -translate-x-1/2 translate-y-1/2",

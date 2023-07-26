@@ -65,15 +65,24 @@ const Remote = () => {
   const actions = useActions();
 
   return (
+
+    <>
+    {/* invisible div that enables clicking on screen to toggle remote instead of an event listener that is tricky not to trigger when clicking on the buttons of the remote*/}
+    {isRemoteOpen &&
+    <div className="absolute top-0 right-0 w-screen h-screen" onClick={() => actions.toggleRemote()}/>
+    }
+
     <Absolute
       className={`transition-all duration-500 text-[1.5rem] text-accent3 overflow-clip z-50 ${
         hidden && "hidden"
       }`}
       x={"rightXl"}
       y={"bottomXl"}
+      onClick={(e) => e.stopPropagation()}
     >
+
       {isRemoteOpen ? (
-        <div className=' bg-slate-800 rounded-lg w-40 '>
+        <div className=' bg-slate-800 rounded-lg w-40 inherit'>
           <Col>
             <Row className='flex flex-row justify-between '>
               <Icon
@@ -270,6 +279,9 @@ const Remote = () => {
         </button>
       )}
     </Absolute>
+
+
+    </>
   );
 };
 

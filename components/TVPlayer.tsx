@@ -136,7 +136,7 @@ const TVPlayer = () => {
           height={"100%"}
           volume={muted ? 0 : volume / 100}
           playing={true}
-          loop={true}
+          loop={false}
           controls={false}
           stopOnUnmount={false}
           pip={true}
