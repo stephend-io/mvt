@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
+import { title } from 'process'
+import { fstat, write } from 'fs'
+import { writeFile } from 'fs/promises'
 
 // Gets an array of MusicVideo objects with a default minRank of 1, and maxRank of 20
 export async function GET(req: NextRequest) {
@@ -150,10 +153,11 @@ export function yearIdsRangeGenerator(minYear: number, maxYear: number, minRank:
   for (let year = minYear; year <= maxYear; year++) {
     for (let month = 1; month <= 12; month++) {
       for (let rank = minRank; rank <= maxRank; rank++) {
-        songArray.push(Number(minYear + String(month).padStart(2, '0') + String(rank).padStart(3, '0')))
+        songArray.push(Number(year + String(month).padStart(2, '0') + String(rank).padStart(3, '0')))
       }
     }
   }
+  console.log(songArray)
   return songArray
 }
 
@@ -170,8 +174,10 @@ export function yearIdsGenerator(minYear: number, maxRank: number = 20) {
 }
 
 export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
-  const songIds = yearIdsRangeGenerator(decade, decade + 9, 1, 10)
+  const songIds = yearIdsRangeGenerator(decade, decade + 9, 1, 20)
+  console.log(songIds)
 
+  writeFile('songIds.json', JSON.stringify(songIds))
   const data = (await prisma.song.findMany({
     select: {
       artist: true,
@@ -186,6 +192,10 @@ export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
     },
   })) as MusicVideo[]
 
+  writeFile('songData.json', JSON.stringify(data))
+
+  console.log(data)
+
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
     const titleExists = titleSet.has(song.title)
@@ -193,6 +203,8 @@ export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
     titleSet.add(song.title)
     return true
   })
+  console.log(titleSet)
+  console.log(filteredData)
 
   const arr = arrayRandomizer(filteredData)
 
