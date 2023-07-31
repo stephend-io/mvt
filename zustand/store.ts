@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { get as getIdb, set as setIdb, del } from 'idb-keyval'
 import { redirect } from 'next/navigation'
-import { findNumberRange, getIdbChannelString, numberInNumberRanges } from '@/lib/utils'
+import { findNumberRange, getIdbChannelString, numberInAppYearRange, numberInNumberRanges } from '@/lib/utils'
 import { number } from 'zod'
 import { MusicVideo } from '@/components/TVPlayer'
 
@@ -184,16 +184,28 @@ const useStore = create<State & Actions>((set, get) => ({
     },
     incrementChannel: () => {
       if (get().isMonth) {
-        const nextNumberInRange = numberInNumberRanges(get().currentChannel + 1, get().channelRange)
-        if (nextNumberInRange) {
-          if (Math.floor(get().currentChannel / 10000) <= 11) {
+        const currMonth = Number(String(get().currentChannel).padStart(6, '0').slice(0, 2))
+        if (currMonth >= 1 && currMonth <= 11) get().actions.loadChannel(get().currentChannel + 10000)
+        else {
+          const nextNumberInRange = numberInAppYearRange(get().currentChannel + 1)
+          if (nextNumberInRange) {
             get().actions.loadChannel(get().currentChannel + 10000)
-          } else {
-            console.log(`get().actions.loadChannel(${Number('1' + String(get().currentChannel).slice(2, 6))})`)
 
-            get().actions.loadChannel(Number('1' + String(get().currentChannel).slice(2, 6)))
+            get().actions.loadChannel(Number('1' + String(get().currentChannel + 1).slice(2, 6)))
+          } else {
+            // channel when max month and year ar ehit
+            get().actions.loadChannel(11980)
           }
         }
+
+        //   if (Math.floor(get().currentChannel / 10000) <= 11) {
+        //     get().actions.loadChannel(get().currentChannel + 10000)
+        //   } else {
+        //     console.log(`get().actions.loadChannel(${Number('1' + String(get().currentChannel).slice(2, 6))})`)
+
+        //     get().actions.loadChannel(Number('1' + String(get().currentChannel).slice(2, 6)))
+        //   }
+        // }
         return
       }
       const nextNumberInRange = numberInNumberRanges(get().currentChannel + 1, get().channelRange)
@@ -272,7 +284,24 @@ const useStore = create<State & Actions>((set, get) => ({
     },
     decrementChannel: () => {
       if (get().isMonth) {
-        const nextNumberInRange = numberInNumberRanges(get().currentChannel - 1, get().channelRange)
+        const currMonth = Number(String(get().currentChannel).padStart(6, '0').slice(0, 2))
+        if (currMonth > 1 && currMonth <= 12) get().actions.loadChannel(get().currentChannel - 10000)
+        else {
+          const nextNumberInRange = numberInAppYearRange(get().currentChannel - 1)
+          if (nextNumberInRange) {
+            get().actions.loadChannel(get().currentChannel - 10000)
+
+            get().actions.loadChannel(Number('1' + String(get().currentChannel - 1).slice(2, 6)))
+          } else {
+            // channel when max month and year ar ehit
+            get().actions.loadChannel(122019)
+          }
+        }
+      }
+
+      if (get().isMonth) {
+        const nextNumberInRange = numberInAppYearRange(get().currentChannel - 1)
+        console.log(`nextNumberInRange: ${nextNumberInRange}`)
         if (nextNumberInRange) {
           if (Math.floor(get().currentChannel / 10000) >= 2) {
             get().actions.loadChannel(get().currentChannel - 10000)

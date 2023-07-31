@@ -151,6 +151,18 @@ const TVPlayer = () => {
                   11-2010
                 </button>
               </Row>
+              <Row className="mt-4">
+                <button onClick={() => actions.setChannel(21980)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                  02-1980
+                </button>
+
+                <button
+                  onClick={() => actions.setChannel(112019)}
+                  className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150"
+                >
+                  11-2019
+                </button>
+              </Row>
             </Col>
           </div>
         </div>
@@ -159,13 +171,14 @@ const TVPlayer = () => {
           {/* Outside vignette for when video player goes off screen */}
           <div className="vignette absolute right-0 top-0 h-screen w-screen" />
           {/* Absolutely positioned text showing current breakpoint for debugging */}
-          <SizeShower />
+          {/* <SizeShower /> */}
           {/* Internal container */}
           <div id="ratio2">
             {/* Inside vignette */}
             <div className="absolute bottom-0 left-0 right-0 top-0 z-50  before:block" id="vignette"></div>
+
             <div className="absolute bottom-12 left-12 z-50 flex flex-col gap-1 font-black text-white">
-              {showPlayer && (
+              {showPlayer && !detailsHidden && (
                 <>
                   <div>Channel: {currentChannel}</div>
 
@@ -176,7 +189,7 @@ const TVPlayer = () => {
             </div>
 
             <div className="absolute bottom-12 right-12 z-50 flex flex-col gap-1 text-end font-black text-white">
-              {showPlayer && (
+              {showPlayer && !detailsHidden && (
                 <>
                   {isMonth && <div>{currentVideo.rank}</div>}
                   <div>{currentVideo.title}</div>
@@ -195,6 +208,11 @@ const TVPlayer = () => {
                 // left: 0,
                 right: 0,
                 // bottom: 0,
+              }}
+              config={{
+                playerVars: {
+                  showInfo: 1,
+                },
               }}
               url={`https://www.youtube.com/watch?v=${currentVideo.links[0].id}`}
               width={'100%'}

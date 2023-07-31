@@ -122,6 +122,26 @@ function binarySearch(arr: number[], target: number) {
   }
   return false
 }
+const min = 1980
+const max = 2019
+// default Year ranges
+export function numberInAppYearRange(number: number) {
+  if (String(number).length === 5) {
+    const numString = Number(String(number).slice(1, 5))
+    if (numString >= min && numString <= max) {
+      return true
+    }
+    return false
+  }
+  if (String(number).length === 6) {
+    const numString = Number(String(number).slice(2, 6))
+    if (numString >= min && numString <= max) {
+      return true
+    }
+    return false
+  }
+  return false
+}
 
 // takes in a channel number and the valid number ranges
 // Returns: a boolean if it fits, and an optional secondary tuple for the closest channel that it fits into
