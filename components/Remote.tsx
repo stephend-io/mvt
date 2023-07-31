@@ -28,9 +28,22 @@ const repeatCaller = (func: () => void, delay: number) => {
 
 const Remote = () => {
   const [hidden, setHidden] = useState(true)
-  const store = useStore()
+  const [sleepTimer, setSleepTimer] = useState(-1)
+  const { detailsHidden } = useStore()
   const timeoutDelay = 5000
   let timeoutID: NodeJS.Timer
+  let sleepTimeoutId: NodeJS.Timer
+
+  useEffect(() => {
+    if (sleepTimer === -1) return
+    clearTimeout(sleepTimeoutId)
+    sleepTimeoutId = setTimeout(() => {
+      window.close()
+      // location.href = ''
+    }, sleepTimer)
+
+    return () => clearTimeout(sleepTimeoutId)
+  }, [sleepTimer])
 
   useLayoutEffect(() => {
     window.addEventListener('contextmenu', function (e) {
@@ -61,7 +74,7 @@ const Remote = () => {
     window.addEventListener('keydown', () => {})
   }, [])
 
-  const { isRemoteOpen, settingsOpen, currentVideo } = useStore()
+  const { isRemoteOpen, isSettingsOpen: settingsOpen, currentVideo } = useStore()
   const actions = useActions()
 
   return (
@@ -79,6 +92,7 @@ const Remote = () => {
                   onClick={() => {
                     settingsOpen && actions.toggleSettings()
                     actions.toggleRemote()
+                    actions.resetState()
                   }}
                   className="m-2"
                 />
@@ -121,11 +135,11 @@ const Remote = () => {
                   </button>
                 </Row>
                 <Row>
-                  <button onClick={() => actions.setChannel(10)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                  <button onClick={() => actions.setChannel(0)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
                     00s
                   </button>
 
-                  <button onClick={() => actions.setChannel(0)} className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                  <button onClick={() => actions.setChannel(10)} className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
                     10s
                   </button>
                 </Row>
@@ -155,7 +169,7 @@ const Remote = () => {
 
                 <Col intent={'center'}>
                   <Icon icon="Up2" size={'s'} className="invert-[0.85]" />
-                  <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} />
+                  <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} onClick={() => setSleepTimer(1000)} />
                   <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} />
                 </Col>
 

@@ -10,8 +10,32 @@ export async function GET(req: NextRequest) {
   const headerList = headers()
 
   let minYear: string | null | number = headerList.get('minYear')
-  console.log('sent request for year: ')
-  console.log(minYear)
+  let monthYear: string | null = headerList.get('monthYear')
+
+  if (monthYear) {
+    const songIds = monthIdGenerator(monthYear)
+    console.log(songIds)
+
+    const data = (await prisma.song.findMany({
+      select: {
+        artist: true,
+        title: true,
+        links: true,
+        rank: true,
+      },
+      where: {
+        id: {
+          in: songIds,
+        },
+      },
+    })) as MusicVideo[]
+    const filteredData = data.filter((song) => {
+      return song.links.length >= 1
+    })
+
+    return NextResponse.json(filteredData)
+  }
+
   if (minYear && minYear.length <= 2) {
     if (Number(minYear) > 10) {
       minYear = Number(minYear) + 1900
@@ -69,6 +93,24 @@ type MusicVideo = {
   }[]
 }
 
+export function monthIdGenerator(monthYearString: string) {
+  let month: string
+  let year: string
+  if (monthYearString.length === 6) {
+    month = monthYearString.slice(0, 2)
+    year = monthYearString.slice(2, 6)
+  } else {
+    throw 'Invalid monthIdGenerator input'
+  }
+
+  const idArr: number[] = []
+  for (let rank = 1; rank <= 100; rank++) {
+    // idArr.push(Number(`${year}${}`))
+    idArr.push(Number(year + month.padStart(2, '0') + String(rank).padStart(3, '0')))
+  }
+  return idArr
+}
+
 export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear }: { minYear: number; maxYear: number; minRank: number; maxRank: number }): Promise<MusicVideo[]> {
   const songIds = yearIdsRangeGenerator(minYear, maxYear, minRank, maxRank)
 
@@ -87,6 +129,7 @@ export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear
 
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
+    if (song.links.length <= 0) return false
     const titleExists = titleSet.has(song.title)
     if (titleExists) return false
     titleSet.add(song.title)
@@ -118,6 +161,7 @@ export async function getMusicVideos({ minYear, maxRank }: { minYear: number; ma
 
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
+    if (song.links.length <= 0) return false
     const titleExists = titleSet.has(song.title)
     if (titleExists) return false
     titleSet.add(song.title)
@@ -198,6 +242,7 @@ export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
 
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
+    if (song.links.length <= 0) return false
     const titleExists = titleSet.has(song.title)
     if (titleExists) return false
     titleSet.add(song.title)

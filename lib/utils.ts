@@ -126,11 +126,34 @@ function binarySearch(arr: number[], target: number) {
 // takes in a channel number and the valid number ranges
 // Returns: a boolean if it fits, and an optional secondary tuple for the closest channel that it fits into
 export function numberInNumberRanges(number: number, numberRanges: number[][]): boolean {
+  // newly added month year channels
+  if (String(number).length === 5) {
+    const numString = String(number)
+    const numExists = numberRanges.some((range) => {
+      if (Number(numString.slice(1, 5)) >= range[0] && Number(numString.slice(1, 5)) <= range[1]) {
+        return true
+      }
+    })
+    if (numExists) return true
+    return false
+  } else if (String(number).length === 6) {
+    const numString = String(number)
+    const numExists = numberRanges.some((range) => {
+      if (Number(numString.slice(2, 6)) >= range[0] && Number(numString.slice(2, 6)) <= range[1]) {
+        return true
+      }
+    })
+    if (numExists) return true
+    return false
+  }
+
+  console.log('number in number ranges called with: ' + number)
   const numExists = numberRanges.some((range) => {
     if (number >= range[0] && number <= range[1]) {
       return true
     }
   })
+
   console.log(`Input: ${number} : numExists is ${String(numExists)}`)
   if (numExists) return true
   return false

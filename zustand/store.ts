@@ -17,21 +17,32 @@ type playerTypes = 'fullScreen' | 'semiFullScreen' | 'mini' | 'leftQuarter' | 'r
 type State = {
   idbPrefix: string
   mouseOver: boolean
+  mounted: boolean
   currentChannel: number
   currentChannelVideoIndex: number
   currentChannelTotalVideos: number
+  isDecade: boolean
+  isMonth: boolean
   // minChannel: number;
   // maxChannel: number;
   channelRange: number[][]
   isRemoteOpen: boolean
   inputChannel: string
   volume: number
+  isVignette: boolean
+  hitsRank: number
+  yearRank: number
+  songDetails: string
+  defaultChannel: number
+  color: string
   muted: boolean
-  settingsOpen: boolean
+  isSettingsOpen: boolean
   mouseDown: boolean
+  detailsHidden: boolean
   currentVideo: {
     title: string
     artist: string
+    rank: number
     links: {
       id: string
       width: number
@@ -69,9 +80,12 @@ type Actions = {
     toggleMouseDown: () => void
     reportVideo: (songName: string) => void
     loadChannel: (channel: number) => void
+    setDetailsHidden: (to: boolean) => void
+    resetState: () => void
     setCurrentVideo: (video: {
       artist: string
       title: string
+      rank: number
       links: {
         id: string
         height: number
@@ -83,11 +97,23 @@ type Actions = {
     changeplayerType: (to: playerTypes) => void
     setSelectedGrid: (to: number) => void
     newChannel: (channel: number) => void
+    newMonthChannel: (channelString: string) => void
+    getMonthChannel: (channelString: string) => void
   }
 }
 
 const initState: State = {
-  currentChannel: 2019,
+  color: 'blue',
+  mounted: false,
+  defaultChannel: 0,
+  hitsRank: 20,
+  yearRank: 40,
+  isVignette: true,
+  isDecade: false,
+  isMonth: false,
+  songDetails: 'fade',
+  currentChannel: 0,
+  detailsHidden: false,
   currentChannelTotalVideos: 0,
   currentChannelVideoIndex: 0,
   isRemoteOpen: false,
@@ -101,14 +127,15 @@ const initState: State = {
     [1980, 2019],
   ],
   muted: false,
-  settingsOpen: false,
+  isSettingsOpen: false,
   mouseDown: false,
   mouseOver: false,
   idbPrefix: 'kindaliketv-',
   currentVideo: {
     artist: 'ERROR',
-    title: 'No Artist',
-    links: [{ id: 'H2E7LteVmXg', width: 100, height: 56 }],
+    title: 'NO-SONG',
+    rank: 0,
+    links: [{ id: 'n5Q4Y5nLvrg', width: 100, height: 56 }],
   },
   currentVideoHeight: 100,
   currentVideoWidth: 56,
@@ -126,8 +153,17 @@ const useStore = create<State & Actions>((set, get) => ({
       if (!by) return () => set((state) => ({ currentChannel: state.currentChannel + 1 }))
       else return () => set((state) => ({ currentChannel: state.currentChannel + by }))
     },
+    resetState: () => {
+      get().actions.setCurrentVideo({
+        artist: 'ERROR',
+        title: 'NO-SONG',
+        rank: 0,
+        links: [{ id: 'Vrr3lRLjZ1Y', width: 100, height: 56 }],
+      })
+    },
     // when channel is not in the channel ranges, defaults to the minimum value of the highest channel range
     setChannel: (to) => {
+      set({ inputChannel: '' })
       if (to === get().currentChannel) {
         return
       }
@@ -147,6 +183,19 @@ const useStore = create<State & Actions>((set, get) => ({
       }
     },
     incrementChannel: () => {
+      if (get().isMonth) {
+        const nextNumberInRange = numberInNumberRanges(get().currentChannel + 1, get().channelRange)
+        if (nextNumberInRange) {
+          if (Math.floor(get().currentChannel / 10000) <= 11) {
+            get().actions.loadChannel(get().currentChannel + 10000)
+          } else {
+            console.log(`get().actions.loadChannel(${Number('1' + String(get().currentChannel).slice(2, 6))})`)
+
+            get().actions.loadChannel(Number('1' + String(get().currentChannel).slice(2, 6)))
+          }
+        }
+        return
+      }
       const nextNumberInRange = numberInNumberRanges(get().currentChannel + 1, get().channelRange)
       console.log('increment called: ')
       console.log(`Next number is: ${get().currentChannel + 1}`)
@@ -222,6 +271,19 @@ const useStore = create<State & Actions>((set, get) => ({
       }
     },
     decrementChannel: () => {
+      if (get().isMonth) {
+        const nextNumberInRange = numberInNumberRanges(get().currentChannel - 1, get().channelRange)
+        if (nextNumberInRange) {
+          if (Math.floor(get().currentChannel / 10000) >= 2) {
+            get().actions.loadChannel(get().currentChannel - 10000)
+          } else {
+            console.log(`get().actions.loadChannel(${Number('12' + String(get().currentChannel).slice(2, 6))})`)
+            get().actions.loadChannel(Number('12' + Number(String(get().currentChannel).slice(1, 6))) - 1)
+          }
+        }
+        return
+      }
+
       console.log('decrementChannel called...')
       let prevNumberInRange = numberInNumberRanges(get().currentChannel - 1, get().channelRange)
       if (prevNumberInRange) {
@@ -248,18 +310,58 @@ const useStore = create<State & Actions>((set, get) => ({
     },
     toggleRemote: () => set((state) => ({ isRemoteOpen: !state.isRemoteOpen })),
     addNoToStack: (no) => {
+      // let stack = get().inputChannel
+      // if (stack.length >= 4) {
+      //   stack = stack.substring(stack.length - 3)
+      // }
+      // stack += no
+      // if (stack === '0000') stack = '0'
+      // set(() => ({ inputChannel: stack }))
       let stack = get().inputChannel
-      if (stack.length >= 4) {
-        stack = stack.substring(stack.length - 3)
+      if (stack.length >= 5) {
+        stack = stack.substring(stack.length - 5)
       }
       stack += no
-      if (stack === '0000') stack = '0'
+      if (stack === '0000') {
+        stack = '0'
+      }
       set(() => ({ inputChannel: stack }))
     },
     resetInputStack: () => set({ inputChannel: '' }),
     decrementVolume: () => get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
     incrementVolume: () => get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
+    newMonthChannel: async (channel) => {
+      const res = await fetch(`http://localhost:2221/api/channels/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          monthYear: channel.padStart(6, '0'),
+        },
+      })
+      if (!res) {
+        throw 'error fetching'
+      }
+      // returns array of top100 items of month
+      const data = (await res.json()) as MusicVideo[]
+      const monthChannelString = getIdbChannelString(Number(channel))
+      await setIdb(monthChannelString, { videos: [...data], videoIndex: 0, total: data.length })
+      get().actions.loadChannel(Number(channel))
+    },
+    getMonthChannel: async (channel) => {
+      const monthChannelString = getIdbChannelString(Number(channel))
+      const currData = await getIdb(monthChannelString)
+      if (currData) {
+        get().actions.loadChannel(Number(channel))
+      } else {
+        get().actions.newMonthChannel(channel)
+      }
+    },
+
     newChannel: async (channel) => {
+      if (String(channel).length >= 5) {
+        get().actions.newMonthChannel(String(channel))
+        return
+      }
       const res = await fetch(`http://localhost:2221/api/channels/`, {
         method: 'GET',
         headers: {
@@ -267,6 +369,7 @@ const useStore = create<State & Actions>((set, get) => ({
           minYear: String(channel),
         },
       })
+
       console.log(res)
       const data = await res.json()
       // get().actions.setCurrentVideo(data[0]);
@@ -276,6 +379,8 @@ const useStore = create<State & Actions>((set, get) => ({
         videoIndex: 0,
         total: data.length,
       })
+      console.log('setIdb')
+      console.log(data)
       get().actions.loadChannel(channel)
     },
     testIncrementVolume: (timer) => {
@@ -298,12 +403,12 @@ const useStore = create<State & Actions>((set, get) => ({
     rightDpad: () => get().actions.incrementVolume(),
     leftDpad: () => get().actions.decrementVolume(),
 
-    toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
+    toggleSettings: () => set((state) => ({ isSettingsOpen: !state.isSettingsOpen })),
     setCurrentVideo: (video) => {
       console.log('Playing: ')
+
       console.log(video)
       const aspectRatio = `${Number(((video.links[0].width / video.links[0].height) * 100).toFixed(2))}vh`
-      console.log('setCurrentVideo')
 
       document.documentElement.style.setProperty('--playerWidth', `${video.links[0].width}%`)
       document.documentElement.style.setProperty('--playerHeight', `${video.links[0].height}%`)
@@ -314,6 +419,9 @@ const useStore = create<State & Actions>((set, get) => ({
       // ! TODO - Report channel and remove from circulation?
       console.log('reported: ' + songName)
       get().actions.nextVideo()
+    },
+    setDetailsHidden: (to) => {
+      set({ detailsHidden: to })
     },
     loadChannel: async (channel: number) => {
       let idbName = getIdbChannelString(channel)
@@ -329,6 +437,19 @@ const useStore = create<State & Actions>((set, get) => ({
           // set({
           //   currentVideo: data.videos[data.videoIndex],
           // });
+          const channelStrLength = String(channel).length
+
+          // ! Temporary, make this not ugly
+          if (channelStrLength <= 2) {
+            set({ isDecade: true })
+            set({ isMonth: false })
+          } else if (String(channel).length >= 5) {
+            set({ isDecade: false })
+            set({ isMonth: true })
+          } else {
+            set({ isDecade: false })
+            set({ isMonth: false })
+          }
 
           // set ahead of time to prevent UI from dleaying its channel update
           set({ currentChannel: channel })
@@ -386,23 +507,37 @@ const useStore = create<State & Actions>((set, get) => ({
           if (data) {
             if (data.videos.length + 2 > data.videoIndex) {
               if (data.maxRank) {
-                const res = await fetch(`http://localhost:2221/api/channels/`, {
-                  // method: "GET",
-                  headers: {
-                    'Content-Type': 'application/json',
-                    minYear: String(channel),
-                    minRank: String(data.maxRank),
-                    maxRank: String(data.maxRank + 20),
-                  },
-                })
-                const parsedData = await res.json()
+                //   const res = await fetch(`http://localhost:2221/api/channels/`, {
+                //     // method: "GET",
+                //     headers: {
+                //       'Content-Type': 'application/json',
+                //       minYear: String(channel),
+                //       minRank: String(data.maxRank),
+                //       maxRank: String(data.maxRank + 20),
+                //     },
+                //   })
+                //   const parsedData = await res.json()
               }
+
+              // console.log('CHECKING LENGTH')
+              // recursive way to avoid empty links which is possible
+              // if (data.videos[data.videoIndex].links.length <= 0) {
+              //   console.log('SKIPPING HERE')
+              //   await setIdb(getIdbChannelString(get().currentChannel), {
+              //     ...data,
+              //     videoIndex: data.videoIndex + 1,
+              //   })
+
+              //   console.log('calling next video')
+              //   get().actions.nextVideo()
+              // }
 
               set(() => ({
                 currentChannel: channel,
                 currentChannelTotalVideos: data.videos.length,
                 currentChannelVideoIndex: data.videoIndex + 1,
               }))
+
               get().actions.setCurrentVideo(data.videos[data.videoIndex])
 
               // console.log(name + "-" + channel);
@@ -421,23 +556,11 @@ const useStore = create<State & Actions>((set, get) => ({
               console.log('no data found somehow')
             }
           } else {
-            // ! TODO - fetch 20 to 40 or 1 to 40 idk
-            const res = await fetch(`http://localhost:2221/api/channels/`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                minYear: String(get().currentChannel),
-                minRank: '21',
-                maxRank: '40',
-              },
-            })
-            const data = await res.json()
-            // get().actions.setCurrentVideo(data[0]);
-            await setIdb(getIdbChannelString(get().currentChannel), {
-              videos: [...data],
-              videoIndex: 0,
-              total: data.length,
-            })
+            const idbName = getIdbChannelString(get().currentChannel)
+            const res = (await getIdb(idbName)) as channelDataType
+
+            // shuffles back to zero
+            await setIdb(idbName, { ...res, videoIndex: 0 })
             get().actions.loadChannel(get().currentChannel)
           }
         }
@@ -451,6 +574,7 @@ const useStore = create<State & Actions>((set, get) => ({
     setSelectedGrid: (to) => {
       set({ buttonSelected: to })
     },
+
     TOBEIMPLEMENTED: () => console.log('func not implemented'),
   },
 }))
