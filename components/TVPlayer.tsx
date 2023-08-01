@@ -4,6 +4,8 @@ import { VariantProps, cva } from 'class-variance-authority'
 import dynamic from 'next/dynamic'
 import Loader from './Loader'
 import { useEffect, useLayoutEffect, useState } from 'react'
+
+import '@/app/fonts/Font.css'
 import { get, set } from 'idb-keyval'
 
 import '@/app/styles.scss'
@@ -116,11 +118,11 @@ const TVPlayer = () => {
 
   return (
     // <div className={TVplayerStyles({ intent })}>
-    <div className="flex h-screen w-screen flex-col items-center justify-center bg-black " onMouseOver={() => actions.toggleMouseDown()}>
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-black font-pixel " onMouseOver={() => actions.toggleMouseDown()}>
       {/* Choices at start are overlaid on top of fully rendered player */}
       {!showPlayer ? (
         <div className="right-1/2 top-1/2 h-full w-full  ">
-          <div className="flex h-full w-full justify-between">
+          <div className="kabel-shadow flex h-full w-full justify-between font-kabel font-bold">
             <Col>
               <Row className="mb-4">
                 <button onClick={() => actions.setChannel(80)} className=" rounded-md bg-red-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
@@ -173,10 +175,9 @@ const TVPlayer = () => {
           {/* Absolutely positioned text showing current breakpoint for debugging */}
           {/* <SizeShower /> */}
           {/* Internal container */}
-          <div id="ratio2">
+          <div id="ratio2 " className="font-kabel">
             {/* Inside vignette */}
             <div className="absolute bottom-0 left-0 right-0 top-0 z-50  before:block" id="vignette"></div>
-
             <div className="absolute bottom-12 left-12 z-50 flex flex-col gap-1 font-black text-white">
               {showPlayer && !detailsHidden && (
                 <>
@@ -187,8 +188,7 @@ const TVPlayer = () => {
                 </>
               )}
             </div>
-
-            <div className="absolute bottom-12 right-12 z-50 flex flex-col gap-1 text-end font-black text-white">
+            <div className="kabel-shadow absolute bottom-12 right-12 z-50 flex flex-col gap-1 text-end font-kabel font-black text-white">
               {showPlayer && !detailsHidden && (
                 <>
                   {isMonth && <div>{currentVideo.rank}</div>}
@@ -218,7 +218,7 @@ const TVPlayer = () => {
               width={'100%'}
               height={'100%'}
               volume={muted || !showPlayer ? 0 : volume / 100}
-              playing={showPlayer}
+              playing={true}
               loop={false}
               controls={false}
               stopOnUnmount={false}

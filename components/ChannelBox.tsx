@@ -1,6 +1,6 @@
 'use client'
 import useStore, { useActions, useCurrentChannel } from '@/zustand/store'
-import '@/app/fonts/Pixel.css'
+import '@/app/fonts/Font.css'
 import { useEffect, useState } from 'react'
 import Loader from './Loader'
 
@@ -88,11 +88,11 @@ const ChannelBox = () => {
   return (
     <div className={`flex flex-col ${hidden && 'hidden'}`}>
       <div
-        id="boom"
+        // id="boom"
         className={`absolute right-20 top-8 z-50 flex translate-x-[2px] flex-col items-end justify-center text-8xl  text-primary blur-[4px] transition-all ${
           channelChange && 'scale-110 saturate-150'
-        }`}
-        style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
+        } font-pixel`}
+        // style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
       >
         {/* {isMonth ? 
         <div>test</div>
@@ -126,10 +126,10 @@ const ChannelBox = () => {
         )}
       </div>
       <div
-        id="boom"
+        // id="boom"
         className={`text-["littlebit-dotty-variable", sans-serif] absolute right-20 top-8 z-50 flex flex-col items-end justify-center text-8xl text-primary blur-[1px] transition-all ${
           channelChange && 'scale-110 saturate-150'
-        }
+        } font-pixel
         `}
         style={{ fontVariationSettings: `"BLOC" 500, "OPEN" 100` }}
       >

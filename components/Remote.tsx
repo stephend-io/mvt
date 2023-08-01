@@ -8,6 +8,9 @@ import Col from './Col'
 import Row from './Row'
 
 let intervalID: NodeJS.Timer
+
+// simple wrapper to make function call repeatedly whe held
+// func() calls the function immediately
 function onHold(func: () => void, delay: number = 200) {
   return {
     onTouchStart: () => {
@@ -78,7 +81,7 @@ const Remote = () => {
   const actions = useActions()
 
   return (
-    <>
+    <div>
       {/* invisible div that enables clicking on screen to toggle remote instead of an event listener that is tricky not to trigger when clicking on the buttons of the remote*/}
       {isRemoteOpen && <div className="absolute right-0 top-0 h-screen w-screen" onClick={() => actions.toggleRemote()} />}
 
@@ -150,7 +153,7 @@ const Remote = () => {
                   <Icon icon="Plus2" onClick={actions.incrementVolume} className="invert-[0.85]" />
 
                   <div className="my-2 text-[1rem]">VOL</div>
-                  <Icon icon="Minus3" onClick={actions.decrementChannel} className="-translate-y-1 invert-[0.85]" />
+                  <Icon icon="Minus3" onClick={actions.decrementVolume} className="-translate-y-1 invert-[0.85]" />
                 </Col>
                 <Col x={'content'} y={'full'}>
                   <Icon icon="Mute" size="m" onClick={actions.toggleMuteVolume} className="invert-[0.85]" />
@@ -168,9 +171,9 @@ const Remote = () => {
                 <Icon icon="Up2" className="-rotate-90 invert-[0.85]" {...onHold(actions.decrementVolume, 200)} size={'s'} />
 
                 <Col intent={'center'}>
-                  <Icon icon="Up2" size={'s'} className="invert-[0.85]" />
+                  <Icon icon="Up2" size={'s'} className="invert-[0.85]" onClick={() => actions.incrementChannel} />
                   <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} onClick={() => setSleepTimer(1000)} />
-                  <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} />
+                  <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} onClick={() => actions.decrementChannel} />
                 </Col>
 
                 <Icon icon="Up2" className="rotate-90 invert-[0.85]" size={'s'} {...onHold(actions.incrementVolume, 200)} />
@@ -231,7 +234,7 @@ const Remote = () => {
           </button>
         )}
       </Absolute>
-    </>
+    </div>
   )
 }
 

@@ -116,7 +116,7 @@ const initState: State = {
   detailsHidden: false,
   currentChannelTotalVideos: 0,
   currentChannelVideoIndex: 0,
-  isRemoteOpen: false,
+  isRemoteOpen: true,
   inputChannel: '',
   volume: 40,
   channelRange: [
