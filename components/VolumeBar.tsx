@@ -37,33 +37,33 @@ const VolumeBar = () => {
   }, [muted, volume])
 
   return (
-    <div className="absolute bottom-12 right-1/2 translate-x-1/2 font-pixel text-6xl uppercase">
+    <div className="absolute bottom-12 right-1/2 translate-x-1/2 font-pixel text-xl uppercase md:text-6xl">
       {!hidden && (
         <div className="flex flex-col items-center justify-center text-primary ">
-          <div className="flex w-full flex-row items-center justify-between ">
-            <div className="relative mb-6">
+          <div className="flex w-1/2 flex-row items-center justify-between  md:w-full">
+            <div className="relative md:mb-6">
               Volume
-              <div className={`absolute -right-0.5 top-0 mb-6 text-primary ${muted && 'ml-8 '} blur-sm`}>Volume</div>
+              <div className={`absolute -right-0.5 top-0 text-primary md:mb-6 ${muted && 'ml-8 '} blur-sm`}>Volume</div>
             </div>
 
             {muted ? (
               <div className=" flex flex-row items-center  ">
                 <Mute className="fill-primary" />
-                <div className={`relative mb-7 ${muted && 'ml-8 opacity-60'}`}>
+                <div className={`relative md:mb-7 ${muted && 'ml-8 opacity-60'}`}>
                   {volume}
 
-                  <div className={`absolute -right-0.5 top-0 mb-6 text-primary ${muted && 'ml-8 '} blur-sm`}>{volume}</div>
+                  <div className={`absolute -right-0.5 top-0 text-primary md:mb-6 ${muted && 'ml-8 '} blur-sm`}>{volume}</div>
                 </div>
               </div>
             ) : (
-              <div className="relative mb-7">
+              <div className="relative md:mb-7">
                 {volume}
 
-                <div className={`absolute -right-0.5 top-0 mb-6 text-primary ${muted && 'ml-8 '} blur-sm`}>{volume}</div>
+                <div className={`absolute -right-0.5 top-0 text-primary md:mb-6 ${muted && 'ml-8 '} blur-sm`}>{volume}</div>
               </div>
             )}
           </div>
-          <div className="mt-4 flex flex-row items-center ">{content}</div>
+          <div className=" flex flex-row items-center md:mt-4 ">{content}</div>
         </div>
       )}
     </div>
@@ -80,16 +80,16 @@ const VolumeBar = () => {
 
 const Half = () => (
   <div className="flex ">
-    <div className={twMerge('m-2 h-2 w-2 rounded-full bg-primary')} />
-    <div className={twMerge('absolute m-2 h-2 w-2 translate-x-[0.1px] rounded-full bg-primary blur-[2px]')} />
+    <div className={twMerge('m-1 h-1 w-1  rounded-full bg-primary md:m-2 md:h-2 md:w-2')} />
+    <div className={twMerge('absolute m-1 h-1  w-1 translate-x-[0.1px] rounded-full bg-primary blur-[2px] md:m-2 md:h-2 md:w-2')} />
     {/* <div className='absolute w-[0.3rem] h-4 bg-primary m-2 translate-x-[0.1px] blur-[7px]' /> */}
   </div>
 )
 
 const Whole = () => (
   <div className="flex">
-    <div className={twMerge('m-2 h-12 w-4 bg-primary')} />
-    <div className={twMerge('absolute m-2 h-14 w-4 -translate-y-[3px] bg-primary blur-[7px]')} />
+    <div className={twMerge('m-1 h-4 w-2 bg-primary md:m-2 md:h-12 md:w-4')} />
+    <div className={twMerge('absolute m-1 h-4 w-2 -translate-y-[3px] bg-primary blur-[7px] md:m-2 md:h-14 md:w-4')} />
   </div>
 )
 

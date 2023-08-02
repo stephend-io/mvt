@@ -88,6 +88,7 @@ type Actions = {
     resetState: () => void
     setCurrentVideo: (video: MusicVideoType) => void
     nextVideo: () => void
+    previousVideo: () => void
     setMiniVideo: (bool: boolean) => void
     changeplayerType: (to: playerTypes) => void
     setSelectedGrid: (to: number) => void
@@ -111,7 +112,7 @@ const initState: State = {
   detailsHidden: false,
   currentChannelTotalVideos: 0,
   currentChannelVideoIndex: 0,
-  isRemoteOpen: true,
+  isRemoteOpen: false,
   inputChannel: '',
   volume: 40,
   channelRange: [
@@ -157,6 +158,7 @@ const useStore = create<State & Actions>((set, get) => ({
         year: 0,
         links: [{ id: 'Vrr3lRLjZ1Y', width: 100, height: 56 }],
       })
+      set({ currentChannel: 1 })
     },
     // when channel is not in the channel ranges, defaults to the minimum value of the highest channel range
     setChannel: (to) => {
@@ -460,7 +462,7 @@ const useStore = create<State & Actions>((set, get) => ({
       const data = (await getIdb(idbName)) as { videos: MusicVideoType[]; videoIndex: number }
       console.log(data)
       if (data) {
-        if (data.videos.length > data.videoIndex) {
+        if (data.videos.length - 1 > data.videoIndex) {
           // console.log(data.videos)
           // console.log(data.videos.length)
           // console.log(data.videoIndex)
@@ -484,7 +486,7 @@ const useStore = create<State & Actions>((set, get) => ({
           // set ahead of time to prevent UI from dleaying its channel update
           set({ currentChannel: channel })
           get().actions.setCurrentVideo(data.videos[data.videoIndex])
-          await setIdb(idbName, { ...data, videoIndex: data.videoIndex + 1 })
+          // await setIdb(idbName, { ...data, videoIndex: data.videoIndex + 1 })
           set((state) => ({
             currentChannelTotalVideos: data.videos.length,
             currentChannelVideoIndex: data.videoIndex,
@@ -498,105 +500,133 @@ const useStore = create<State & Actions>((set, get) => ({
       }
     },
 
-    // changeplayerType: (to) => {
-    //   switch (to) {
-    //     case "fullScreen":
-    //       set({ playerSizeX: 100, playerSizeY: 100, playerType: to });
-    //       break;
-    //     case "semiFullScreen":
-    //       set({ playerSizeX: 98, playerSizeY: 98, playerType: to });
-    //       break;
-    //     case "mini":
-    //       set({ playerSizeX: 30, playerSizeY: 20, playerType: to });
-    //       break;
-    //     case "leftQuarter":
-    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-    //       break;
-    //     case "rightQuarter":
-    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-    //       break;
-    //     case "middleQuarter":
-    //       set({ playerSizeX: 70, playerSizeY: 100, playerType: to });
-    //       break;
-    //     case "boxMiddle":
-    //       set({ playerSizeX: 50, playerSizeY: 100, playerType: to });
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // },
     setMiniVideo: (bool) => {
       set({ miniVideo: bool })
     },
     nextVideo: () => {
       ;(async () => {
-        if (get().currentChannelTotalVideos > get().currentChannelVideoIndex) {
+        if (get().currentChannelTotalVideos - 1 === get().currentChannelVideoIndex) {
+          const idbName = getIdbChannelString(get().currentChannel)
+          const data = (await getIdb(idbName)) as channelDataType
+          const channel = get().currentChannel
+
+          // goes to the lowest rank
+          await setIdb(idbName, { ...data, videoIndex: 0 })
+          set(() => ({
+            currentChannel: channel,
+            currentChannelTotalVideos: data.videos.length,
+            currentChannelVideoIndex: 0,
+          }))
+          get().actions.setCurrentVideo(data.videos[0])
+          return
+        }
+        if (get().currentChannelTotalVideos - 1 > get().currentChannelVideoIndex) {
           const channel = get().currentChannel
           const idbName = getIdbChannelString(get().currentChannel)
           const data = (await getIdb(idbName)) as channelDataType
           if (data) {
-            if (data.videos.length + 2 > data.videoIndex) {
-              if (data.maxRank) {
-                //   const res = await fetch(`http://localhost:2221/api/channels/`, {
-                //     // method: "GET",
-                //     headers: {
-                //       'Content-Type': 'application/json',
-                //       minYear: String(channel),
-                //       minRank: String(data.maxRank),
-                //       maxRank: String(data.maxRank + 20),
-                //     },
-                //   })
-                //   const parsedData = await res.json()
-              }
+            set(() => ({
+              currentChannel: channel,
+              currentChannelTotalVideos: data.videos.length,
+              currentChannelVideoIndex: data.videoIndex + 1,
+            }))
 
-              // console.log('CHECKING LENGTH')
-              // recursive way to avoid empty links which is possible
-              // if (data.videos[data.videoIndex].links.length <= 0) {
-              //   console.log('SKIPPING HERE')
-              //   await setIdb(getIdbChannelString(get().currentChannel), {
-              //     ...data,
-              //     videoIndex: data.videoIndex + 1,
-              //   })
-
-              //   console.log('calling next video')
-              //   get().actions.nextVideo()
-              // }
-
-              set(() => ({
-                currentChannel: channel,
-                currentChannelTotalVideos: data.videos.length,
-                currentChannelVideoIndex: data.videoIndex + 1,
-              }))
-
-              get().actions.setCurrentVideo(data.videos[data.videoIndex])
-
-              // console.log(name + "-" + channel);
-              // console.log(data.videoIndex + "/" + data.videos.length);
-              // set({
-              //   currentVideo: data[data.videoIndex],
-              // });
-              // get().actions.loadChannel(get().currentChannel)
-              // if (data.videoIndex >= data.videos.length) {
-              // }
-              setIdb(getIdbChannelString(get().currentChannel), {
-                ...data,
-                videoIndex: data.videoIndex + 1,
-              })
-            } else {
-              console.log('no data found somehow')
-            }
+            get().actions.setCurrentVideo(data.videos[data.videoIndex + 1])
+            setIdb(getIdbChannelString(get().currentChannel), {
+              ...data,
+              videoIndex: data.videoIndex + 1,
+            })
           } else {
             const idbName = getIdbChannelString(get().currentChannel)
-            const res = (await getIdb(idbName)) as channelDataType
+            const data = (await getIdb(idbName)) as channelDataType
+            const channel = get().currentChannel
 
-            // shuffles back to zero
-            await setIdb(idbName, { ...res, videoIndex: 0 })
-            get().actions.loadChannel(get().currentChannel)
+            // goes to the lowest rank
+            await setIdb(idbName, { ...data, videoIndex: 0 })
+            set(() => ({
+              currentChannel: channel,
+              currentChannelTotalVideos: data.videos.length,
+              currentChannelVideoIndex: 0,
+            }))
+            get().actions.setCurrentVideo(data.videos[0])
           }
         }
       })()
-      console.log('play next video')
       return
+    },
+    previousVideo: () => {
+      ;(async () => {
+        if (get().currentChannelVideoIndex === 0) {
+          const idbName = getIdbChannelString(get().currentChannel)
+          const data = (await getIdb(idbName)) as channelDataType
+          const channel = get().currentChannel
+
+          console.log('settings current index to:')
+          console.log(data.videos.length - 1)
+          // goes to the lowest rank
+          await setIdb(idbName, { ...data, videoIndex: data.videos.length - 1 })
+          set(() => ({
+            currentChannel: channel,
+            currentChannelTotalVideos: data.videos.length,
+            currentChannelVideoIndex: data.videos.length - 1,
+          }))
+          get().actions.setCurrentVideo(data.videos[data.videos.length - 1])
+          return
+        }
+        if (get().currentChannelVideoIndex >= 1) {
+          console.log('yo222')
+          const channel = get().currentChannel
+          const idbName = getIdbChannelString(get().currentChannel)
+          const data = (await getIdb(idbName)) as channelDataType
+          console.log(data)
+          if (data) {
+            console.log('its actually working here u know')
+            console.log('current paying:')
+            console.log(get().currentVideo)
+            console.log(get().currentChannelVideoIndex)
+            set(() => ({
+              currentChannel: channel,
+              currentChannelTotalVideos: data.videos.length,
+              currentChannelVideoIndex: data.videoIndex - 1,
+            }))
+            setIdb(getIdbChannelString(get().currentChannel), {
+              ...data,
+              videoIndex: data.videoIndex - 1,
+            })
+            get().actions.setCurrentVideo(data.videos[get().currentChannelVideoIndex])
+          }
+
+          // else {
+          //   const idbName = getIdbChannelString(get().currentChannel)
+          //   const res = (await getIdb(idbName)) as channelDataType
+
+          //   // goes to the lowest rank
+          //   await setIdb(idbName, { ...res, videoIndex: res.videos.length - 1 })
+          //   get().actions.loadChannel(get().currentChannel)
+          // }
+        } else {
+          // console.log('yo333')
+          // const idbName = getIdbChannelString(get().currentChannel)
+          // const data = (await getIdb(idbName)) as channelDataType
+          // const channel = get().currentChannel
+          // console.log('settings current index to:')
+          // console.log(data.videos.length - 1)
+          // // goes to the lowest rank
+          // await setIdb(idbName, { ...data, videoIndex: data.videos.length - 1 })
+          // set(() => ({
+          //   currentChannel: channel,
+          //   currentChannelTotalVideos: data.videos.length,
+          //   currentChannelVideoIndex: data.videos.length - 1,
+          // }))
+          // get().actions.setCurrentVideo(data.videos[data.videos.length - 1])
+          // setIdb(getIdbChannelString(get().currentChannel), {
+          //   ...data,
+          //   videoIndex: data.videos.length - 1,
+          // })
+          // get().actions.loadChannel(get().currentChannel)
+        }
+      })()
+      console.log('play next video')
     },
     changeplayerType: (to) => {
       set({ playerType: to })

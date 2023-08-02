@@ -150,10 +150,10 @@ const Remote = () => {
 
               <Row className="mt-4">
                 <Col className="flex flex-col items-center justify-center ">
-                  <Icon icon="Plus2" onClick={actions.incrementVolume} className="invert-[0.85]" />
+                  <Icon icon="Plus2" {...onHold(actions.incrementVolume, 200)} className="invert-[0.85]" />
 
                   <div className="my-2 text-[1rem]">VOL</div>
-                  <Icon icon="Minus3" onClick={actions.decrementVolume} className="-translate-y-1 invert-[0.85]" />
+                  <Icon icon="Minus3" {...onHold(actions.decrementVolume, 200)} className="-translate-y-1 invert-[0.85]" />
                 </Col>
                 <Col x={'content'} y={'full'}>
                   <Icon icon="Mute" size="m" onClick={actions.toggleMuteVolume} className="invert-[0.85]" />
@@ -161,22 +161,23 @@ const Remote = () => {
                   {/* <div className='w-9 h-9 rounded-full bg-slate-300 mr-3 hover:scale-125 hover:saturate-200 transition-all' /> */}
                 </Col>
                 <Col className="flex flex-col items-center " intent={'fit'}>
-                  <Icon icon="Plus2" onClick={() => actions.incrementChannel()} className="invert-[0.85]" />
+                  <Icon icon="Plus2" {...onHold(actions.incrementChannel, 500)} className="invert-[0.85]" />
                   <div className="my-2 text-[1rem]">CH</div>
 
-                  <Icon icon="Minus3" onClick={() => actions.decrementChannel()} className="-translate-y-1 invert-[0.85]" />
+                  <Icon icon="Minus3" {...onHold(actions.decrementChannel, 500)} className="-translate-y-1 invert-[0.85]" />
                 </Col>
               </Row>
               <Row className="p-4">
-                <Icon icon="Up2" className="-rotate-90 invert-[0.85]" {...onHold(actions.decrementVolume, 200)} size={'s'} />
+                <Icon icon="Up2" className="-rotate-90 invert-[0.85]" onClick={actions.previousVideo} size={'s'} />
 
                 <Col intent={'center'}>
-                  <Icon icon="Up2" size={'s'} className="invert-[0.85]" onClick={() => actions.incrementChannel} />
-                  <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} onClick={() => setSleepTimer(1000)} />
-                  <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} onClick={() => actions.decrementChannel} />
+                  <Icon icon="Up2" size={'s'} className="invert-[0.85]" onClick={actions.previousVideo} />
+                  {/* <Icon icon="Enter" className="my-3  -translate-x-[0.2rem] invert-[0.85]" size={'s'} onClick={() => null} /> */}
+                  <div className="h-14 w-8"></div>
+                  <Icon icon="Up2" className="rotate-180 invert-[0.85]" size={'s'} onClick={actions.nextVideo} />
                 </Col>
 
-                <Icon icon="Up2" className="rotate-90 invert-[0.85]" size={'s'} {...onHold(actions.incrementVolume, 200)} />
+                <Icon icon="Up2" className="rotate-90 invert-[0.85]" size={'s'} onClick={actions.nextVideo} />
               </Row>
               {/* <Row className='text-xs '>
               <button

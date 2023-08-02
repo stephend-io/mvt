@@ -13,6 +13,7 @@ import { SizeShower } from './SizeShower'
 import Row from './Row'
 import Col from './Col'
 import { CLIENT_STATIC_FILES_RUNTIME, CLIENT_STATIC_FILES_RUNTIME_WEBPACK } from 'next/dist/shared/lib/constants'
+import QuickSettings from './QuickSettings'
 // import useTV from "@/app/hooks/useTV";
 
 const ReactPlayer = dynamic(() => import('react-player/youtube'), {
@@ -32,7 +33,7 @@ export type MusicVideo = {
 }
 
 const TVPlayer = () => {
-  const { mouseDown, currentVideo, muted, volume, detailsHidden, isDecade, isMonth, currentChannel } = useStore()
+  const { currentChannelVideoIndex, mouseDown, currentVideo, muted, volume, detailsHidden, isDecade, isMonth, currentChannel } = useStore()
   const [showPlayer, setShowPlayer] = useState(false)
 
   useEffect(() => {
@@ -58,6 +59,8 @@ const TVPlayer = () => {
   let mouseHoverDebounce: NodeJS.Timer
   let hideMouseTimeout: NodeJS.Timer
   useEffect(() => {
+    actions.setDetailsHidden(false)
+
     function mouseHoverCallback() {
       // resets both timeouts when mouse is hovered
       clearTimeout(mouseHoverDebounce)
@@ -81,7 +84,7 @@ const TVPlayer = () => {
       clearTimeout(mouseHoverDebounce)
       clearTimeout(hideMouseTimeout)
     }
-  }, [])
+  }, [currentChannel, currentChannelVideoIndex])
 
   // const timeoutDelay = 3000
   // let timeoutID: NodeJS.Timer
@@ -127,74 +130,73 @@ const TVPlayer = () => {
   // }
   // console.log('rerendered tvplayer')
   // console.log(currentVideo)
-  let monthRef = useRef<HTMLDivElement>(null)
-  let yearRef = useRef<HTMLDivElement>(null)
 
   return (
     // <div className={TVplayerStyles({ intent })}>
     <div className="flex h-screen w-screen flex-col items-center justify-center bg-black font-pixel ">
       {/* Choices at start are overlaid on top of fully rendered player */}
       {!showPlayer ? (
-        <div className="right-1/2 top-1/2 h-full w-full  ">
-          <div className="flex h-full w-full justify-between font-pixel text-sm font-bold md:text-4xl">
-            <Col>
-              <Row>
-                <button onClick={() => actions.setChannel(80)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-red-400 hover:text-black active:saturate-150">
-                  80s
-                </button>
-                <button
-                  onClick={() => actions.setChannel(90)}
-                  className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-green-400 hover:text-black active:saturate-150"
-                >
-                  90s
-                </button>
-              </Row>
-              <Row>
-                <button onClick={() => actions.setChannel(0)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150">
-                  00s
-                </button>
+        // <div className="right-1/2 top-1/2 h-full w-full  ">
+        //   <div className="flex h-full w-full justify-between font-pixel text-sm font-bold md:text-4xl">
+        //     <Col>
+        //       <Row>
+        //         <button onClick={() => actions.setChannel(80)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-red-400 hover:text-black active:saturate-150">
+        //           80s
+        //         </button>
+        //         <button
+        //           onClick={() => actions.setChannel(90)}
+        //           className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-green-400 hover:text-black active:saturate-150"
+        //         >
+        //           90s
+        //         </button>
+        //       </Row>
+        //       <Row>
+        //         <button onClick={() => actions.setChannel(0)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150">
+        //           00s
+        //         </button>
 
-                <button
-                  onClick={() => actions.setChannel(10)}
-                  className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
-                >
-                  10s
-                </button>
-              </Row>
-              <form className="mt-2 flex  w-1/2 justify-around bg-white text-center font-pixel">
-                <input onClick={() => null} placeholder="year" className="w-1/3 px-2 text-center" />
-                <input onClick={() => null} placeholder="month" className="w-1/3 px-2 text-center" />
-                <button>Enter</button>
-              </form>
-              {/* <button
-                onClick={() => actions.setChannel(32005)}
-                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
-              >
-                03-2005
-              </button>
+        //         <button
+        //           onClick={() => actions.setChannel(10)}
+        //           className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+        //         >
+        //           10s
+        //         </button>
+        //       </Row>
+        //       <form className="mt-2 flex  w-1/2 justify-around bg-white text-center font-pixel">
+        //         <input onClick={() => null} placeholder="year" className="w-1/3 px-2 text-center" />
+        //         <input onClick={() => null} placeholder="month" className="w-1/3 px-2 text-center" />
+        //         <button>Enter</button>
+        //       </form>
+        //       {/* <button
+        //         onClick={() => actions.setChannel(32005)}
+        //         className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
+        //       >
+        //         03-2005
+        //       </button>
 
-              <button
-                onClick={() => actions.setChannel(112010)}
-                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
-              >
-                11-2010
-              </button>
-              <button
-                onClick={() => actions.setChannel(21980)}
-                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
-              >
-                02-1980
-              </button>
+        //       <button
+        //         onClick={() => actions.setChannel(112010)}
+        //         className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+        //       >
+        //         11-2010
+        //       </button>
+        //       <button
+        //         onClick={() => actions.setChannel(21980)}
+        //         className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
+        //       >
+        //         02-1980
+        //       </button>
 
-              <button
-                onClick={() => actions.setChannel(112019)}
-                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
-              >
-                11-2019
-              </button> */}
-            </Col>
-          </div>
-        </div>
+        //       <button
+        //         onClick={() => actions.setChannel(112019)}
+        //         className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+        //       >
+        //         11-2019
+        //       </button> */}
+        //     </Col>
+        //   </div>
+        // </div>
+        <QuickSettings />
       ) : (
         <>
           {/* Outside vignette for when video player goes off screen */}
@@ -210,6 +212,7 @@ const TVPlayer = () => {
                 <>
                   {/* <div>Channel: {currentChannel}</div> */}
                   {/* {JSON.stringify(currentVideo)} */}
+                  {/* {currentChannelVideoIndex} */}
                   {isDecade && <div>Year: {currentVideo.year}</div>}
                   {/* <div>isDecade: {String(isDecade)}</div>
                   <div>isMonth: {String(isMonth)}</div> */}
