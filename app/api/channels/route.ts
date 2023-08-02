@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { title } from 'process'
 import { fstat, write } from 'fs'
 import { writeFile } from 'fs/promises'
+import { MusicVideoType } from '@/zustand/store'
 
 // Gets an array of MusicVideo objects with a default minRank of 1, and maxRank of 20
 export async function GET(req: NextRequest) {
@@ -22,13 +23,14 @@ export async function GET(req: NextRequest) {
         title: true,
         links: true,
         rank: true,
+        year: true,
       },
       where: {
         id: {
           in: songIds,
         },
       },
-    })) as MusicVideo[]
+    })) as MusicVideoType[]
     const filteredData = data.filter((song) => {
       return song.links.length >= 1
     })
@@ -64,7 +66,7 @@ export async function GET(req: NextRequest) {
 
   console.log('getting videos...')
 
-  let res: Promise<MusicVideo[]>
+  let res: Promise<MusicVideoType[]>
   if (maxYear !== undefined) {
     res = getMusicVideosInRange({
       minYear,
@@ -111,7 +113,7 @@ export function monthIdGenerator(monthYearString: string) {
   return idArr
 }
 
-export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear }: { minYear: number; maxYear: number; minRank: number; maxRank: number }): Promise<MusicVideo[]> {
+export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear }: { minYear: number; maxYear: number; minRank: number; maxRank: number }): Promise<MusicVideoType[]> {
   const songIds = yearIdsRangeGenerator(minYear, maxYear, minRank, maxRank)
 
   const data = (await prisma.song.findMany({
@@ -119,13 +121,14 @@ export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear
       artist: true,
       title: true,
       links: true,
+      year: true,
     },
     where: {
       id: {
         in: songIds,
       },
     },
-  })) as MusicVideo[]
+  })) as MusicVideoType[]
 
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
@@ -141,7 +144,7 @@ export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear
   return arr
 }
 
-export async function getMusicVideos({ minYear, maxRank }: { minYear: number; maxRank?: number }): Promise<MusicVideo[]> {
+export async function getMusicVideos({ minYear, maxRank }: { minYear: number; maxRank?: number }): Promise<MusicVideoType[]> {
   const songIds = yearIdsGenerator(minYear, maxRank)
   console.log(songIds)
 
@@ -151,13 +154,14 @@ export async function getMusicVideos({ minYear, maxRank }: { minYear: number; ma
       title: true,
       links: true,
       rank: true,
+      year: true,
     },
     where: {
       id: {
         in: songIds,
       },
     },
-  })) as MusicVideo[]
+  })) as MusicVideoType[]
 
   const titleSet = new Set<string>()
   const filteredData = data.filter((song) => {
@@ -217,7 +221,7 @@ export function yearIdsGenerator(minYear: number, maxRank: number = 20) {
   return songArray
 }
 
-export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
+export async function getHitsOfThe(decade: number): Promise<MusicVideoType[]> {
   const songIds = yearIdsRangeGenerator(decade, decade + 9, 1, 20)
   console.log(songIds)
 
@@ -228,13 +232,14 @@ export async function getHitsOfThe(decade: number): Promise<MusicVideo[]> {
       title: true,
       links: true,
       rank: true,
+      year: true,
     },
     where: {
       id: {
         in: songIds,
       },
     },
-  })) as MusicVideo[]
+  })) as MusicVideoType[]
 
   writeFile('songData.json', JSON.stringify(data))
 

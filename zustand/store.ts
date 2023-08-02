@@ -7,12 +7,24 @@ import { number } from 'zod'
 import { MusicVideo } from '@/components/TVPlayer'
 
 type channelDataType = {
-  videos: MusicVideo[]
+  videos: MusicVideoType[]
   videoIndex: number
   maxRank: number
 }
 
 type playerTypes = 'fullScreen' | 'semiFullScreen' | 'mini' | 'leftQuarter' | 'rightQuarter' | 'middleQuarter' | 'boxMiddle'
+
+export type MusicVideoType = {
+  artist: string
+  title: string
+  rank: number
+  year: number
+  links: {
+    id: string
+    height: number
+    width: number
+  }[]
+}
 
 type State = {
   idbPrefix: string
@@ -39,16 +51,8 @@ type State = {
   isSettingsOpen: boolean
   mouseDown: boolean
   detailsHidden: boolean
-  currentVideo: {
-    title: string
-    artist: string
-    rank: number
-    links: {
-      id: string
-      width: number
-      height: number
-    }[]
-  }
+  currentVideo: MusicVideoType
+
   currentVideoWidth: number
   currentVideoHeight: number
   miniVideo: boolean
@@ -82,16 +86,7 @@ type Actions = {
     loadChannel: (channel: number) => void
     setDetailsHidden: (to: boolean) => void
     resetState: () => void
-    setCurrentVideo: (video: {
-      artist: string
-      title: string
-      rank: number
-      links: {
-        id: string
-        height: number
-        width: number
-      }[]
-    }) => void
+    setCurrentVideo: (video: MusicVideoType) => void
     nextVideo: () => void
     setMiniVideo: (bool: boolean) => void
     changeplayerType: (to: playerTypes) => void
@@ -112,7 +107,7 @@ const initState: State = {
   isDecade: false,
   isMonth: false,
   songDetails: 'fade',
-  currentChannel: 0,
+  currentChannel: 1,
   detailsHidden: false,
   currentChannelTotalVideos: 0,
   currentChannelVideoIndex: 0,
@@ -135,6 +130,7 @@ const initState: State = {
     artist: 'ERROR',
     title: 'NO-SONG',
     rank: 0,
+    year: 0,
     links: [{ id: 'n5Q4Y5nLvrg', width: 100, height: 56 }],
   },
   currentVideoHeight: 100,
@@ -158,6 +154,7 @@ const useStore = create<State & Actions>((set, get) => ({
         artist: 'ERROR',
         title: 'NO-SONG',
         rank: 0,
+        year: 0,
         links: [{ id: 'Vrr3lRLjZ1Y', width: 100, height: 56 }],
       })
     },
@@ -371,7 +368,7 @@ const useStore = create<State & Actions>((set, get) => ({
         throw 'error fetching'
       }
       // returns array of top100 items of month
-      const data = (await res.json()) as MusicVideo[]
+      const data = (await res.json()) as MusicVideoType[]
       const monthChannelString = getIdbChannelString(Number(channel))
       await setIdb(monthChannelString, { videos: [...data], videoIndex: 0, total: data.length })
       get().actions.loadChannel(Number(channel))
@@ -437,6 +434,10 @@ const useStore = create<State & Actions>((set, get) => ({
       console.log('Playing: ')
 
       console.log(video)
+      console.log(video.links[0])
+      console.log(video.links[0].width)
+      console.log(video.links[0].height)
+
       const aspectRatio = `${Number(((video.links[0].width / video.links[0].height) * 100).toFixed(2))}vh`
 
       document.documentElement.style.setProperty('--playerWidth', `${video.links[0].width}%`)
@@ -456,7 +457,7 @@ const useStore = create<State & Actions>((set, get) => ({
       let idbName = getIdbChannelString(channel)
       console.log(idbName)
 
-      const data = (await getIdb(idbName)) as { videos: MusicVideo[]; videoIndex: number }
+      const data = (await getIdb(idbName)) as { videos: MusicVideoType[]; videoIndex: number }
       console.log(data)
       if (data) {
         if (data.videos.length > data.videoIndex) {

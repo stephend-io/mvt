@@ -3,7 +3,7 @@ import useStore, { useActions } from '@/zustand/store'
 import { VariantProps, cva } from 'class-variance-authority'
 import dynamic from 'next/dynamic'
 import Loader from './Loader'
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
 
 import '@/app/fonts/Font.css'
 import { get, set } from 'idb-keyval'
@@ -12,38 +12,12 @@ import '@/app/styles.scss'
 import { SizeShower } from './SizeShower'
 import Row from './Row'
 import Col from './Col'
+import { CLIENT_STATIC_FILES_RUNTIME, CLIENT_STATIC_FILES_RUNTIME_WEBPACK } from 'next/dist/shared/lib/constants'
 // import useTV from "@/app/hooks/useTV";
 
 const ReactPlayer = dynamic(() => import('react-player/youtube'), {
   ssr: false,
   loading: () => <Loader />,
-})
-
-const TVplayerStyles = cva('absolute transition-all duration-1000 ease-in-out  overflow-clip', {
-  variants: {
-    intent: {
-      // fullScreen: "top-0 right-0 w-full h-full",
-      fullScreen: 'h-full w-full bg-black flex flex-col justify-center items-center ',
-      semiFullScreen: 'max-w-[95vw] max-h-[98vh] top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 ',
-      mini: 'top-2 right-2 h-1/3 w-1/3',
-      leftQuarter: 'top-0 left-2 w-2/3 h-full',
-      rightQuarter: 'top-0 right-2 w-2/3 h-full',
-      middleQuarter: 'top-1/2  -translate-y-1/2 translate-x-1/2 right-1/2  w-2/3 h-full',
-      boxMiddle: 'top-1/2 right-1/2 -translate-y-1/2 translate-x-1/2 w-2/3 h-2/3',
-      initial: 'top-[5vh] right-1/2 translate-y-1/2 translate-x-1/2 w-full h-full bg-red-500',
-    },
-    shape: {
-      default: '',
-      roundedSm: 'rounded-sm',
-      roundedMd: 'rounded-md',
-      roundedLg: 'rounded-lg',
-      roundedXl: 'rounded-xl',
-    },
-  },
-  defaultVariants: {
-    intent: 'fullScreen',
-    // shape: "roundedXl",
-  },
 })
 
 export type MusicVideo = {
@@ -57,12 +31,8 @@ export type MusicVideo = {
   }[]
 }
 
-// type Props = VariantProps<typeof TVplayerStyles> & {
-//   videos: { embedId: string; width: number; height: number }[];
-// };
-
 const TVPlayer = () => {
-  const { currentVideo, muted, volume, detailsHidden, isDecade, isMonth, currentChannel } = useStore()
+  const { mouseDown, currentVideo, muted, volume, detailsHidden, isDecade, isMonth, currentChannel } = useStore()
   const [showPlayer, setShowPlayer] = useState(false)
 
   useEffect(() => {
@@ -83,6 +53,48 @@ const TVPlayer = () => {
   useEffect(() => {
     setHideText(detailsHidden)
   }, [detailsHidden, currentVideo])
+
+  // Timeout used to prevent too many callback invocations
+  let mouseHoverDebounce: NodeJS.Timer
+  let hideMouseTimeout: NodeJS.Timer
+  useEffect(() => {
+    function mouseHoverCallback() {
+      // resets both timeouts when mouse is hovered
+      clearTimeout(mouseHoverDebounce)
+      clearTimeout(hideMouseTimeout)
+
+      // actual call hidden behind a debounce
+      mouseHoverDebounce = setTimeout(() => {
+        // shows details on hover
+        actions.setDetailsHidden(false)
+
+        // delay to hide details
+        hideMouseTimeout = setTimeout(() => {
+          actions.setDetailsHidden(true)
+        }, 5000)
+      }, 50)
+    }
+
+    window.addEventListener('mousemove', mouseHoverCallback)
+    return () => {
+      window.removeEventListener('mousemove', mouseHoverCallback)
+      clearTimeout(mouseHoverDebounce)
+      clearTimeout(hideMouseTimeout)
+    }
+  }, [])
+
+  // const timeoutDelay = 3000
+  // let timeoutID: NodeJS.Timer
+
+  // useEffect(() => {
+  //   clearTimeout(timeoutID)
+  //   console.log('mouseover effect')
+  //   actions.setDetailsHidden(false)
+  //   timeoutID = setTimeout(() => {
+  //     actions.setDetailsHidden(true)
+  //   }, timeoutDelay)
+  //   return () => clearTimeout(timeoutID)
+  // }, [mouseDown])
 
   // useLayoutEffect(() => {
   //   actions.setCurrentVideo(videos[9].links[0]);
@@ -113,58 +125,73 @@ const TVPlayer = () => {
   //     await set("kindalikemtv-" + channel, newChannelData);
   //   }
   // }
-  console.log('rerendered tvplayer')
-  console.log(currentVideo)
+  // console.log('rerendered tvplayer')
+  // console.log(currentVideo)
+  let monthRef = useRef<HTMLDivElement>(null)
+  let yearRef = useRef<HTMLDivElement>(null)
 
   return (
     // <div className={TVplayerStyles({ intent })}>
-    <div className="flex h-screen w-screen flex-col items-center justify-center bg-black font-pixel " onMouseOver={() => actions.toggleMouseDown()}>
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-black font-pixel ">
       {/* Choices at start are overlaid on top of fully rendered player */}
       {!showPlayer ? (
         <div className="right-1/2 top-1/2 h-full w-full  ">
-          <div className="kabel-shadow flex h-full w-full justify-between font-kabel font-bold">
+          <div className="flex h-full w-full justify-between font-pixel text-sm font-bold md:text-4xl">
             <Col>
-              <Row className="mb-4">
-                <button onClick={() => actions.setChannel(80)} className=" rounded-md bg-red-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+              <Row>
+                <button onClick={() => actions.setChannel(80)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-red-400 hover:text-black active:saturate-150">
                   80s
                 </button>
-                <button onClick={() => actions.setChannel(90)} className=" rounded-md bg-green-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                <button
+                  onClick={() => actions.setChannel(90)}
+                  className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-green-400 hover:text-black active:saturate-150"
+                >
                   90s
                 </button>
               </Row>
               <Row>
-                <button onClick={() => actions.setChannel(0)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                <button onClick={() => actions.setChannel(0)} className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150">
                   00s
                 </button>
 
-                <button onClick={() => actions.setChannel(10)} className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
+                <button
+                  onClick={() => actions.setChannel(10)}
+                  className=" rounded-md p-2 text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+                >
                   10s
                 </button>
               </Row>
-              <Row className="mt-4">
-                <button onClick={() => actions.setChannel(32005)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
-                  03-2005
-                </button>
+              <form className="mt-2 flex  w-1/2 justify-around bg-white text-center font-pixel">
+                <input onClick={() => null} placeholder="year" className="w-1/3 px-2 text-center" />
+                <input onClick={() => null} placeholder="month" className="w-1/3 px-2 text-center" />
+                <button>Enter</button>
+              </form>
+              {/* <button
+                onClick={() => actions.setChannel(32005)}
+                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
+              >
+                03-2005
+              </button>
 
-                <button
-                  onClick={() => actions.setChannel(112010)}
-                  className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150"
-                >
-                  11-2010
-                </button>
-              </Row>
-              <Row className="mt-4">
-                <button onClick={() => actions.setChannel(21980)} className=" rounded-md bg-blue-400 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150">
-                  02-1980
-                </button>
+              <button
+                onClick={() => actions.setChannel(112010)}
+                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+              >
+                11-2010
+              </button>
+              <button
+                onClick={() => actions.setChannel(21980)}
+                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-blue-400 hover:text-black active:saturate-150"
+              >
+                02-1980
+              </button>
 
-                <button
-                  onClick={() => actions.setChannel(112019)}
-                  className=" rounded-md bg-slate-200 p-2 text-base transition-all duration-75 hover:scale-110 hover:saturate-[0.2] active:saturate-150"
-                >
-                  11-2019
-                </button>
-              </Row>
+              <button
+                onClick={() => actions.setChannel(112019)}
+                className=" rounded-md p-2 text-base text-white transition-all duration-75 hover:scale-110 hover:bg-slate-200 hover:text-black active:saturate-150"
+              >
+                11-2019
+              </button> */}
             </Col>
           </div>
         </div>
@@ -175,20 +202,24 @@ const TVPlayer = () => {
           {/* Absolutely positioned text showing current breakpoint for debugging */}
           {/* <SizeShower /> */}
           {/* Internal container */}
-          <div id="ratio2 " className="font-kabel">
+          <div id="ratio2" className="kabel-shadow text-md font-kabel sm:text-lg md:text-4xl">
             {/* Inside vignette */}
             <div className="absolute bottom-0 left-0 right-0 top-0 z-50  before:block" id="vignette"></div>
             <div className="absolute bottom-12 left-12 z-50 flex flex-col gap-1 font-black text-white">
               {showPlayer && !detailsHidden && (
                 <>
-                  <div>Channel: {currentChannel}</div>
-
-                  <div>isDecade: {String(isDecade)}</div>
-                  <div>isMonth: {String(isMonth)}</div>
+                  {/* <div>Channel: {currentChannel}</div> */}
+                  {/* {JSON.stringify(currentVideo)} */}
+                  {isDecade && <div>Year: {currentVideo.year}</div>}
+                  {/* <div>isDecade: {String(isDecade)}</div>
+                  <div>isMonth: {String(isMonth)}</div> */}
+                  {isMonth && <div>Rank: {currentVideo.rank}</div>}
+                  <div>{currentVideo.title}</div>
+                  <div>{currentVideo.artist}</div>
                 </>
               )}
             </div>
-            <div className="kabel-shadow absolute bottom-12 right-12 z-50 flex flex-col gap-1 text-end font-kabel font-black text-white">
+            {/* <div className="kabel-shadow absolute bottom-12 right-12 z-50 flex flex-col gap-1 text-end font-kabel font-black text-white">
               {showPlayer && !detailsHidden && (
                 <>
                   {isMonth && <div>{currentVideo.rank}</div>}
@@ -196,7 +227,7 @@ const TVPlayer = () => {
                   <div>{currentVideo.artist}</div>
                 </>
               )}
-            </div>
+            </div> */}
             <ReactPlayer
               style={{
                 transition: 'ease-in-out',

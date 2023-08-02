@@ -43,7 +43,7 @@
 //     if (currChannel.currVideo + 1 <= currChannel.totalVids) {
 //       const currChannelData = (await get(
 //         "kindalikemtv-" + channel + "-data"
-//       )) as MusicVideo[];
+//       )) as MusicVideoType[];
 //       actions.setCurrentVideo(currChannelData[currChannel.currVideo].links[0]);
 //       const newChannelData = {
 //         ...currChannel,
