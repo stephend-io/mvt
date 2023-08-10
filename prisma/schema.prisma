@@ -91,3 +91,9 @@ model Song {
   artist String
   links  Json
 }
+
+model ReportedSong {
+  reportID Int    @id @unique @default(autoincrement())
+  title    String
+  artist   String
+}

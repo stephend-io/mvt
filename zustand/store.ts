@@ -450,7 +450,11 @@ const useStore = create<State & Actions>((set, get) => ({
       set({ currentVideo: video })
     },
     reportVideo: () => {
-      // ! TODO - Report channel and remove from circulation?
+      fetch('/api/reports', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: get().currentVideo.title, artist: get().currentVideo.artist }),
+      })
       console.log('reported: ' + get().currentVideo.title)
       get().actions.nextVideo()
     },
