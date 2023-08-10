@@ -75,7 +75,7 @@ const VolumeBar = () => {
 //   <div className='flex '>
 //     <div className='w-[0.2rem] h-12 bg-primary m-2' />
 //     <div className='absolute w-[0.3rem] h-12 bg-primary m-2 translate-x-[0.1px] blur-[7px]' />
-//   </div>
+//   </div
 // );
 
 const Half = () => (

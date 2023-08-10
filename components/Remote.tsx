@@ -80,6 +80,56 @@ const Remote = () => {
   const { isRemoteOpen, isSettingsOpen: settingsOpen, currentVideo } = useStore()
   const actions = useActions()
 
+  useEffect(() => {
+    function keyCallback(e: KeyboardEvent) {
+      // console.log('keyCallback: ' + e.key)
+
+      if (Number(e.key) || e.key === '0') {
+        actions.addNoToStack(Number(e.key))
+        // console.log('valid number: ' + e.key)
+        return
+      }
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'l':
+        case 'd':
+          actions.nextVideo()
+          break
+        case 'h':
+        case 'a':
+        case 'ArrowLeft':
+          actions.previousVideo()
+          break
+        case 'k':
+        case 'w':
+        case 'ArrowUp':
+          actions.incrementChannel()
+          break
+        case 's':
+        case 'j':
+        case 'ArrowDown':
+          actions.decrementChannel()
+          break
+        case 'L':
+        case 'D':
+        case 'W':
+        case 'K':
+          actions.incrementVolume()
+          break
+        case 'S':
+        case 'A':
+        case 'J':
+        case 'H':
+          actions.decrementVolume()
+          break
+        default:
+          break
+      }
+    }
+    window.addEventListener('keydown', keyCallback)
+    return () => window.removeEventListener('keydown', keyCallback)
+  }, [])
+
   return (
     <div>
       {/* invisible div that enables clicking on screen to toggle remote instead of an event listener that is tricky not to trigger when clicking on the buttons of the remote*/}
@@ -89,7 +139,8 @@ const Remote = () => {
         {isRemoteOpen ? (
           <div className=" inherit w-40 rounded-lg bg-slate-800">
             <Col>
-              <Row className="flex flex-row justify-between ">
+              {/* <Row className="flex flex-row justify-between "> */}
+              <div className="flex w-full justify-between px-1">
                 <Icon
                   icon="Power"
                   onClick={() => {
@@ -100,13 +151,14 @@ const Remote = () => {
                   className="m-2"
                 />
 
-                <button onClick={() => actions.setMiniVideo(false)}>
+                {/* <button onClick={() => actions.setMiniVideo(false)}>
                   <div className="mr-3 h-9 w-9 rounded-full bg-lime-300 transition-all hover:scale-125 hover:saturate-200" />
+                </button> */}
+                <button onClick={() => actions.reportVideo()}>
+                  <div className="mr-2 h-9 w-9 rounded-full transition-all hover:scale-125 hover:saturate-200">🚩</div>
                 </button>
-                <button onClick={() => actions.setMiniVideo(true)}>
-                  <div className="mr-3 h-9 w-9 rounded-full bg-yellow-300 transition-all hover:scale-125 hover:saturate-200" />
-                </button>
-              </Row>
+              </div>
+              {/* </Row> */}
               <Row>
                 <button onClick={() => actions.addNoToStack(1)}>1</button>
                 <button onClick={() => actions.addNoToStack(2)}>2</button>

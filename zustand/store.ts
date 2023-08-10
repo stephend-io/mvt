@@ -35,6 +35,7 @@ type State = {
   currentChannelTotalVideos: number
   isDecade: boolean
   isMonth: boolean
+  channelLoaded: boolean
   // minChannel: number;
   // maxChannel: number;
   channelRange: number[][]
@@ -82,7 +83,7 @@ type Actions = {
     toggleSettings: () => void
     testIncrementVolume: (timer: number) => void
     toggleMouseDown: () => void
-    reportVideo: (songName: string) => void
+    reportVideo: () => void
     loadChannel: (channel: number) => void
     setDetailsHidden: (to: boolean) => void
     resetState: () => void
@@ -101,7 +102,8 @@ type Actions = {
 const initState: State = {
   color: 'blue',
   mounted: false,
-  defaultChannel: 0,
+  defaultChannel: 1,
+  channelLoaded: false,
   hitsRank: 20,
   yearRank: 40,
   isVignette: true,
@@ -158,7 +160,7 @@ const useStore = create<State & Actions>((set, get) => ({
         year: 0,
         links: [{ id: 'Vrr3lRLjZ1Y', width: 100, height: 56 }],
       })
-      set({ currentChannel: 1 })
+      set({ currentChannel: 1, channelLoaded: false })
     },
     // when channel is not in the channel ranges, defaults to the minimum value of the highest channel range
     setChannel: (to) => {
@@ -447,9 +449,9 @@ const useStore = create<State & Actions>((set, get) => ({
       document.documentElement.style.setProperty('--aspectRatio', aspectRatio)
       set({ currentVideo: video })
     },
-    reportVideo: (songName) => {
+    reportVideo: () => {
       // ! TODO - Report channel and remove from circulation?
-      console.log('reported: ' + songName)
+      console.log('reported: ' + get().currentVideo.title)
       get().actions.nextVideo()
     },
     setDetailsHidden: (to) => {
@@ -498,12 +500,16 @@ const useStore = create<State & Actions>((set, get) => ({
         // console.log('attempting to make new channel: ' + channel)
         get().actions.newChannel(channel)
       }
+      set({ channelLoaded: true })
     },
 
     setMiniVideo: (bool) => {
       set({ miniVideo: bool })
     },
     nextVideo: () => {
+      if (!get().channelLoaded) {
+        return
+      }
       ;(async () => {
         if (get().currentChannelTotalVideos - 1 === get().currentChannelVideoIndex) {
           const idbName = getIdbChannelString(get().currentChannel)
@@ -555,6 +561,9 @@ const useStore = create<State & Actions>((set, get) => ({
       return
     },
     previousVideo: () => {
+      if (!get().channelLoaded) {
+        return
+      }
       ;(async () => {
         if (get().currentChannelVideoIndex === 0) {
           const idbName = getIdbChannelString(get().currentChannel)
