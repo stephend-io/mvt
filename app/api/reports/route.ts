@@ -20,8 +20,8 @@ export async function PUT(req: NextRequest) {
           artist: data.artist,
         },
       })
-      .then((e) => console.log(e))
-      .catch((err) => console.log(err))
+      // .then((e: undefined) => console.log(e))
+      .catch((err: undefined) => console.log(err))
     console.log(res)
   } catch (err) {
     console.error(err)

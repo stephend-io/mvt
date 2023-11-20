@@ -176,7 +176,7 @@ const Remote = () => {
               </Row>
 
               <Row>
-                <Icon icon="Record" onClick={() => actions.reportVideo(JSON.stringify(currentVideo))} size={'s'} />
+                <Icon icon="Record" onClick={() => actions.reportVideo()} size={'s'} />
                 <button onClick={() => actions.addNoToStack(0)}>0</button>
                 <Icon icon="Settings" onClick={actions.toggleSettings} size={'s'} className="invert-[0.85]" />
               </Row>

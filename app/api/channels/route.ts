@@ -95,7 +95,7 @@ type MusicVideo = {
   }[]
 }
 
-export function monthIdGenerator(monthYearString: string) {
+function monthIdGenerator(monthYearString: string) {
   let month: string
   let year: string
   if (monthYearString.length === 6) {
@@ -113,7 +113,7 @@ export function monthIdGenerator(monthYearString: string) {
   return idArr
 }
 
-export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear }: { minYear: number; maxYear: number; minRank: number; maxRank: number }): Promise<MusicVideoType[]> {
+async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear }: { minYear: number; maxYear: number; minRank: number; maxRank: number }): Promise<MusicVideoType[]> {
   const songIds = yearIdsRangeGenerator(minYear, maxYear, minRank, maxRank)
 
   const data = (await prisma.song.findMany({
@@ -144,7 +144,7 @@ export async function getMusicVideosInRange({ minRank, minYear, maxRank, maxYear
   return arr
 }
 
-export async function getMusicVideos({ minYear, maxRank }: { minYear: number; maxRank?: number }): Promise<MusicVideoType[]> {
+async function getMusicVideos({ minYear, maxRank }: { minYear: number; maxRank?: number }): Promise<MusicVideoType[]> {
   const songIds = yearIdsGenerator(minYear, maxRank)
   console.log(songIds)
 
@@ -184,7 +184,7 @@ type optionalParams = {
   minRank?: number
   maxRank?: number
 }
-export function arrayRandomizer<T>(arr: T[]) {
+function arrayRandomizer<T>(arr: T[]) {
   let tmp: T
 
   for (let i = arr.length - 1; i > 0; i--) {
@@ -196,7 +196,7 @@ export function arrayRandomizer<T>(arr: T[]) {
 
   return arr
 }
-export function yearIdsRangeGenerator(minYear: number, maxYear: number, minRank: number, maxRank: number) {
+function yearIdsRangeGenerator(minYear: number, maxYear: number, minRank: number, maxRank: number) {
   const songArray: number[] = []
   for (let year = minYear; year <= maxYear; year++) {
     for (let month = 1; month <= 12; month++) {
@@ -209,7 +209,7 @@ export function yearIdsRangeGenerator(minYear: number, maxYear: number, minRank:
   return songArray
 }
 
-export function yearIdsGenerator(minYear: number, maxRank: number = 20) {
+function yearIdsGenerator(minYear: number, maxRank: number = 20) {
   const songArray: number[] = []
 
   for (let month = 1; month <= 12; month++) {
@@ -221,7 +221,7 @@ export function yearIdsGenerator(minYear: number, maxRank: number = 20) {
   return songArray
 }
 
-export async function getHitsOfThe(decade: number): Promise<MusicVideoType[]> {
+async function getHitsOfThe(decade: number): Promise<MusicVideoType[]> {
   const songIds = yearIdsRangeGenerator(decade, decade + 9, 1, 20)
   console.log(songIds)
 

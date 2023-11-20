@@ -1938,7 +1938,7 @@ const sampleData = [
   },
 ]
 
-export const Page = async () => {
+export default async function Home() {
   // redirect("/channels/01");
   // const router = useRouter();
 
@@ -1986,5 +1986,3 @@ export const Page = async () => {
     </div>
   )
 }
-
-export default Page

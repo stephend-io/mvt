@@ -1,41 +1,33 @@
-// import {
-//   convertISO8601ToMilliseconds,
-//   getTimeFromTimeString,
-//   validator,
-// } from "@/lib/utils";
-// import { channel } from "@/services/youtubeDataApi/Channels";
-// import {
-//   getMakeDetailedPlaylistItems,
-//   getPlaylistChannels,
-//   getPlaylistItems,
-// } from "@/services/youtubeDataApi/PlaylistItems";
-// import { getMakeVideos, videos } from "@/services/youtubeDataApi/Videos";
-// import { google } from "googleapis";
-// import { NextRequest, NextResponse } from "next/server";
-// import { z } from "zod";
-// import { prisma } from "@/lib/prisma";
+import { convertISO8601ToMilliseconds, getTimeFromTimeString, validator } from '@/lib/utils'
+// import { channel } from '@/services/youtubeDataApi/Channels'
+// import { getMakeDetailedPlaylistItems, getPlaylistChannels, getPlaylistItems } from '@/services/youtubeDataApi/PlaylistItems'
+// import { getMakeVideos, videos } from '@/services/youtubeDataApi/Videos'
+// import { google } from 'googleapis'
+// import { NextRequest, NextResponse } from 'next/server'
+// import { z } from 'zod'
+// import { prisma } from '@/lib/prisma'
 
-// const playlistIdSchema = z.string().length(34);
-// export type playlistIdType = z.infer<typeof playlistIdSchema>; // string
+// const playlistIdSchema = z.string().length(34)
+// export type playlistIdType = z.infer<typeof playlistIdSchema> // string
 
 // async function getMakeFetchPlaylistChannels(playlistId: string) {
-//   const newChannels: channel[] = [];
-//   const videosArray: videos[] = [];
+//   const newChannels: channel[] = []
+//   const videosArray: videos[] = []
 
-//   const channelIds = await getPlaylistChannels(playlistId);
+//   const channelIds = await getPlaylistChannels(playlistId)
 
-//   validator().channelID(channelIds);
+//   validator().channelID(channelIds)
 
-//   const res = await google.youtube("v3").channels.list({
+//   const res = await google.youtube('v3').channels.list({
 //     key: process.env.YOUTUBE_API_KEY,
-//     part: ["snippet", "contentDetails"],
+//     part: ['snippet', 'contentDetails'],
 //     id: channelIds,
 //     maxResults: 50,
-//   });
+//   })
 
-//   const channelIdArray = res.data.items?.map((channel) => channel.id as string);
+//   const channelIdArray = res.data.items?.map((channel) => channel.id as string)
 
-//   if (!channelIdArray) throw "No Channel Array";
+//   if (!channelIdArray) throw 'No Channel Array'
 
 //   // const existingChannels = await prisma.ytChannel.findMany({
 //   //   select: {
@@ -113,49 +105,47 @@
 //   //   data: videosArray,
 //   // });
 
-//   return channelIds;
+//   return channelIds
 // }
 
 // export async function POST(request: NextRequest) {
 //   try {
-//     const { playlistId, channelName } = await request.json();
-//     const playlistChannels = await getMakeFetchPlaylistChannels(
-//       playlistIdSchema.parse(playlistId)
-//     );
+//     const { playlistId, channelName } = await request.json()
+//     const playlistChannels = await getMakeFetchPlaylistChannels(playlistIdSchema.parse(playlistId))
 
-//     const TvChannelId = await makeTvChannel(playlistChannels, channelName);
+//     const TvChannelId = await makeTvChannel(playlistChannels, channelName)
 
 //     if (playlistChannels)
 //       return new Response(JSON.stringify(TvChannelId), {
 //         status: 200,
-//       });
-//     else throw "Error Getting / Making / Fetching playlist channels";
+//       })
+//     else throw 'Error Getting / Making / Fetching playlist channels'
 //   } catch (err) {
-//     console.error(err);
-//     return new Response("Something went wrong", {
+//     console.error(err)
+//     return new Response('Something went wrong', {
 //       status: 500,
-//     });
+//     })
 //   }
 // }
 
-// const testPlaylistRecursion = "PLnQ_7AffD8eUuBY0Z52NBlZgfFJsgg_mt";
+// const testPlaylistRecursion = 'PLnQ_7AffD8eUuBY0Z52NBlZgfFJsgg_mt'
 // export async function GET(request: NextRequest) {
 //   try {
-//     const data = await getPlaylistChannels(testPlaylistRecursion);
+//     const data = await getPlaylistChannels(testPlaylistRecursion)
 
-//     console.log("No coming out: " + data.length);
-//     console.log(data);
+//     console.log('No coming out: ' + data.length)
+//     console.log(data)
 //     return new Response(JSON.stringify(data), {
 //       status: 200,
-//     });
+//     })
 //   } catch (err) {
-//     return new Response("Something went wrong", {
+//     return new Response('Something went wrong', {
 //       status: 500,
-//     });
+//     })
 //   }
 // }
 // async function makeTvChannel(channelIds: string[], channelName: string) {
-//   console.log("Making Tv Channel: " + channelName);
+//   console.log('Making Tv Channel: ' + channelName)
 //   const { channelId } = await prisma.tvChannel.create({
 //     select: {
 //       channelId: true,
@@ -164,10 +154,10 @@
 //       channelName: channelName,
 //       channels: channelIds,
 //     },
-//   });
-//   return channelId;
+//   })
+//   return channelId
 // }
 
 // function getChannelVideos(filters?: string[]) {
-//   throw new Error("Function not implemented.");
+//   throw new Error('Function not implemented.')
 // }
