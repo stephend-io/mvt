@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
 
   let minYear: string | null | number = headerList.get('minYear')
   let monthYear: string | null = headerList.get('monthYear')
+  console.log(`process.env.DATABASE_URL is: ${process.env.DATABASE_URL}`)
 
   console.log(minYear)
   console.log(monthYear)
