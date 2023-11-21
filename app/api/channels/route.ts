@@ -14,29 +14,43 @@ export async function GET(req: NextRequest) {
   let minYear: string | null | number = headerList.get('minYear')
   let monthYear: string | null = headerList.get('monthYear')
 
+  console.log(minYear)
+  console.log(monthYear)
+
   if (monthYear) {
-    const songIds = monthIdGenerator(monthYear)
-    console.log(songIds)
-
-    const data = (await prisma.song.findMany({
-      select: {
-        artist: true,
-        title: true,
-        links: true,
-        rank: true,
-        year: true,
-      },
-      where: {
-        id: {
-          in: songIds,
+    try {
+      const songIds = monthIdGenerator(monthYear)
+      console.log(songIds)
+      console.log('this part reached')
+      const data = (await prisma.song.findMany({
+        select: {
+          artist: true,
+          title: true,
+          links: true,
+          rank: true,
+          year: true,
         },
-      },
-    })) as MusicVideoType[]
-    const filteredData = data.filter((song) => {
-      return song.links.length >= 1
-    })
+        where: {
+          id: {
+            in: songIds,
+          },
+        },
+      })) as MusicVideoType[]
+      console.log('this part reached')
+      const filteredData = data.filter((song) => {
+        return song.links.length >= 1
+      })
+      console.log('this part reached')
 
-    return NextResponse.json(filteredData)
+      console.log(data)
+      console.log(filteredData)
+      return NextResponse.json(filteredData)
+    } catch (err) {
+      console.log('this part reached')
+      console.log(err)
+      console.error('err')
+    }
+    return
   }
 
   if (minYear && minYear.length <= 2) {

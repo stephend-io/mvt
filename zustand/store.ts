@@ -361,7 +361,7 @@ const useStore = create<State & Actions>((set, get) => ({
     decrementVolume: () => get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
     incrementVolume: () => get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
     newMonthChannel: async (channel) => {
-      const res = await fetch(`${process.env.ROOT}/api/channels/`, {
+      const res = await fetch(`/api/channels/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -371,6 +371,8 @@ const useStore = create<State & Actions>((set, get) => ({
       if (!res) {
         throw 'error fetching'
       }
+      console.log(JSON.stringify(res))
+
       // returns array of top100 items of month
       const data = (await res.json()) as MusicVideoType[]
       const monthChannelString = getIdbChannelString(Number(channel))
@@ -392,7 +394,7 @@ const useStore = create<State & Actions>((set, get) => ({
         get().actions.newMonthChannel(String(channel))
         return
       }
-      const res = await fetch(`${process.env.ROOT}/api/channels/`, {
+      const res = await fetch(`/api/channels/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -400,7 +402,7 @@ const useStore = create<State & Actions>((set, get) => ({
         },
       })
 
-      console.log(res)
+      console.log(JSON.stringify(res))
       const data = await res.json()
       // get().actions.setCurrentVideo(data[0]);
       const idbName = getIdbChannelString(channel)
