@@ -8,6 +8,6 @@ module.exports = {
     includePaths: [path.join(__dirname, 'styles')],
   },
   env: {
-    ROOT: process.env.NODE_ENV === 'production' ? `https://stephend.io/` : `http://localhost:2221`,
+    ROOT: process.env.NODE_ENV === 'production' ? `https://stephend.io` : `http://localhost:2221`,
   },
 }
