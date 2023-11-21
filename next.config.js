@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {}
 
-const path = require("path");
+const path = require('path')
 
 module.exports = {
   sassOptions: {
-    includePaths: [path.join(__dirname, "styles")],
+    includePaths: [path.join(__dirname, 'styles')],
   },
-};
+  env: {
+    ROOT: process.env.NODE_ENV === 'production' ? `https://stephend.io/` : `http://localhost:2221`,
+  },
+}

@@ -361,7 +361,7 @@ const useStore = create<State & Actions>((set, get) => ({
     decrementVolume: () => get().volume >= 2 && set((state) => ({ volume: state.volume - 2 })),
     incrementVolume: () => get().volume <= 98 && set((state) => ({ volume: state.volume + 2 })),
     newMonthChannel: async (channel) => {
-      const res = await fetch(`http://localhost:2221/api/channels/`, {
+      const res = await fetch(`${process.env.ROOT}/api/channels/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -392,7 +392,7 @@ const useStore = create<State & Actions>((set, get) => ({
         get().actions.newMonthChannel(String(channel))
         return
       }
-      const res = await fetch(`http://localhost:2221/api/channels/`, {
+      const res = await fetch(`${process.env.ROOT}/api/channels/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

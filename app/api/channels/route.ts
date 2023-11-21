@@ -9,6 +9,7 @@ import { MusicVideoType } from '@/zustand/store'
 // Gets an array of MusicVideo objects with a default minRank of 1, and maxRank of 20
 export async function GET(req: NextRequest) {
   const headerList = headers()
+  console.log(headerList)
 
   let minYear: string | null | number = headerList.get('minYear')
   let monthYear: string | null = headerList.get('monthYear')

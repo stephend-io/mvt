@@ -22,7 +22,7 @@ const Index = async () => {
   }, [])
 
   console.log('index - NEW')
-  // const res = await fetch("http://localhost:2221/api/channels/", {
+  // const res = await fetch("http://${process.env.ROOT}/api/channels/", {
   //   method: "get",
   //   // headers: { "Content-Type": "application/json" },
   //   next: { revalidate: 0 },

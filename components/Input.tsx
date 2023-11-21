@@ -23,7 +23,7 @@
 //   } = useForm<TestInput>();
 
 //   const onSubmit: SubmitHandler<TestInput> = async (data) =>
-//     await fetch("http://localhost:2221/api/test", {
+//     await fetch("${process.env.ROOT}/api/test", {
 //       method: "post",
 //       body: JSON.stringify(data),
 //       headers: {
@@ -67,7 +67,7 @@
 //   } = useForm<Inputs>();
 
 //   const onSubmit: SubmitHandler<Inputs> = async (data) =>
-//     await fetch("http://localhost:2221/api/playlistItems", {
+//     await fetch("${process.env.ROOT}/api/playlistItems", {
 //       method: "post",
 //       body: JSON.stringify(data),
 //       headers: {
@@ -112,7 +112,7 @@
 //       <div
 //         className='bg-red-800 p-2 rounded-lg hover:scale-125 transition-all active:opacity-80 active:bg-red-200 hover:cursor-pointer'
 //         onClick={() =>
-//           fetch("http://localhost:2221/api/playlistItems", {
+//           fetch("${process.env.ROOT}/api/playlistItems", {
 //             method: "get",
 //           }).then(() => console.log("done fetching"))
 //         }

@@ -46,7 +46,7 @@ export default function Home({ params }: { params: { slug: string } }) {
           year = '201' + params.slug[1]
         }
 
-        const res = await fetch(`http://localhost:2221/api/channels/`, {
+        const res = await fetch(`${process.env.ROOT}/api/channels/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

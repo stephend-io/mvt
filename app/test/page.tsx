@@ -12,7 +12,7 @@ const Page = async () => {
   const actions = useActions()
   useEffect(() => {
     ;(async () => {
-      // await fetch('http://localhost:2221/api/test/')
+      // await fetch('${process.env.ROOT}/api/test/')
       console.log(actions.newMonthChannel('031998'))
     })()
   }, [])
