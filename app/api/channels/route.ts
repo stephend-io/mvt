@@ -238,10 +238,11 @@ function yearIdsGenerator(minYear: number, maxRank: number = 20) {
 }
 
 async function getHitsOfThe(decade: number): Promise<MusicVideoType[]> {
+  console.log('getting hits of the... ')
   const songIds = yearIdsRangeGenerator(decade, decade + 9, 1, 20)
   console.log(songIds)
 
-  writeFile('songIds.json', JSON.stringify(songIds))
+  // writeFile('songIds.json', JSON.stringify(songIds))
   const data = (await prisma.song.findMany({
     select: {
       artist: true,
@@ -257,8 +258,9 @@ async function getHitsOfThe(decade: number): Promise<MusicVideoType[]> {
     },
   })) as MusicVideoType[]
 
-  writeFile('songData.json', JSON.stringify(data))
+  // writeFile('songData.json', JSON.stringify(data))
 
+  console.log('getting hits of the... part 2')
   console.log(data)
 
   const titleSet = new Set<string>()
