@@ -7,7 +7,7 @@
 
 <hr/>
 
-<b>Live Demo:</b> <a href="stephend.io/MVT">stephend.io/MVT</a>
+<b>Live Demo:</b> <a href="stephend.io">stephend.io</a>
 
 <hr/>
 <ul>
